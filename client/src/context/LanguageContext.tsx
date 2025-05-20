@@ -31,13 +31,13 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   // Try to get language from localStorage, or detect from browser, or default to 'en'
   const detectInitialLanguage = (): string => {
     const savedLanguage = localStorage.getItem("language");
-    if (savedLanguage && ["en", "es", "ar"].includes(savedLanguage)) {
+    if (savedLanguage && ["en", "ru", "uz"].includes(savedLanguage)) {
       return savedLanguage;
     }
     
     // Try to detect from browser
     const browserLang = navigator.language.split("-")[0];
-    if (["en", "es", "ar"].includes(browserLang)) {
+    if (["en", "ru", "uz"].includes(browserLang)) {
       return browserLang;
     }
     
@@ -68,7 +68,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   }, [currentLanguage, directions.dir]);
 
   const setLanguage = (lang: string) => {
-    if (["en", "es", "ar"].includes(lang)) {
+    if (["en", "ru", "uz"].includes(lang)) {
       setCurrentLanguage(lang);
     }
   };
