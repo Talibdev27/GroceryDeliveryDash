@@ -1,6 +1,10 @@
 import React, { createContext, useState, useEffect } from "react";
 import i18n from "i18next";
 
+// Define supported languages
+const SUPPORTED_LANGUAGES = ["en", "ru", "uz"] as const;
+type SupportedLanguage = typeof SUPPORTED_LANGUAGES[number];
+
 interface LanguageContextType {
   currentLanguage: string;
   setLanguage: (lang: string) => void;
@@ -29,47 +33,50 @@ interface LanguageProviderProps {
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   // Try to get language from localStorage, or detect from browser, or default to 'en'
-  const detectInitialLanguage = (): string => {
+  const detectInitialLanguage = (): SupportedLanguage => {
+    // Clear any previously saved language that's not in our supported list
     const savedLanguage = localStorage.getItem("language");
-    if (savedLanguage && ["en", "ru", "uz"].includes(savedLanguage)) {
-      return savedLanguage;
+    
+    // Check if the saved language is one of our supported languages
+    if (savedLanguage && SUPPORTED_LANGUAGES.includes(savedLanguage as SupportedLanguage)) {
+      return savedLanguage as SupportedLanguage;
     }
     
-    // Try to detect from browser
+    // Try to detect from browser, fallback to 'en'
     const browserLang = navigator.language.split("-")[0];
-    if (["en", "ru", "uz"].includes(browserLang)) {
-      return browserLang;
+    if (SUPPORTED_LANGUAGES.includes(browserLang as SupportedLanguage)) {
+      return browserLang as SupportedLanguage;
     }
     
     return "en"; // Default
   };
 
-  const [currentLanguage, setCurrentLanguage] = useState(detectInitialLanguage());
+  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>(detectInitialLanguage());
 
-  // Compute directional properties based on language
-  const getDirections = (lang: string) => {
-    const isRtl = lang === "ar";
-    return {
-      start: isRtl ? "right" : "left",
-      end: isRtl ? "left" : "right",
-      dir: isRtl ? "rtl" : "ltr",
-      textAlign: isRtl ? "right" : "left",
-    } as const;
+  // Compute directional properties - all our languages are LTR
+  const directions = {
+    start: "left",
+    end: "right",
+    dir: "ltr" as const,
+    textAlign: "left",
   };
-
-  const directions = getDirections(currentLanguage);
 
   // Update i18n language when currentLanguage changes
   useEffect(() => {
+    // Update HTML attributes
     document.documentElement.lang = currentLanguage;
     document.documentElement.dir = directions.dir;
+    
+    // Change i18next language
     i18n.changeLanguage(currentLanguage);
+    
+    // Save to localStorage
     localStorage.setItem("language", currentLanguage);
-  }, [currentLanguage, directions.dir]);
+  }, [currentLanguage]);
 
   const setLanguage = (lang: string) => {
-    if (["en", "ru", "uz"].includes(lang)) {
-      setCurrentLanguage(lang);
+    if (SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage)) {
+      setCurrentLanguage(lang as SupportedLanguage);
     }
   };
 
