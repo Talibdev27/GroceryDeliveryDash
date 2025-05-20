@@ -1,5 +1,5 @@
 import React from "react";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage } from "@/hooks/use-language";
 import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
@@ -23,7 +23,9 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
     const flagMap = {
       en: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/us.svg",
       es: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/es.svg",
-      ar: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/sa.svg"
+      ar: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/sa.svg",
+      ru: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/ru.svg",
+      uz: "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/uz.svg"
     };
     return flagMap[code as keyof typeof flagMap];
   };
@@ -35,7 +37,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
     return (
       <div className="flex flex-col space-y-2">
         <p className="font-medium text-neutral-800">{t("mobileMenu.changeLanguage")}</p>
-        <div className="flex space-x-2 rtl:space-x-reverse">
+        <div className="grid grid-cols-2 gap-2">
           <button 
             className={`flex items-center space-x-1 rtl:space-x-reverse ${language === 'en' ? 'bg-primary text-white' : 'bg-neutral-100'} px-3 py-2 rounded hover:bg-primary/90 hover:text-white transition-colors`}
             onClick={() => setLanguage('en')}
@@ -56,6 +58,20 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
           >
             <img src={getFlagSrc('ar')} alt="Arabic" className="w-4 h-4 rounded-sm" />
             <span>{t("languages.ar")}</span>
+          </button>
+          <button 
+            className={`flex items-center space-x-1 rtl:space-x-reverse ${language === 'ru' ? 'bg-primary text-white' : 'bg-neutral-100'} px-3 py-2 rounded hover:bg-primary/90 hover:text-white transition-colors`}
+            onClick={() => setLanguage('ru')}
+          >
+            <img src={getFlagSrc('ru')} alt="Russian" className="w-4 h-4 rounded-sm" />
+            <span>{t("languages.ru")}</span>
+          </button>
+          <button 
+            className={`flex items-center space-x-1 rtl:space-x-reverse ${language === 'uz' ? 'bg-primary text-white' : 'bg-neutral-100'} px-3 py-2 rounded hover:bg-primary/90 hover:text-white transition-colors`}
+            onClick={() => setLanguage('uz')}
+          >
+            <img src={getFlagSrc('uz')} alt="Uzbek" className="w-4 h-4 rounded-sm" />
+            <span>{t("languages.uz")}</span>
           </button>
         </div>
       </div>
@@ -81,6 +97,14 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         <DropdownMenuItem onClick={() => setLanguage('ar')} className="flex items-center space-x-2 rtl:space-x-reverse p-2 hover:bg-neutral-100 rounded cursor-pointer">
           <img src={getFlagSrc('ar')} alt="Arabic" className="w-4 h-4 rounded-sm" />
           <span>{t("languages.ar")}</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setLanguage('ru')} className="flex items-center space-x-2 rtl:space-x-reverse p-2 hover:bg-neutral-100 rounded cursor-pointer">
+          <img src={getFlagSrc('ru')} alt="Russian" className="w-4 h-4 rounded-sm" />
+          <span>{t("languages.ru")}</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setLanguage('uz')} className="flex items-center space-x-2 rtl:space-x-reverse p-2 hover:bg-neutral-100 rounded cursor-pointer">
+          <img src={getFlagSrc('uz')} alt="Uzbek" className="w-4 h-4 rounded-sm" />
+          <span>{t("languages.uz")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

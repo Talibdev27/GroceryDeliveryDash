@@ -1,0 +1,389 @@
+{
+  "seo": {
+    "home": {
+      "title": "FreshCart - 30 daqiqa yoki undan kam vaqt ichida oziq-ovqat etkazib berish",
+      "description": "FreshCart bilan onlayn taomlar buyurtma qiling va ularni 30 daqiqa yoki undan kam vaqt ichida eshigingizga etkazib bering. Yangi mevalar, sabzavotlar, sut mahsulotlari va boshqalardan bahramand bo'ling."
+    },
+    "products": {
+      "title": "Onlayn oziq-ovqat xarid qilish | FreshCart",
+      "description": "Yangi oziq-ovqat, mahsulotlar, sut mahsulotlari, pishiriqlar va boshqalarning keng assortimentini ko'rib chiqing. Tez yetkazib berish va yuqori sifat kafolatlangan."
+    },
+    "product": {
+      "title": "{{productName}} | FreshCart",
+      "description": "{{productName}} onlayn sotib oling. Yangi va yuqori sifatli mahsulotlar 30 daqiqa yoki undan kam vaqt ichida eshigingizga etkazib beriladi."
+    },
+    "checkout": {
+      "title": "To'lov | FreshCart",
+      "description": "Xaridingizni yakunlang va oziq-ovqatni tezda oling."
+    },
+    "account": {
+      "title": "Mening hisobim | FreshCart",
+      "description": "Hisobingizni boshqaring, buyurtmalarni ko'rishingiz, afzalliklarni yangilang va boshqalar."
+    }
+  },
+  "header": {
+    "brand": "FreshCart",
+    "downloadApp": "Ilovani yuklab olish",
+    "account": "Hisob",
+    "orders": "Buyurtmalar",
+    "searchPlaceholder": "Oziq-ovqat qidirilmoqda..."
+  },
+  "nav": {
+    "home": "Bosh sahifa",
+    "categories": "Kategoriyalar",
+    "deals": "Chegirmalar",
+    "recipes": "Retseptlar",
+    "helpSupport": "Yordam va qo'llab-quvvatlash"
+  },
+  "mobileMenu": {
+    "changeLanguage": "Tilni o'zgartirish"
+  },
+  "breadcrumb": {
+    "home": "Bosh sahifa",
+    "products": "Mahsulotlar",
+    "product": "Mahsulot"
+  },
+  "hero": {
+    "title": "30 daqiqa yoki undan kam vaqt ichida yangi oziq-ovqat etkazib berish",
+    "subtitle": "Mahalliy fermalar va do'konlardan eng yangi ingredientlar to'g'ridan-to'g'ri eshigingizga etkazib beriladi.",
+    "deliveryAddress": "Yetkazib berish manzili",
+    "enterAddress": "Yetkazib berish manzilingizni kiriting",
+    "startShopping": "Xarid qilishni boshlash",
+    "imageAlt": "Yangi oziq-ovqat etkazib berish",
+    "features": {
+      "fastDelivery": "Tez etkazib berish",
+      "freshProducts": "Yangi mahsulotlar",
+      "safePackaging": "Xavfsiz qadoqlash"
+    }
+  },
+  "categories": {
+    "title": "Kategoriya bo'yicha xarid qilish",
+    "fruits": "Mevalar",
+    "vegetables": "Sabzavotlar",
+    "dairy": "Sut mahsulotlari",
+    "bakery": "Nonvoyxona",
+    "meat": "Go'sht",
+    "seafood": "Dengiz mahsulotlari",
+    "frozen": "Muzlatilgan",
+    "snacks": "Gazaklar"
+  },
+  "promotions": {
+    "vegetables": {
+      "title": "Yangi sabzavotlar",
+      "description": "Shu hafta yangi va organik sabzavotlarga 30% gacha chegirma!",
+      "alt": "Yangi sabzavotlar aksiyasi"
+    },
+    "mealKits": {
+      "title": "Taom to'plamlari",
+      "description": "Oson retseptlar va o'lchangan ingredientlar bilan yangi taom to'plamlarini sinab ko'ring!",
+      "alt": "Taom to'plamlari aksiyasi"
+    },
+    "shopNow": "Hozir xarid qilish",
+    "explore": "Ko'rib chiqish"
+  },
+  "featuredProducts": {
+    "title": "Tanlangan mahsulotlar",
+    "viewAll": "Hammasini ko'rish",
+    "viewAllProducts": "Barcha mahsulotlarni ko'rish"
+  },
+  "products": {
+    "allProducts": "Barcha mahsulotlar",
+    "searchProducts": "Mahsulotlarni qidirish...",
+    "filters": "Filtrlar",
+    "resetFilters": "Qayta o'rnatish",
+    "filterCategories": "Kategoriyalar",
+    "filterPrice": "Narx oralig'i",
+    "filterDietary": "Parhez afzalliklari",
+    "sortBy": "Saralash",
+    "sortOptions": {
+      "popularity": "Mashhurlik",
+      "priceAsc": "Narx: Past-yuqori",
+      "priceDesc": "Narx: Yuqori-past",
+      "nameAsc": "Nomi: A-Z",
+      "nameDesc": "Nomi: Z-A"
+    },
+    "dietaryOptions": {
+      "organic": "Organik",
+      "vegan": "Vegiterianlar uchun",
+      "glutenFree": "Glutensiz",
+      "dairyFree": "Sut mahsulotisiz"
+    },
+    "noResults": "Mahsulotlar topilmadi",
+    "tryAdjustingFilters": "Filtrlarni yoki qidiruv so'zini o'zgartirishga harakat qiling",
+    "apples": {
+      "name": "Organik olmalar",
+      "unit": "1 lb qop"
+    },
+    "milk": {
+      "name": "Organik sut",
+      "unit": "1 gallon"
+    },
+    "bread": {
+      "name": "To'liq donli non",
+      "unit": "1 buxanka"
+    },
+    "avocados": {
+      "name": "Organik avokado",
+      "unit": "2 ta"
+    },
+    "eggs": {
+      "name": "Organik tuxumlar",
+      "unit": "12 ta"
+    },
+    "tomatoes": {
+      "name": "Organik pomidor",
+      "unit": "1 lb"
+    },
+    "chicken": {
+      "name": "Organik tovuq",
+      "unit": "1 lb"
+    },
+    "bananas": {
+      "name": "Organik bananlar",
+      "unit": "1 bog'lam"
+    }
+  },
+  "product": {
+    "addToCart": "Savatga qo'shish",
+    "quantity": "Miqdori",
+    "unit": "O'lchov birligi",
+    "availability": "Mavjudligi",
+    "inStock": "Mavjud",
+    "outOfStock": "Mavjud emas",
+    "reviews": "sharhlar",
+    "tabs": {
+      "description": "Tavsif",
+      "nutrition": "Ozuqaviy qiymat",
+      "reviews": "Sharhlar"
+    },
+    "descriptionTitle": "Mahsulot tavsifi",
+    "benefits": "Foydalar",
+    "benefitItems": {
+      "item1": "Yangi va mahalliy",
+      "item2": "Zarur ozuqa moddalari bilan to'ldirilgan",
+      "item3": "Sog'lom ovqatlanish uchun ideal"
+    },
+    "nutritionFacts": "Ozuqaviy ma'lumotlar",
+    "servingSize": "Porsiya hajmi",
+    "nutritionItems": {
+      "calories": "Kaloriya",
+      "fat": "Umumiy yog'",
+      "carbs": "Umumiy uglevodlar",
+      "protein": "Oqsil"
+    },
+    "allergens": "Allergenlar",
+    "allergensText": "Bu mahsulot yong'oq, bug'doy va soya izlarini o'z ichiga olishi mumkin.",
+    "storage": "Saqlash bo'yicha ko'rsatmalar",
+    "storageText": "Salqin va quruq joyda saqlang. Ochilgandan keyin sovutgichda saqlang.",
+    "customerReviews": "Mijozlar sharhlari",
+    "writeReview": "Sharh yozish",
+    "reviewSample1": "Ajoyib sifatli mahsulot. Juda yangi va mazali. Albatta yana sotib olaman!",
+    "reviewSample2": "Yaxshi mahsulot, lekin qadoqlash yaxshilanishi mumkin. Umuman olganda, xariddan mamnunman.",
+    "daysAgo": "kun oldin",
+    "weekAgo": "hafta oldin",
+    "defaultDescription": "Zavqingiz uchun ehtiyotkorlik bilan tanlangan yangi va yuqori sifatli mahsulot.",
+    "longDescription": "Bizning mahsulotlar maksimal yangilik va sifatni ta'minlash uchun mahalliy fermalardan keladi. Har bir elementni yuqori standartlarimizga javob berishi uchun ehtiyotkorlik bilan tanlaymiz, shuning uchun siz har bir xarid bilan eng yaxshi tajribaga ega bo'lishingiz mumkin.",
+    "notFound": "Mahsulot topilmadi",
+    "notFoundMessage": "Siz qidirayotgan mahsulot mavjud emas yoki o'chirilgan.",
+    "backToProducts": "Mahsulotlarga qaytish"
+  },
+  "cart": {
+    "yourCart": "Sizning savatingiz",
+    "items": "narsalar",
+    "emptyCart": "Savatingiz bo'sh",
+    "emptyCartMessage": "Narsalarni savatingizga qo'shishni boshlang, ularni bu erda ko'rish uchun.",
+    "startShopping": "Xarid qilishni boshlash",
+    "youMightAlsoLike": "Sizga ham yoqishi mumkin",
+    "subtotal": "Oraliq jami",
+    "deliveryFee": "Yetkazib berish haqi",
+    "total": "Jami",
+    "proceedToCheckout": "To'lovga o'tish"
+  },
+  "whyChooseUs": {
+    "title": "Nima uchun FreshCart tanlash kerak",
+    "delivery": {
+      "title": "30 daqiqada etkazib berish",
+      "description": "Oziq-ovqatlarni 30 daqiqa yoki undan kamroq vaqt ichida, to'g'ridan to'g'ri eshigigizga etkazib berish."
+    },
+    "fresh": {
+      "title": "Yangi mahsulotlar",
+      "description": "Eng yangi mahsulotlar uchun mahalliy fermalar va ta'minotchilardan to'g'ridan-to'g'ri olamiz."
+    },
+    "satisfaction": {
+      "title": "Qoniqish kafolatlangan",
+      "description": "Buyurtmangizdan xursand emassizmi? Biz uni almashtiramiz yoki pulingizni qaytaramiz, savol yo'q."
+    }
+  },
+  "appPromotion": {
+    "title": "Mobil ilovamizni yuklab oling",
+    "description": "Mobil ilovamiz orqali eksklyuziv takliflar va yaxshiroq xarid qilish tajribasiga ega bo'ling. Yetkazib berishlarni real vaqtda kuzating va bir marta bosish bilan qayta buyurtma bering.",
+    "googlePlay": "Google Play-dan yuklab olish",
+    "appStore": "App Store-dan yuklab olish",
+    "appScreenshot": "FreshCart mobil ilovasi"
+  },
+  "checkout": {
+    "title": "To'lov",
+    "deliveryAddress": "Yetkazib berish manzili",
+    "fullName": "To'liq ismi",
+    "fullNamePlaceholder": "To'liq ismingizni kiriting",
+    "email": "Elektron pochta",
+    "emailPlaceholder": "Elektron pochtangizni kiriting",
+    "phone": "Telefon",
+    "phonePlaceholder": "Telefon raqamingizni kiriting",
+    "address": "Manzil",
+    "addressPlaceholder": "Ko'cha manzilingizni kiriting",
+    "city": "Shahar",
+    "cityPlaceholder": "Shahringizni kiriting",
+    "state": "Viloyat",
+    "statePlaceholder": "Viloyatingizni kiriting",
+    "zipCode": "Pochta indeksi",
+    "zipCodePlaceholder": "Pochta indeksingizni kiriting",
+    "saveAddressForFuture": "Bu manzilni keyingi buyurtmalar uchun saqlash",
+    "deliveryOptions": "Yetkazib berish variantlari",
+    "deliveryTime": "Yetkazib berish vaqti",
+    "asap": "Iloji boricha tezroq",
+    "asapDescription": "Buyurtmangizni 30 daqiqa ichida oling",
+    "scheduled": "Rejalashtirilgan yetkazib berish",
+    "scheduledDescription": "O'zingizga mos vaqtni tanlang",
+    "selectTimeSlot": "Vaqt oralig'ini tanlang",
+    "contactFreeDelivery": "Kontaktsiz yetkazib berish",
+    "contactFreeDescription": "Kuryer sizning buyurtmangizni eshikda qoldiradi",
+    "deliveryNotes": "Yetkazib berish bo'yicha eslatmalar",
+    "deliveryNotesPlaceholder": "Yetkazib berish uchun maxsus ko'rsatmalar qo'shing",
+    "paymentMethod": "To'lov usuli",
+    "creditCard": "Kredit karta",
+    "cardNumber": "Karta raqami",
+    "expiryDate": "Amal qilish muddati",
+    "cvv": "CVV",
+    "nameOnCard": "Kartadagi ism",
+    "nameOnCardPlaceholder": "Kartangizda ko'rsatilgan ismni kiriting",
+    "placeOrder": "Buyurtma berish",
+    "termsConditionsMessage": "Buyurtma berish orqali siz bizning Xizmat ko'rsatish shartlari va Maxfiylik siyosatimizni qabul qilasiz",
+    "orderSummary": "Buyurtma xulosasi",
+    "cartItems": "Savat elementlari ({{count}})",
+    "subtotal": "Oraliq jami",
+    "deliveryFee": "Yetkazib berish haqi",
+    "tip": "Chaychaqalar",
+    "total": "Jami",
+    "promoCodePlaceholder": "Promo-kodni kiriting",
+    "promoCodeHint": "Chegirmalar olish uchun haqiqiy promo-kodni kiriting",
+    "back": "Orqaga",
+    "continueShopping": "Xarid qilishni davom ettirish",
+    "continueToDelivery": "Yetkazib berishga davom etish",
+    "continueToPayment": "To'lovga davom etish",
+    "orderConfirmed": "Buyurtma tasdiqlandi!",
+    "orderConfirmedMessage": "Sizning buyurtmangiz muvaffaqiyatli bajarildi va tez orada yetkazib beriladi.",
+    "orderNumber": "Buyurtma raqami",
+    "redirectMessage": "Siz bir necha soniyada bosh sahifaga yo'naltirilasiz...",
+    "backToHome": "Bosh sahifaga qaytish",
+    "emptyCart": "Savatingiz bo'sh",
+    "emptyCartMessage": "To'lovga o'tishdan oldin savatingizga narsalar qo'shishingiz kerak.",
+    "startShopping": "Xarid qilishni boshlash"
+  },
+  "account": {
+    "profile": "Profil",
+    "orders": "Buyurtmalar",
+    "addresses": "Manzillar",
+    "payment": "To'lov",
+    "favorites": "Sevimlilar",
+    "notifications": "Bildirishnomalar",
+    "settings": "Sozlamalar",
+    "signOut": "Chiqish",
+    "personalInformation": "Shaxsiy ma'lumot",
+    "personalInfoDescription": "Shaxsiy ma'lumotlaringiz va aloqa ma'lumotlaringizni yangilang",
+    "firstName": "Ism",
+    "lastName": "Familiya",
+    "email": "Elektron pochta",
+    "phone": "Telefon",
+    "changePassword": "Parolni o'zgartirish",
+    "currentPassword": "Hozirgi parol",
+    "newPassword": "Yangi parol",
+    "confirmPassword": "Parolni tasdiqlang",
+    "saveChanges": "O'zgarishlarni saqlash",
+    "orderHistory": "Buyurtmalar tarixi",
+    "orderHistoryDescription": "Barcha oldingi va joriy buyurtmalarni ko'rish va kuzatish",
+    "orderNumber": "Buyurtma raqami",
+    "orderStatus": {
+      "processing": "Qayta ishlanmoqda",
+      "shipped": "Jo'natilgan",
+      "delivered": "Yetkazib berilgan",
+      "cancelled": "Bekor qilingan"
+    },
+    "viewDetails": "Tafsilotlarni ko'rish",
+    "items": "{{count}} narsalar",
+    "trackOrder": "Buyurtmani kuzatish",
+    "reorder": "Qayta buyurtma berish",
+    "noOrders": "Hali buyurtma yo'q",
+    "noOrdersDescription": "Siz hali hech qanday buyurtma bermadingiz. Bu erda ko'rish uchun xarid qilishni boshlang.",
+    "startShopping": "Xarid qilishni boshlash",
+    "savedAddresses": "Saqlangan manzillar",
+    "savedAddressesDescription": "Yetkazib berish manzillaringizni boshqarish va tahrirlash",
+    "addNewAddress": "Yangi manzil qo'shish",
+    "default": "Standart",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "setAsDefault": "Standart sifatida o'rnatish",
+    "noAddresses": "Saqlangan manzillar yo'q",
+    "noAddressesDescription": "Sizda hali saqlangan manzillar yo'q. To'lovni tezroq qilish uchun qo'shing.",
+    "addFirstAddress": "Birinchi manzilingizni qo'shing",
+    "paymentMethods": "To'lov usullari",
+    "paymentMethodsDescription": "Saqlangan to'lov usullaringizni boshqarish",
+    "addNewPayment": "Yangi to'lov usulini qo'shish",
+    "expiresOn": "{{date}} da muddati tugaydi",
+    "noPaymentMethods": "To'lov usullari yo'q",
+    "noPaymentMethodsDescription": "Sizda hali saqlangan to'lov usullari yo'q. To'lovni tezroq qilish uchun birini qo'shing.",
+    "addFirstPaymentMethod": "Birinchi to'lov usulingizni qo'shing",
+    "favoriteItems": "Sevimli elementlar",
+    "favoriteItemsDescription": "Sevimli mahsulotlaringizni ko'rish va boshqarish",
+    "addToCart": "Savatga qo'shish",
+    "noFavorites": "Hali sevimlilar yo'q",
+    "noFavoritesDescription": "Siz hali hech qanday mahsulotni sevimlilaringizga qo'shmagansiz.",
+    "browseProducts": "Mahsulotlarni ko'rib chiqish",
+    "notificationPreferences": "Bildirishnoma afzalliklari",
+    "notificationPreferencesDescription": "Qanday va qachon bildirishnoma olishni xohlashingizni boshqaring",
+    "emailNotifications": "Elektron pochta bildirishnomalari",
+    "orderUpdates": "Buyurtma yangilanishlari",
+    "orderUpdatesDescription": "Buyurtma holati o'zgarishlari va yetkazib berish yangilanishlari haqida bildirishnomalar olish",
+    "promotions": "Aksiyalar va chegirmalar",
+    "promotionsDescription": "Maxsus takliflar, chegirmalar va aksiyalar haqida elektron xatlar olish",
+    "newsletter": "Haftalik xabarlar",
+    "newsletterDescription": "Yangi mahsulotlar va mavsumiy aksiyalar haqida haftalik xulosa oling",
+    "pushNotifications": "Push-bildirishnomalar",
+    "pushOrderUpdatesDescription": "Qurilmangizda buyurtmalaringiz haqida real vaqtda yangilanishlar olish",
+    "pushPromotionsDescription": "Qurilmangizda maxsus takliflar va chegirmalar haqida bildirishnomalar olish",
+    "savePreferences": "Afzalliklarni saqlash",
+    "accountSettings": "Hisob sozlamalari",
+    "accountSettingsDescription": "Hisobingiz afzalliklari va sozlamalarini boshqaring",
+    "language": "Til",
+    "appearance": "Ko'rinish",
+    "darkMode": "Tun rejimi",
+    "darkModeDescription": "Yorug' va qorong'i rejimlar o'rtasida almashtirish",
+    "dangerZone": "Xavfli zona",
+    "deleteAccount": "Hisobni o'chirish",
+    "deleteAccountDescription": "Hisobingizni o'chirilganidan so'ng, barcha ma'lumotlaringiz butunlay o'chiriladi. Bu harakatni qaytarib bo'lmaydi.",
+    "deleteMyAccount": "Mening hisobimni o'chirish"
+  },
+  "footer": {
+    "tagline": "30 daqiqa yoki undan kamroq vaqt ichida yangi oziq-ovqat mahsulotlarini eshigigizga yetkazib bering.",
+    "shopping": "Xarid qilish",
+    "browseCategories": "Kategoriyalarni ko'rib chiqish",
+    "dailyDeals": "Kundalik chegirmalar",
+    "giftCards": "Sovg'a kartalari",
+    "mealKits": "Taom to'plamlari",
+    "organicItems": "Organik mahsulotlar",
+    "account": "Hisob",
+    "myAccount": "Mening hisobim",
+    "orderHistory": "Buyurtmalar tarixi",
+    "wishlist": "Istaklar ro'yxati",
+    "addresses": "Manzillar",
+    "paymentMethods": "To'lov usullari",
+    "contactUs": "Biz bilan bog'laning",
+    "address": "123 Yangi ko'cha, Yashil shahar, Viloyat 12345",
+    "phone": "+1 (123) 456-7890",
+    "email": "yordam@freshcart.com",
+    "allRightsReserved": "Barcha huquqlar himoyalangan.",
+    "privacyPolicy": "Maxfiylik siyosati",
+    "termsOfService": "Xizmat ko'rsatish shartlari",
+    "accessibility": "Qulaylilik"
+  }
+}
