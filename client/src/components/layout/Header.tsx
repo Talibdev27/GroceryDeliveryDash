@@ -45,10 +45,10 @@ export default function Header() {
     switch (lang) {
       case "en":
         return "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/us.svg";
-      case "es":
-        return "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/es.svg";
-      case "ar":
-        return "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/sa.svg";
+      case "ru":
+        return "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/ru.svg";
+      case "uz":
+        return "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/uz.svg";
       default:
         return "https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/us.svg";
     }
@@ -58,10 +58,10 @@ export default function Header() {
     switch (lang) {
       case "en":
         return "English";
-      case "es":
-        return "Español";
-      case "ar":
-        return "العربية";
+      case "ru":
+        return "Russian";
+      case "uz":
+        return "Uzbek";
       default:
         return "English";
     }
@@ -92,21 +92,21 @@ export default function Header() {
                   />
                   <span>English</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage("es")} className="cursor-pointer">
+                <DropdownMenuItem onClick={() => setLanguage("ru")} className="cursor-pointer">
                   <img 
-                    src={getLanguageFlag("es")}
-                    alt="Spanish"
+                    src={getLanguageFlag("ru")}
+                    alt="Russian"
                     className="w-4 h-4 rounded-sm mr-2 rtl:ml-2 rtl:mr-0"
                   />
-                  <span>Español</span>
+                  <span>Russian</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage("ar")} className="cursor-pointer">
+                <DropdownMenuItem onClick={() => setLanguage("uz")} className="cursor-pointer">
                   <img 
-                    src={getLanguageFlag("ar")}
-                    alt="Arabic"
+                    src={getLanguageFlag("uz")}
+                    alt="Uzbek"
                     className="w-4 h-4 rounded-sm mr-2 rtl:ml-2 rtl:mr-0"
                   />
-                  <span>العربية</span>
+                  <span>Uzbek</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
