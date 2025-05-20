@@ -3,8 +3,6 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
 import en from "@/data/locales/en.json";
-import es from "@/data/locales/es.json";
-import ar from "@/data/locales/ar.json";
 import ru from "@/data/locales/ru.json";
 import uz from "@/data/locales/uz.json";
 
@@ -17,12 +15,6 @@ i18n
       en: {
         translation: en
       },
-      es: {
-        translation: es
-      },
-      ar: {
-        translation: ar
-      },
       ru: {
         translation: ru
       },
@@ -31,7 +23,7 @@ i18n
       }
     },
     fallbackLng: "en",
-    supportedLngs: ["en", "es", "ar", "ru", "uz"],
+    supportedLngs: ["en", "ru", "uz"],
     
     interpolation: {
       escapeValue: false // react already safes from xss
