@@ -1,0 +1,65 @@
+import { Switch, Route, useLocation } from "wouter";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import Home from "@/pages/Home";
+import Products from "@/pages/Products";
+import Product from "@/pages/Product";
+import Checkout from "@/pages/Checkout";
+import Account from "@/pages/Account";
+import NotFound from "@/pages/not-found";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import MobileMenu from "@/components/layout/MobileMenu";
+import ShoppingCart from "@/components/shop/ShoppingCart";
+import { useLanguage } from "@/hooks/use-language";
+import { useTheme } from "@/hooks/use-theme";
+import { useEffect } from "react";
+
+function Router() {
+  return (
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route path="/products" component={Products} />
+      <Route path="/product/:id" component={Product} />
+      <Route path="/checkout" component={Checkout} />
+      <Route path="/account" component={Account} />
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
+function App() {
+  const { currentLanguage } = useLanguage();
+  const { theme } = useTheme();
+  const [location] = useLocation();
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  // Set html direction and lang attributes
+  useEffect(() => {
+    const htmlElement = document.documentElement;
+    htmlElement.lang = currentLanguage;
+    htmlElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
+    htmlElement.className = theme;
+  }, [currentLanguage, theme]);
+
+  return (
+    <TooltipProvider>
+      <div className="flex flex-col min-h-screen bg-neutral-100 text-neutral-700 font-sans">
+        <Toaster />
+        <Header />
+        <MobileMenu />
+        <ShoppingCart />
+        <main className="flex-grow">
+          <Router />
+        </main>
+        <Footer />
+      </div>
+    </TooltipProvider>
+  );
+}
+
+export default App;

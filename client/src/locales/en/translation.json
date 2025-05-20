@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "title": "FreshCart - Grocery Delivery in 30 Minutes or Less",
+    "description": "Order fresh groceries from local farms and stores delivered to your doorstep in 30 minutes or less."
+  },
+  "languages": {
+    "en": "English",
+    "es": "Spanish",
+    "ar": "Arabic"
+  },
+  "header": {
+    "downloadApp": "Download App",
+    "account": "Account",
+    "orders": "Orders",
+    "search": "Search for groceries...",
+    "home": "Home",
+    "categories": "Categories",
+    "deals": "Deals",
+    "recipes": "Recipes"
+  },
+  "mobileMenu": {
+    "changeLanguage": "Change Language",
+    "helpSupport": "Help & Support"
+  },
+  "cart": {
+    "yourCart": "Your Cart",
+    "items": "items",
+    "item": "item",
+    "empty": "Your cart is empty",
+    "startShopping": "Start Shopping",
+    "subtotal": "Subtotal",
+    "deliveryFee": "Delivery Fee",
+    "total": "Total",
+    "checkout": "Proceed to Checkout",
+    "youMightLike": "You might also like"
+  },
+  "hero": {
+    "title": "Fresh Groceries Delivered in 30 Minutes or Less",
+    "subtitle": "The freshest ingredients from local farms and stores delivered right to your doorstep.",
+    "deliveryAddress": "Delivery Address",
+    "enterAddress": "Enter your delivery address",
+    "startShopping": "Start Shopping",
+    "features": {
+      "fastDelivery": "Fast Delivery",
+      "freshProducts": "Fresh Products",
+      "safePackaging": "Safe Packaging"
+    }
+  },
+  "categories": {
+    "title": "Shop by Category",
+    "viewAll": "View All",
+    "fruits": "Fruits",
+    "vegetables": "Vegetables",
+    "dairy": "Dairy",
+    "bakery": "Bakery",
+    "meat": "Meat",
+    "seafood": "Seafood",
+    "frozen": "Frozen",
+    "snacks": "Snacks"
+  },
+  "promotions": {
+    "freshVegetables": {
+      "title": "Fresh Vegetables",
+      "description": "Up to 30% off on fresh, organic vegetables this week!"
+    },
+    "mealKits": {
+      "title": "Meal Kits",
+      "description": "Try our new meal kits with easy recipes and pre-measured ingredients!"
+    },
+    "shopNow": "Shop Now",
+    "explore": "Explore"
+  },
+  "products": {
+    "featuredProducts": "Featured Products",
+    "viewAll": "View All",
+    "addToCart": "Add to Cart",
+    "outOfStock": "Out of Stock",
+    "inStock": "In Stock"
+  },
+  "features": {
+    "whyChoose": "Why Choose FreshCart",
+    "delivery": {
+      "title": "30-Minute Delivery",
+      "description": "Get your groceries delivered in 30 minutes or less, right to your doorstep."
+    },
+    "fresh": {
+      "title": "Fresh Products",
+      "description": "We source directly from local farms and suppliers for the freshest products."
+    },
+    "satisfaction": {
+      "title": "Satisfaction Guaranteed",
+      "description": "Not happy with your order? We'll replace it or refund you, no questions asked."
+    }
+  },
+  "app": {
+    "download": "Download Our Mobile App",
+    "description": "Get exclusive deals and a better shopping experience with our mobile app. Track your deliveries in real-time and reorder with one tap.",
+    "googlePlay": "Get it on Google Play",
+    "appStore": "Download on the App Store"
+  },
+  "footer": {
+    "description": "Get fresh groceries delivered to your doorstep in 30 minutes or less.",
+    "shopping": "Shopping",
+    "browseCategories": "Browse Categories",
+    "dailyDeals": "Daily Deals",
+    "giftCards": "Gift Cards",
+    "mealKits": "Meal Kits",
+    "organicItems": "Organic Items",
+    "account": "Account",
+    "myAccount": "My Account",
+    "orderHistory": "Order History",
+    "wishlist": "Wishlist",
+    "addresses": "Addresses",
+    "paymentMethods": "Payment Methods",
+    "contact": "Contact Us",
+    "phone": "+1 (123) 456-7890",
+    "email": "help@freshcart.com",
+    "address": "123 Fresh Street, Green City, State 12345",
+    "copyright": "© 2023 FreshCart. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "accessibility": "Accessibility"
+  }
+}

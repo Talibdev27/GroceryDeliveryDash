@@ -1,0 +1,389 @@
+{
+  "seo": {
+    "home": {
+      "title": "FreshCart - Grocery Delivery in 30 Minutes or Less",
+      "description": "Order fresh groceries online with FreshCart and get them delivered to your doorstep in 30 minutes or less. Enjoy fresh fruits, vegetables, dairy, and more."
+    },
+    "products": {
+      "title": "Shop Groceries Online | FreshCart",
+      "description": "Browse our wide selection of fresh groceries, produce, dairy, bakery items and more. Fast delivery and high quality guaranteed."
+    },
+    "product": {
+      "title": "{{productName}} | FreshCart",
+      "description": "Buy {{productName}} online. Fresh, high-quality products delivered to your door in 30 minutes or less."
+    },
+    "checkout": {
+      "title": "Checkout | FreshCart",
+      "description": "Complete your purchase and get your groceries delivered fast."
+    },
+    "account": {
+      "title": "My Account | FreshCart",
+      "description": "Manage your account, view orders, update preferences and more."
+    }
+  },
+  "header": {
+    "brand": "FreshCart",
+    "downloadApp": "Download App",
+    "account": "Account",
+    "orders": "Orders",
+    "searchPlaceholder": "Search for groceries..."
+  },
+  "nav": {
+    "home": "Home",
+    "categories": "Categories",
+    "deals": "Deals",
+    "recipes": "Recipes",
+    "helpSupport": "Help & Support"
+  },
+  "mobileMenu": {
+    "changeLanguage": "Change Language"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "products": "Products",
+    "product": "Product"
+  },
+  "hero": {
+    "title": "Fresh Groceries Delivered in 30 Minutes or Less",
+    "subtitle": "The freshest ingredients from local farms and stores delivered right to your doorstep.",
+    "deliveryAddress": "Delivery Address",
+    "enterAddress": "Enter your delivery address",
+    "startShopping": "Start Shopping",
+    "imageAlt": "Fresh grocery delivery",
+    "features": {
+      "fastDelivery": "Fast Delivery",
+      "freshProducts": "Fresh Products",
+      "safePackaging": "Safe Packaging"
+    }
+  },
+  "categories": {
+    "title": "Shop by Category",
+    "fruits": "Fruits",
+    "vegetables": "Vegetables",
+    "dairy": "Dairy",
+    "bakery": "Bakery",
+    "meat": "Meat",
+    "seafood": "Seafood",
+    "frozen": "Frozen",
+    "snacks": "Snacks"
+  },
+  "promotions": {
+    "vegetables": {
+      "title": "Fresh Vegetables",
+      "description": "Up to 30% off on fresh, organic vegetables this week!",
+      "alt": "Fresh vegetables promotion"
+    },
+    "mealKits": {
+      "title": "Meal Kits",
+      "description": "Try our new meal kits with easy recipes and pre-measured ingredients!",
+      "alt": "Meal kits promotion"
+    },
+    "shopNow": "Shop Now",
+    "explore": "Explore"
+  },
+  "featuredProducts": {
+    "title": "Featured Products",
+    "viewAll": "View All",
+    "viewAllProducts": "View All Products"
+  },
+  "products": {
+    "allProducts": "All Products",
+    "searchProducts": "Search products...",
+    "filters": "Filters",
+    "resetFilters": "Reset",
+    "filterCategories": "Categories",
+    "filterPrice": "Price Range",
+    "filterDietary": "Dietary Preferences",
+    "sortBy": "Sort by",
+    "sortOptions": {
+      "popularity": "Popularity",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "nameAsc": "Name: A to Z",
+      "nameDesc": "Name: Z to A"
+    },
+    "dietaryOptions": {
+      "organic": "Organic",
+      "vegan": "Vegan",
+      "glutenFree": "Gluten Free",
+      "dairyFree": "Dairy Free"
+    },
+    "noResults": "No products found",
+    "tryAdjustingFilters": "Try adjusting your filters or search term",
+    "apples": {
+      "name": "Organic Apples",
+      "unit": "1 lb bag"
+    },
+    "milk": {
+      "name": "Organic Milk",
+      "unit": "1 gallon"
+    },
+    "bread": {
+      "name": "Whole Grain Bread",
+      "unit": "1 loaf"
+    },
+    "avocados": {
+      "name": "Organic Avocados",
+      "unit": "2 count"
+    },
+    "eggs": {
+      "name": "Organic Eggs",
+      "unit": "12 count"
+    },
+    "tomatoes": {
+      "name": "Organic Tomatoes",
+      "unit": "1 lb"
+    },
+    "chicken": {
+      "name": "Organic Chicken",
+      "unit": "1 lb"
+    },
+    "bananas": {
+      "name": "Organic Bananas",
+      "unit": "1 bunch"
+    }
+  },
+  "product": {
+    "addToCart": "Add to Cart",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "availability": "Availability",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "reviews": "reviews",
+    "tabs": {
+      "description": "Description",
+      "nutrition": "Nutrition",
+      "reviews": "Reviews"
+    },
+    "descriptionTitle": "Product Description",
+    "benefits": "Benefits",
+    "benefitItems": {
+      "item1": "Fresh and locally sourced",
+      "item2": "Packed with essential nutrients",
+      "item3": "Perfect for healthy eating"
+    },
+    "nutritionFacts": "Nutrition Facts",
+    "servingSize": "Serving Size",
+    "nutritionItems": {
+      "calories": "Calories",
+      "fat": "Total Fat",
+      "carbs": "Total Carbohydrates",
+      "protein": "Protein"
+    },
+    "allergens": "Allergens",
+    "allergensText": "This product may contain traces of nuts, wheat, and soy.",
+    "storage": "Storage Instructions",
+    "storageText": "Store in a cool, dry place. Refrigerate after opening.",
+    "customerReviews": "Customer Reviews",
+    "writeReview": "Write a Review",
+    "reviewSample1": "Great quality product. Very fresh and tasty. Will definitely buy again!",
+    "reviewSample2": "Good product but the packaging could be improved. Overall satisfied with the purchase.",
+    "daysAgo": "days ago",
+    "weekAgo": "week ago",
+    "defaultDescription": "Fresh and high-quality product, carefully selected for your enjoyment.",
+    "longDescription": "Our products are sourced from local farms to ensure maximum freshness and quality. We carefully select each item to meet our high standards, so you can enjoy the best possible experience with every purchase.",
+    "notFound": "Product Not Found",
+    "notFoundMessage": "The product you're looking for doesn't exist or has been removed.",
+    "backToProducts": "Back to Products"
+  },
+  "cart": {
+    "yourCart": "Your Cart",
+    "items": "items",
+    "emptyCart": "Your cart is empty",
+    "emptyCartMessage": "Start adding items to your cart to see them here.",
+    "startShopping": "Start Shopping",
+    "youMightAlsoLike": "You might also like",
+    "subtotal": "Subtotal",
+    "deliveryFee": "Delivery Fee",
+    "total": "Total",
+    "proceedToCheckout": "Proceed to Checkout"
+  },
+  "whyChooseUs": {
+    "title": "Why Choose FreshCart",
+    "delivery": {
+      "title": "30-Minute Delivery",
+      "description": "Get your groceries delivered in 30 minutes or less, right to your doorstep."
+    },
+    "fresh": {
+      "title": "Fresh Products",
+      "description": "We source directly from local farms and suppliers for the freshest products."
+    },
+    "satisfaction": {
+      "title": "Satisfaction Guaranteed",
+      "description": "Not happy with your order? We'll replace it or refund you, no questions asked."
+    }
+  },
+  "appPromotion": {
+    "title": "Download Our Mobile App",
+    "description": "Get exclusive deals and a better shopping experience with our mobile app. Track your deliveries in real-time and reorder with one tap.",
+    "googlePlay": "Get it on Google Play",
+    "appStore": "Download on the App Store",
+    "appScreenshot": "FreshCart mobile app"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "deliveryAddress": "Delivery Address",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "phone": "Phone",
+    "phonePlaceholder": "Enter your phone number",
+    "address": "Address",
+    "addressPlaceholder": "Enter your street address",
+    "city": "City",
+    "cityPlaceholder": "Enter your city",
+    "state": "State",
+    "statePlaceholder": "Enter your state",
+    "zipCode": "Zip Code",
+    "zipCodePlaceholder": "Enter your zip code",
+    "saveAddressForFuture": "Save this address for future orders",
+    "deliveryOptions": "Delivery Options",
+    "deliveryTime": "Delivery Time",
+    "asap": "As Soon As Possible",
+    "asapDescription": "Get your order delivered within 30 minutes",
+    "scheduled": "Scheduled Delivery",
+    "scheduledDescription": "Choose a delivery time that works for you",
+    "selectTimeSlot": "Select Time Slot",
+    "contactFreeDelivery": "Contact-Free Delivery",
+    "contactFreeDescription": "Delivery person will leave your order at the door",
+    "deliveryNotes": "Delivery Notes",
+    "deliveryNotesPlaceholder": "Add any special instructions for delivery",
+    "paymentMethod": "Payment Method",
+    "creditCard": "Credit Card",
+    "cardNumber": "Card Number",
+    "expiryDate": "Expiry Date",
+    "cvv": "CVV",
+    "nameOnCard": "Name on Card",
+    "nameOnCardPlaceholder": "Enter the name on your card",
+    "placeOrder": "Place Order",
+    "termsConditionsMessage": "By placing your order, you agree to our Terms of Service and Privacy Policy",
+    "orderSummary": "Order Summary",
+    "cartItems": "Cart Items ({{count}})",
+    "subtotal": "Subtotal",
+    "deliveryFee": "Delivery Fee",
+    "tip": "Tip",
+    "total": "Total",
+    "promoCodePlaceholder": "Enter promo code",
+    "promoCodeHint": "Enter a valid promo code to get discounts",
+    "back": "Back",
+    "continueShopping": "Continue Shopping",
+    "continueToDelivery": "Continue to Delivery",
+    "continueToPayment": "Continue to Payment",
+    "orderConfirmed": "Order Confirmed!",
+    "orderConfirmedMessage": "Your order has been successfully placed and will be delivered soon.",
+    "orderNumber": "Order Number",
+    "redirectMessage": "You will be redirected to the homepage in a few seconds...",
+    "backToHome": "Back to Home",
+    "emptyCart": "Your Cart is Empty",
+    "emptyCartMessage": "You need to add items to your cart before proceeding to checkout.",
+    "startShopping": "Start Shopping"
+  },
+  "account": {
+    "profile": "Profile",
+    "orders": "Orders",
+    "addresses": "Addresses",
+    "payment": "Payment",
+    "favorites": "Favorites",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "personalInformation": "Personal Information",
+    "personalInfoDescription": "Update your personal details and contact information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "saveChanges": "Save Changes",
+    "orderHistory": "Order History",
+    "orderHistoryDescription": "View and track all your past and current orders",
+    "orderNumber": "Order Number",
+    "orderStatus": {
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "viewDetails": "View Details",
+    "items": "{{count}} items",
+    "trackOrder": "Track Order",
+    "reorder": "Reorder",
+    "noOrders": "No Orders Yet",
+    "noOrdersDescription": "You haven't placed any orders yet. Start shopping to see them here.",
+    "startShopping": "Start Shopping",
+    "savedAddresses": "Saved Addresses",
+    "savedAddressesDescription": "Manage and edit your delivery addresses",
+    "addNewAddress": "Add New Address",
+    "default": "Default",
+    "edit": "Edit",
+    "delete": "Delete",
+    "setAsDefault": "Set as Default",
+    "noAddresses": "No Addresses Saved",
+    "noAddressesDescription": "You don't have any saved addresses yet. Add one to make checkout faster.",
+    "addFirstAddress": "Add Your First Address",
+    "paymentMethods": "Payment Methods",
+    "paymentMethodsDescription": "Manage your saved payment methods",
+    "addNewPayment": "Add New Payment",
+    "expiresOn": "Expires on {{date}}",
+    "noPaymentMethods": "No Payment Methods",
+    "noPaymentMethodsDescription": "You don't have any saved payment methods yet. Add one to make checkout faster.",
+    "addFirstPaymentMethod": "Add Your First Payment Method",
+    "favoriteItems": "Favorite Items",
+    "favoriteItemsDescription": "View and manage your favorite products",
+    "addToCart": "Add to Cart",
+    "noFavorites": "No Favorites Yet",
+    "noFavoritesDescription": "You haven't added any products to your favorites yet.",
+    "browseProducts": "Browse Products",
+    "notificationPreferences": "Notification Preferences",
+    "notificationPreferencesDescription": "Manage how and when you want to be notified",
+    "emailNotifications": "Email Notifications",
+    "orderUpdates": "Order Updates",
+    "orderUpdatesDescription": "Get notified about order status changes and delivery updates",
+    "promotions": "Promotions and Deals",
+    "promotionsDescription": "Receive emails about special offers, discounts, and promotions",
+    "newsletter": "Weekly Newsletter",
+    "newsletterDescription": "Get a weekly roundup of new products and seasonal specials",
+    "pushNotifications": "Push Notifications",
+    "pushOrderUpdatesDescription": "Receive real-time updates about your orders on your device",
+    "pushPromotionsDescription": "Get notified about special offers and deals on your device",
+    "savePreferences": "Save Preferences",
+    "accountSettings": "Account Settings",
+    "accountSettingsDescription": "Manage your account preferences and settings",
+    "language": "Language",
+    "appearance": "Appearance",
+    "darkMode": "Dark Mode",
+    "darkModeDescription": "Switch between light and dark mode",
+    "dangerZone": "Danger Zone",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDescription": "Once you delete your account, all your data will be permanently removed. This action cannot be undone.",
+    "deleteMyAccount": "Delete My Account"
+  },
+  "footer": {
+    "tagline": "Get fresh groceries delivered to your doorstep in 30 minutes or less.",
+    "shopping": "Shopping",
+    "browseCategories": "Browse Categories",
+    "dailyDeals": "Daily Deals",
+    "giftCards": "Gift Cards",
+    "mealKits": "Meal Kits",
+    "organicItems": "Organic Items",
+    "account": "Account",
+    "myAccount": "My Account",
+    "orderHistory": "Order History",
+    "wishlist": "Wishlist",
+    "addresses": "Addresses",
+    "paymentMethods": "Payment Methods",
+    "contactUs": "Contact Us",
+    "address": "123 Fresh Street, Green City, State 12345",
+    "phone": "+1 (123) 456-7890",
+    "email": "help@freshcart.com",
+    "allRightsReserved": "All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "accessibility": "Accessibility"
+  }
+}
