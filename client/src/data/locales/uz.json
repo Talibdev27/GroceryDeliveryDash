@@ -1,4 +1,11 @@
 {
+  "languages": {
+    "en": "Inglizcha",
+    "es": "Ispancha",
+    "ar": "Arabcha",
+    "ru": "Ruscha",
+    "uz": "O'zbekcha"
+  },
   "seo": {
     "home": {
       "title": "FreshCart - 30 daqiqa yoki undan kam vaqt ichida oziq-ovqat etkazib berish",

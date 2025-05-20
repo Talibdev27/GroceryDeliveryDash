@@ -1,4 +1,11 @@
 {
+  "languages": {
+    "en": "Inglés",
+    "es": "Español",
+    "ar": "Árabe",
+    "ru": "Ruso",
+    "uz": "Uzbeko"
+  },
   "seo": {
     "home": {
       "title": "FreshCart - Entrega de Comestibles en 30 Minutos o Menos",

@@ -1,4 +1,11 @@
 {
+  "languages": {
+    "en": "English",
+    "es": "Spanish",
+    "ar": "Arabic",
+    "ru": "Russian",
+    "uz": "Uzbek"
+  },
   "seo": {
     "home": {
       "title": "FreshCart - Grocery Delivery in 30 Minutes or Less",
