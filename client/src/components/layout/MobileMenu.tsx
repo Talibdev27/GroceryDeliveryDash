@@ -110,22 +110,22 @@ export default function MobileMenu() {
                     <span>English</span>
                   </Button>
                   <Button 
-                    variant={currentLanguage === "es" ? "default" : "outline"}
+                    variant={currentLanguage === "ru" ? "default" : "outline"}
                     size="sm"
                     className="flex items-center space-x-1 rtl:space-x-reverse" 
-                    onClick={() => setLanguage("es")}
+                    onClick={() => setLanguage("ru")}
                   >
-                    <img src={getLanguageFlag("es")} alt="Spanish" className="w-4 h-4 rounded-sm" />
-                    <span>Español</span>
+                    <img src={getLanguageFlag("ru")} alt="Russian" className="w-4 h-4 rounded-sm" />
+                    <span>Russian</span>
                   </Button>
                   <Button 
-                    variant={currentLanguage === "ar" ? "default" : "outline"}
+                    variant={currentLanguage === "uz" ? "default" : "outline"}
                     size="sm"
                     className="flex items-center space-x-1 rtl:space-x-reverse" 
-                    onClick={() => setLanguage("ar")}
+                    onClick={() => setLanguage("uz")}
                   >
-                    <img src={getLanguageFlag("ar")} alt="Arabic" className="w-4 h-4 rounded-sm" />
-                    <span>العربية</span>
+                    <img src={getLanguageFlag("uz")} alt="Uzbek" className="w-4 h-4 rounded-sm" />
+                    <span>Uzbek</span>
                   </Button>
                 </div>
               </div>
