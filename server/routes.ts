@@ -278,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Product Management routes (Admin/Product Manager)
   app.post("/api/admin/products", authenticateUser, async (req: Request, res: Response) => {
     try {
-      const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image } = req.body;
+      const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
       
       const product = await storage.createProduct({
         name,
@@ -289,7 +289,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stockQuantity: parseInt(stockQuantity),
         featured: Boolean(featured),
         sale: Boolean(sale),
-        image
+        image,
+        unit: unit || "pcs"
       });
       
       res.status(201).json({ product });
@@ -302,7 +303,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/products/:id", authenticateUser, async (req: Request, res: Response) => {
     try {
       const productId = parseInt(req.params.id);
-      const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image } = req.body;
+      const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
       
       const product = await storage.updateProduct(productId, {
         name,
@@ -313,7 +314,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stockQuantity: parseInt(stockQuantity),
         featured: Boolean(featured),
         sale: Boolean(sale),
-        image
+        image,
+        unit: unit || "pcs"
       });
       
       if (!product) {
