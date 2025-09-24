@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 
 // API base URL
-const API_BASE = 'http://localhost:3000/api';
+// In development you can set VITE_API_BASE=http://localhost:3000/api
+// In production we default to same-origin "/api" to avoid CORS issues
+const API_BASE = (import.meta as any)?.env?.VITE_API_BASE || '/api';
 
 // Generic API hook for GET requests
 export const useApi = <T>(endpoint: string, dependencies: any[] = []) => {

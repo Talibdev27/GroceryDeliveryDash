@@ -1,9 +1,26 @@
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
 import session from "express-session";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+app.set("trust proxy", 1);
+// CORS (safe default: allow same-origin in production; allow configured origins otherwise)
+const allowedOrigins = (process.env.CORS_ORIGIN || "").split(",").map(s => s.trim()).filter(Boolean);
+app.use(cors({
+  origin: (_origin, callback) => {
+    if (app.get("env") === "production" && allowedOrigins.length === 0) {
+      // In production, if no CORS_ORIGIN provided we assume same-origin and deny cross-site
+      return callback(null, false);
+    }
+    if (!allowedOrigins.length || (typeof _origin === "string" && allowedOrigins.includes(_origin))) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
