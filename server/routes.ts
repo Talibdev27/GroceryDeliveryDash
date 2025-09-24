@@ -279,18 +279,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/products", authenticateUser, async (req: Request, res: Response) => {
     try {
       const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
+      const priceNum = Number(price);
+      const salePriceNum = salePrice === undefined || salePrice === null || salePrice === '' ? null : Number(salePrice);
+      const categoryIdNum = Number(categoryId);
+      const stockQtyNum = Number(stockQuantity ?? 0);
+      const unitStr = typeof unit === 'string' && unit.trim().length > 0 ? unit.trim() : 'pcs';
       
       const product = await storage.createProduct({
         name,
         description,
-        price: parseFloat(price),
-        salePrice: salePrice ? parseFloat(salePrice) : null,
-        categoryId: parseInt(categoryId),
-        stockQuantity: parseInt(stockQuantity),
+        price: priceNum,
+        salePrice: salePriceNum,
+        categoryId: categoryIdNum,
+        stockQuantity: stockQtyNum,
         featured: Boolean(featured),
         sale: Boolean(sale),
         image,
-        unit: unit || "pcs"
+        unit: unitStr,
       });
       
       res.status(201).json({ product });
@@ -304,18 +309,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const productId = parseInt(req.params.id);
       const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
+      const priceNum = Number(price);
+      const salePriceNum = salePrice === undefined || salePrice === null || salePrice === '' ? null : Number(salePrice);
+      const categoryIdNum = Number(categoryId);
+      const stockQtyNum = Number(stockQuantity ?? 0);
+      const unitStr = typeof unit === 'string' && unit.trim().length > 0 ? unit.trim() : 'pcs';
       
       const product = await storage.updateProduct(productId, {
         name,
         description,
-        price: parseFloat(price),
-        salePrice: salePrice ? parseFloat(salePrice) : null,
-        categoryId: parseInt(categoryId),
-        stockQuantity: parseInt(stockQuantity),
+        price: priceNum,
+        salePrice: salePriceNum,
+        categoryId: categoryIdNum,
+        stockQuantity: stockQtyNum,
         featured: Boolean(featured),
         sale: Boolean(sale),
         image,
-        unit: unit || "pcs"
+        unit: unitStr,
       });
       
       if (!product) {
