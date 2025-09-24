@@ -6,6 +6,11 @@
     "ru": "Русский",
     "uz": "Узбекский"
   },
+  "currency": {
+    "symbol": "сум",
+    "name": "Узбекский сум",
+    "code": "UZS"
+  },
   "seo": {
     "home": {
       "title": "FreshCart - Доставка продуктов за 30 минут или меньше",
@@ -29,7 +34,7 @@
     }
   },
   "header": {
-    "brand": "FreshCart",
+    "brand": "Diyor Market",
     "downloadApp": "Скачать приложение",
     "account": "Аккаунт",
     "orders": "Заказы",
@@ -387,10 +392,19 @@
     "contactUs": "Связаться с нами",
     "address": "123 Свежая улица, Зеленый город, Область 12345",
     "phone": "+1 (123) 456-7890",
-    "email": "помощь@freshcart.com",
+    "email": "помощь@diyormarket.com",
     "allRightsReserved": "Все права защищены.",
     "privacyPolicy": "Политика конфиденциальности",
     "termsOfService": "Условия обслуживания",
     "accessibility": "Доступность"
+  },
+  "auth": {
+    "login": "Войти",
+    "register": "Регистрация",
+    "username": "Имя пользователя",
+    "password": "Пароль",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "email": "Электронная почта"
   }
 }

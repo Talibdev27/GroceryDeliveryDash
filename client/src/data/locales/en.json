@@ -6,30 +6,35 @@
     "ru": "Russian",
     "uz": "Uzbek"
   },
+  "currency": {
+    "symbol": "сум",
+    "name": "Uzbek Som",
+    "code": "UZS"
+  },
   "seo": {
     "home": {
-      "title": "FreshCart - Grocery Delivery in 30 Minutes or Less",
-      "description": "Order fresh groceries online with FreshCart and get them delivered to your doorstep in 30 minutes or less. Enjoy fresh fruits, vegetables, dairy, and more."
+      "title": "Diyor Market - Grocery Delivery in 30 Minutes or Less",
+      "description": "Order fresh groceries online with Diyor Market and get them delivered to your doorstep in 30 minutes or less. Enjoy fresh fruits, vegetables, dairy, and more."
     },
     "products": {
-      "title": "Shop Groceries Online | FreshCart",
+      "title": "Shop Groceries Online | Diyor Market",
       "description": "Browse our wide selection of fresh groceries, produce, dairy, bakery items and more. Fast delivery and high quality guaranteed."
     },
     "product": {
-      "title": "{{productName}} | FreshCart",
+      "title": "{{productName}} | Diyor Market",
       "description": "Buy {{productName}} online. Fresh, high-quality products delivered to your door in 30 minutes or less."
     },
     "checkout": {
-      "title": "Checkout | FreshCart",
+      "title": "Checkout | Diyor Market",
       "description": "Complete your purchase and get your groceries delivered fast."
     },
     "account": {
-      "title": "My Account | FreshCart",
+      "title": "My Account | Diyor Market",
       "description": "Manage your account, view orders, update preferences and more."
     }
   },
   "header": {
-    "brand": "FreshCart",
+    "brand": "Diyor Market",
     "downloadApp": "Download App",
     "account": "Account",
     "orders": "Orders",
@@ -371,7 +376,7 @@
     "deleteMyAccount": "Delete My Account"
   },
   "footer": {
-    "tagline": "Get fresh groceries delivered to your doorstep in 30 minutes or less.",
+    "tagline": "Get fresh groceries delivered to your doorstep in 30 minutes or less from Diyor Market.",
     "shopping": "Shopping",
     "browseCategories": "Browse Categories",
     "dailyDeals": "Daily Deals",
@@ -387,10 +392,19 @@
     "contactUs": "Contact Us",
     "address": "123 Fresh Street, Green City, State 12345",
     "phone": "+1 (123) 456-7890",
-    "email": "help@freshcart.com",
+    "email": "help@diyormarket.com",
     "allRightsReserved": "All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "accessibility": "Accessibility"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "username": "Username",
+    "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email"
   }
 }

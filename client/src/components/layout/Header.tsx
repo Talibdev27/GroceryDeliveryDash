@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import CartButton from "@/components/ui/CartButton";
 import { useLanguage } from "@/hooks/use-language";
 import { useTheme } from "@/hooks/use-theme";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import {
   Search,
@@ -21,12 +22,14 @@ import {
   Menu,
   Moon,
   Sun,
+  LogOut,
 } from "lucide-react";
 
 export default function Header() {
   const { t } = useTranslation();
   const { currentLanguage, setLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
   const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -84,7 +87,10 @@ export default function Header() {
                 <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={() => setLanguage("en")} className="cursor-pointer">
+                <DropdownMenuItem onClick={() => {
+                  console.log("Header: English language clicked");
+                  setLanguage("en");
+                }} className="cursor-pointer">
                   <img 
                     src={getLanguageFlag("en")}
                     alt="English"
@@ -92,7 +98,10 @@ export default function Header() {
                   />
                   <span>English</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage("ru")} className="cursor-pointer">
+                <DropdownMenuItem onClick={() => {
+                  console.log("Header: Russian language clicked");
+                  setLanguage("ru");
+                }} className="cursor-pointer">
                   <img 
                     src={getLanguageFlag("ru")}
                     alt="Russian"
@@ -100,7 +109,10 @@ export default function Header() {
                   />
                   <span>Russian</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage("uz")} className="cursor-pointer">
+                <DropdownMenuItem onClick={() => {
+                  console.log("Header: Uzbek language clicked");
+                  setLanguage("uz");
+                }} className="cursor-pointer">
                   <img 
                     src={getLanguageFlag("uz")}
                     alt="Uzbek"
@@ -117,14 +129,32 @@ export default function Header() {
             </div>
           </div>
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <Link href="/account" className="flex items-center space-x-1 rtl:space-x-reverse hover:text-primary">
-              <User className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("header.account")}</span>
-            </Link>
-            <Link href="/account/orders" className="flex items-center space-x-1 rtl:space-x-reverse hover:text-primary">
-              <Package className="h-4 w-4" />
-              <span className="hidden sm:inline">{t("header.orders")}</span>
-            </Link>
+            {user ? (
+              <>
+                <Link href="/account" className="flex items-center space-x-1 rtl:space-x-reverse hover:text-primary">
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">{user.firstName || user.username}</span>
+                </Link>
+                <Link href="/account/orders" className="flex items-center space-x-1 rtl:space-x-reverse hover:text-primary">
+                  <Package className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t("header.orders")}</span>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={logout}
+                  className="h-8 w-8 p-0"
+                  aria-label="Logout"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <Link href="/auth" className="flex items-center space-x-1 rtl:space-x-reverse hover:text-primary">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">{t("header.account")}</span>
+              </Link>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -145,7 +175,7 @@ export default function Header() {
               <path d="M12 2C7.03 2 3 6.03 3 11v5.5c0 1.38 1.12 2.5 2.5 2.5h1c.28 0 .5-.22.5-.5v-7c0-.28-.22-.5-.5-.5h-1c-.44 0-.85.09-1.23.27C4.73 6.82 8.06 4 12 4s7.27 2.82 8.73 7.27c-.38-.18-.79-.27-1.23-.27h-1c-.28 0-.5.22-.5.5v7c0 .28.22.5.5.5h1c1.38 0 2.5-1.12 2.5-2.5V11c0-4.97-4.03-9-9-9z" />
             </svg>
             <span className="font-heading font-bold text-xl text-neutral-800">
-              {t("header.brand")}
+              Diyor Market
             </span>
           </Link>
           
@@ -189,6 +219,21 @@ export default function Header() {
               <Link href="/recipes" className="font-medium hover:text-primary">
                 {t("nav.recipes")}
               </Link>
+              {user && user.role === "admin" && (
+                <Link href="/admin" className="font-medium hover:text-primary text-blue-600">
+                  Admin Dashboard
+                </Link>
+              )}
+              {user && user.role === "super_admin" && (
+                <Link href="/super-admin" className="font-medium hover:text-primary text-red-600">
+                  Super Admin
+                </Link>
+              )}
+              {user && user.role === "rider" && (
+                <Link href="/rider" className="font-medium hover:text-primary text-green-600">
+                  Rider
+                </Link>
+              )}
             </nav>
           </div>
         </div>

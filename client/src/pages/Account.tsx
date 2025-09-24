@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
-import { Link, useRoute } from "wouter";
+import { Link, useRoute, useLocation } from "wouter";
 import {
   Card,
   CardContent,
@@ -22,6 +22,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/context/AuthContext";
 import { 
   User, 
   Package, 
@@ -37,6 +38,34 @@ export default function Account() {
   const { t } = useTranslation();
   const [, params] = useRoute("/account/:section?");
   const [activeTab, setActiveTab] = useState(params?.section || "profile");
+  const { user, logout, loading } = useAuth();
+  const [, setLocation] = useLocation();
+  
+  // Redirect to auth page if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      setLocation("/auth");
+    }
+  }, [loading, user, setLocation]);
+
+  if (loading) {
+    return (
+      <div className="bg-neutral-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-neutral-500">Loading...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth page
+  }
   
   // Mock orders
   const orders = [
@@ -187,12 +216,16 @@ export default function Account() {
                 <div className="p-6 border-b border-neutral-200">
                   <div className="flex items-center">
                     <Avatar className="h-16 w-16">
-                      <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=John" alt="John Doe" />
-                      <AvatarFallback>JD</AvatarFallback>
+                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'user'}`} alt={user?.username || 'User'} />
+                      <AvatarFallback>
+                        {user?.firstName?.[0]}{user?.lastName?.[0] || user?.username?.[0] || 'U'}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="ml-4">
-                      <h2 className="font-heading font-bold text-lg">John Doe</h2>
-                      <p className="text-neutral-500 text-sm">john.doe@example.com</p>
+                      <h2 className="font-heading font-bold text-lg">
+                        {user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username : 'Guest User'}
+                      </h2>
+                      <p className="text-neutral-500 text-sm">{user?.email || 'Not logged in'}</p>
                     </div>
                   </div>
                 </div>
@@ -242,12 +275,13 @@ export default function Account() {
                       </a>
                     </Link>
                     <Separator className="my-2" />
-                    <Link href="/">
-                      <a className="flex items-center px-4 py-2 rounded-md text-red-600 hover:bg-neutral-100">
-                        <LogOut className="h-5 w-5 mr-3" />
-                        {t("account.signOut")}
-                      </a>
-                    </Link>
+                    <button 
+                      onClick={logout}
+                      className="flex items-center px-4 py-2 rounded-md text-red-600 hover:bg-neutral-100 w-full text-left"
+                    >
+                      <LogOut className="h-5 w-5 mr-3" />
+                      {t("account.signOut")}
+                    </button>
                   </nav>
                 </div>
               </div>
@@ -268,19 +302,19 @@ export default function Account() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="firstName">{t("account.firstName")}</Label>
-                          <Input id="firstName" defaultValue="John" />
+                          <Input id="firstName" defaultValue={user?.firstName || ""} />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName">{t("account.lastName")}</Label>
-                          <Input id="lastName" defaultValue="Doe" />
+                          <Input id="lastName" defaultValue={user?.lastName || ""} />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="email">{t("account.email")}</Label>
-                          <Input id="email" type="email" defaultValue="john.doe@example.com" />
+                          <Input id="email" type="email" defaultValue={user?.email || ""} />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="phone">{t("account.phone")}</Label>
-                          <Input id="phone" type="tel" defaultValue="(555) 123-4567" />
+                          <Input id="phone" type="tel" defaultValue={user?.phone || ""} />
                         </div>
                       </div>
                       

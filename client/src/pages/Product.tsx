@@ -20,6 +20,7 @@ import {
   AccordionTrigger
 } from "@/components/ui/accordion";
 import { useCart } from "@/hooks/use-cart";
+import { useProduct, useCategories } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
 import { 
   Minus, 
@@ -31,7 +32,6 @@ import {
   Share2, 
   ArrowLeft 
 } from "lucide-react";
-import { products } from "@/data/mocks";
 
 export default function Product() {
   const { t } = useTranslation();
@@ -39,21 +39,18 @@ export default function Product() {
   const { addToCart } = useCart();
   
   const [quantity, setQuantity] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-  const [product, setProduct] = useState<any>(null);
+  const { data: productData, loading: isLoading, error } = useProduct(params?.id || "");
+  const { data: categoriesData } = useCategories();
   
-  useEffect(() => {
-    if (!params) return;
-    
-    // Simulate loading
-    setIsLoading(true);
-    setTimeout(() => {
-      // Find product by slug
-      const foundProduct = products.find(p => p.slug === params.id);
-      setProduct(foundProduct || null);
-      setIsLoading(false);
-    }, 500);
-  }, [params]);
+  const product = productData?.product;
+  const categories = categoriesData?.categories || [];
+
+  // Debug logging
+  console.log("Product page: Product ID from URL:", params?.id);
+  console.log("Product page: Product data from API:", productData);
+  console.log("Product page: Product object:", product);
+  console.log("Product page: Loading state:", isLoading);
+  console.log("Product page: Error state:", error);
   
   const incrementQuantity = () => {
     setQuantity(prev => prev + 1);
@@ -66,12 +63,29 @@ export default function Product() {
   };
   
   const handleAddToCart = () => {
+    console.log("Product page: Add to cart clicked");
+    console.log("Product page: Product data:", product);
+    console.log("Product page: Quantity:", quantity);
+    
     if (product) {
+      console.log("Product page: Calling addToCart with:", {
+        ...product,
+        quantity: quantity
+      });
       addToCart({
         ...product,
         quantity: quantity
       });
+    } else {
+      console.log("Product page: No product data available");
     }
+  };
+  
+  // Get category name for breadcrumb
+  const getCategoryName = () => {
+    if (!product || !product.categoryId) return "";
+    const category = categories.find(cat => cat.id === product.categoryId);
+    return category?.name || "";
   };
   
   if (isLoading) {
@@ -91,13 +105,13 @@ export default function Product() {
     );
   }
   
-  if (!product) {
+  if (error || (!isLoading && !product)) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-md mx-auto">
           <CardContent className="pt-6 flex flex-col items-center text-center">
             <h1 className="text-2xl font-bold mb-4">{t("product.notFound")}</h1>
-            <p className="text-neutral-500 mb-6">{t("product.notFoundMessage")}</p>
+            <p className="text-neutral-500 mb-6">{error || t("product.notFoundMessage")}</p>
             <Link href="/products">
               <Button>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -124,8 +138,8 @@ export default function Product() {
             <ChevronRight className="h-4 w-4" />
             <Link href="/products" className="hover:text-primary">{t("breadcrumb.products")}</Link>
             <ChevronRight className="h-4 w-4" />
-            <Link href={`/products?category=${encodeURIComponent(product.category)}`} className="hover:text-primary">
-              {product.category}
+            <Link href={`/products?category=${encodeURIComponent(getCategoryName())}`} className="hover:text-primary">
+              {getCategoryName()}
             </Link>
             <ChevronRight className="h-4 w-4" />
             <span className="font-medium text-neutral-800 truncate max-w-[150px]">
@@ -149,7 +163,7 @@ export default function Product() {
           {/* Product Details */}
           <div>
             <div className="bg-white border border-neutral-200 rounded-lg p-6">
-              <div className="text-sm text-primary font-medium mb-2">{product.category}</div>
+              <div className="text-sm text-primary font-medium mb-2">{getCategoryName()}</div>
               <h1 className="text-2xl md:text-3xl font-heading font-bold mb-2">{product.name}</h1>
               
               <div className="flex items-center mb-4">
@@ -164,7 +178,18 @@ export default function Product() {
                 <span className="ml-2 text-sm text-neutral-600">(24 {t("product.reviews")})</span>
               </div>
               
-              <div className="text-2xl font-bold mb-4">{formatCurrency(product.price)}</div>
+              <div className="text-2xl font-bold mb-4">
+                {product.sale && product.salePrice ? (
+                  <div className="flex items-center space-x-2">
+                    <span>{formatCurrency(parseFloat(product.salePrice))}</span>
+                    <span className="text-lg text-neutral-400 line-through">
+                      {formatCurrency(parseFloat(product.price))}
+                    </span>
+                  </div>
+                ) : (
+                  formatCurrency(parseFloat(product.price))
+                )}
+              </div>
               
               <p className="text-neutral-600 mb-6">
                 {product.description || t("product.defaultDescription")}
@@ -199,7 +224,8 @@ export default function Product() {
                 </div>
                 
                 <div className="text-sm text-neutral-500 mb-2">
-                  <span className="font-medium">{t("product.availability")}:</span> {t("product.inStock")}
+                  <span className="font-medium">{t("product.availability")}:</span> 
+                  {product.inStock ? t("product.inStock") : t("product.outOfStock")}
                 </div>
               </div>
               
@@ -208,9 +234,10 @@ export default function Product() {
                   size="lg" 
                   className="flex-1"
                   onClick={handleAddToCart}
+                  disabled={!product.inStock}
                 >
                   <ShoppingCart className="mr-2 h-5 w-5" />
-                  {t("product.addToCart")}
+                  {product.inStock ? t("product.addToCart") : t("product.outOfStock")}
                 </Button>
                 
                 <Button variant="outline" size="icon" className="h-12 w-12">

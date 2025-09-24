@@ -3,50 +3,14 @@ import { Link } from "wouter";
 import ProductCard from "@/components/ui/ProductCard";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/use-cart";
-import { generateUniqueId } from "@/lib/utils";
+import { useFeaturedProducts } from "@/hooks/use-api";
 
 export default function FeaturedProducts() {
   const { t } = useTranslation();
   const { addToCart } = useCart();
+  const { data: featuredData, loading, error } = useFeaturedProducts();
   
-  const featuredProducts = [
-    {
-      id: generateUniqueId(),
-      name: t("products.apples.name"),
-      image: "https://images.unsplash.com/photo-1584306670957-acf935f5033c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 3.99,
-      unit: t("products.apples.unit"),
-      category: t("categories.fruits"),
-      slug: "organic-apples",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.milk.name"),
-      image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 4.99,
-      unit: t("products.milk.unit"),
-      category: t("categories.dairy"),
-      slug: "organic-milk",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.bread.name"),
-      image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 3.49,
-      unit: t("products.bread.unit"),
-      category: t("categories.bakery"),
-      slug: "whole-grain-bread",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.avocados.name"),
-      image: "https://images.unsplash.com/photo-1519162808019-7de1683fa2ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 4.99,
-      unit: t("products.avocados.unit"),
-      category: t("categories.fruits"),
-      slug: "organic-avocados",
-    }
-  ];
+  const featuredProducts = featuredData?.products || [];
 
   return (
     <section className="py-8 md:py-12 bg-white">
@@ -60,15 +24,38 @@ export default function FeaturedProducts() {
           </Link>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onAddToCart={() => addToCart(product)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+                <div className="w-full h-40 bg-neutral-200 animate-pulse"></div>
+                <div className="p-4 space-y-2">
+                  <div className="w-12 h-3 bg-neutral-200 animate-pulse"></div>
+                  <div className="w-32 h-4 bg-neutral-200 animate-pulse"></div>
+                  <div className="w-24 h-3 bg-neutral-200 animate-pulse"></div>
+                  <div className="flex justify-between">
+                    <div className="w-12 h-4 bg-neutral-200 animate-pulse"></div>
+                    <div className="w-8 h-8 rounded-full bg-neutral-200 animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-red-500">Error loading featured products</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {featuredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={() => addToCart(product)}
+              />
+            ))}
+          </div>
+        )}
         
         <div className="mt-6 text-center md:hidden">
           <Link href="/products">

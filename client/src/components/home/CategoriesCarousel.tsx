@@ -4,70 +4,16 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import { useLanguage } from "@/hooks/use-language";
-
-interface Category {
-  id: string;
-  name: string;
-  image: string;
-  slug: string;
-}
+import { useCategories } from "@/hooks/use-api";
 
 export default function CategoriesCarousel() {
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
   const isRtl = currentLanguage === "ar";
   const categoriesRef = useRef<HTMLDivElement>(null);
+  const { data: categoriesData, loading, error } = useCategories();
   
-  const categories: Category[] = [
-    {
-      id: "1",
-      name: t("categories.fruits"),
-      image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      slug: "fruits"
-    },
-    {
-      id: "2",
-      name: t("categories.vegetables"),
-      image: "https://images.unsplash.com/photo-1557844352-761f2565b576?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      slug: "vegetables"
-    },
-    {
-      id: "3",
-      name: t("categories.dairy"),
-      image: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      slug: "dairy"
-    },
-    {
-      id: "4",
-      name: t("categories.bakery"),
-      image: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      slug: "bakery"
-    },
-    {
-      id: "5",
-      name: t("categories.meat"),
-      image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      slug: "meat"
-    },
-    {
-      id: "6",
-      name: t("categories.seafood"),
-      image: "https://images.unsplash.com/photo-1510130387422-82bed34b37e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      slug: "seafood"
-    },
-    {
-      id: "7",
-      name: t("categories.frozen"),
-      image: "https://images.unsplash.com/photo-1604322184324-eed6e0cb3378?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      slug: "frozen"
-    },
-    {
-      id: "8",
-      name: t("categories.snacks"),
-      image: "https://images.unsplash.com/photo-1621939514649-280e2ee25f60?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
-      slug: "snacks"
-    }
-  ];
+  const categories = categoriesData?.categories || [];
   
   const scrollCategories = (direction: "left" | "right") => {
     if (categoriesRef.current) {
@@ -95,23 +41,36 @@ export default function CategoriesCarousel() {
             className="overflow-x-auto pb-4 no-scrollbar"
           >
             <div className="flex space-x-4 rtl:space-x-reverse min-w-max">
-              {categories.map((category) => (
-                <Link 
-                  key={category.id}
-                  href={`/products?category=${category.slug}`}
-                  className="flex flex-col items-center group"
-                >
-                  <div 
-                    className="w-24 h-24 bg-neutral-100 rounded-full overflow-hidden mb-2 group-hover:ring-2 ring-primary transition-all"
-                    style={{ 
-                      backgroundImage: `url('${category.image}')`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center"
-                    }}
-                  ></div>
-                  <span className="text-sm font-medium group-hover:text-primary">{category.name}</span>
-                </Link>
-              ))}
+              {loading ? (
+                Array.from({ length: 8 }).map((_, index) => (
+                  <div key={index} className="flex flex-col items-center">
+                    <div className="w-24 h-24 bg-neutral-200 rounded-full animate-pulse mb-2"></div>
+                    <div className="w-16 h-4 bg-neutral-200 animate-pulse"></div>
+                  </div>
+                ))
+              ) : error ? (
+                <div className="text-center py-8">
+                  <p className="text-red-500">Error loading categories</p>
+                </div>
+              ) : (
+                categories.map((category) => (
+                  <Link 
+                    key={category.id}
+                    href={`/products?category=${category.name}`}
+                    className="flex flex-col items-center group"
+                  >
+                    <div 
+                      className="w-24 h-24 bg-neutral-100 rounded-full overflow-hidden mb-2 group-hover:ring-2 ring-primary transition-all"
+                      style={{ 
+                        backgroundImage: `url('${category.image}')`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center"
+                      }}
+                    ></div>
+                    <span className="text-sm font-medium group-hover:text-primary">{category.name}</span>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
           

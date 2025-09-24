@@ -7,12 +7,17 @@ export default function CartButton() {
   const { toggleCart, cartItems } = useCart();
   const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   
+  const handleClick = () => {
+    console.log("CartButton: Clicked! Current item count:", itemCount);
+    toggleCart();
+  };
+  
   return (
     <Button
       variant="ghost"
       className="relative group p-2"
       aria-label="Shopping cart"
-      onClick={toggleCart}
+      onClick={handleClick}
     >
       <ShoppingCart className="h-5 w-5 text-neutral-700 group-hover:text-primary" />
       {itemCount > 0 && (

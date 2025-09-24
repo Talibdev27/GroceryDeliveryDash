@@ -6,30 +6,35 @@
     "ru": "Ruscha",
     "uz": "O'zbekcha"
   },
+  "currency": {
+    "symbol": "сум",
+    "name": "O'zbek so'mi",
+    "code": "UZS"
+  },
   "seo": {
     "home": {
-      "title": "FreshCart - 30 daqiqa yoki undan kam vaqt ichida oziq-ovqat etkazib berish",
-      "description": "FreshCart bilan onlayn taomlar buyurtma qiling va ularni 30 daqiqa yoki undan kam vaqt ichida eshigingizga etkazib bering. Yangi mevalar, sabzavotlar, sut mahsulotlari va boshqalardan bahramand bo'ling."
+      "title": "Diyor Market - 30 daqiqa yoki undan kam vaqt ichida oziq-ovqat etkazib berish",
+      "description": "Diyor Market bilan onlayn taomlar buyurtma qiling va ularni 30 daqiqa yoki undan kam vaqt ichida eshigingizga etkazib bering. Yangi mevalar, sabzavotlar, sut mahsulotlari va boshqalardan bahramand bo'ling."
     },
     "products": {
-      "title": "Onlayn oziq-ovqat xarid qilish | FreshCart",
+      "title": "Onlayn oziq-ovqat xarid qilish | Diyor Market",
       "description": "Yangi oziq-ovqat, mahsulotlar, sut mahsulotlari, pishiriqlar va boshqalarning keng assortimentini ko'rib chiqing. Tez yetkazib berish va yuqori sifat kafolatlangan."
     },
     "product": {
-      "title": "{{productName}} | FreshCart",
+      "title": "{{productName}} | Diyor Market",
       "description": "{{productName}} onlayn sotib oling. Yangi va yuqori sifatli mahsulotlar 30 daqiqa yoki undan kam vaqt ichida eshigingizga etkazib beriladi."
     },
     "checkout": {
-      "title": "To'lov | FreshCart",
+      "title": "To'lov | Diyor Market",
       "description": "Xaridingizni yakunlang va oziq-ovqatni tezda oling."
     },
     "account": {
-      "title": "Mening hisobim | FreshCart",
+      "title": "Mening hisobim | Diyor Market",
       "description": "Hisobingizni boshqaring, buyurtmalarni ko'rishingiz, afzalliklarni yangilang va boshqalar."
     }
   },
   "header": {
-    "brand": "FreshCart",
+    "brand": "Diyor Market",
     "downloadApp": "Ilovani yuklab olish",
     "account": "Hisob",
     "orders": "Buyurtmalar",
@@ -387,10 +392,19 @@
     "contactUs": "Biz bilan bog'laning",
     "address": "123 Yangi ko'cha, Yashil shahar, Viloyat 12345",
     "phone": "+1 (123) 456-7890",
-    "email": "yordam@freshcart.com",
+    "email": "yordam@diyormarket.com",
     "allRightsReserved": "Barcha huquqlar himoyalangan.",
     "privacyPolicy": "Maxfiylik siyosati",
     "termsOfService": "Xizmat ko'rsatish shartlari",
     "accessibility": "Qulaylilik"
+  },
+  "auth": {
+    "login": "Kirish",
+    "register": "Ro'yxatdan o'tish",
+    "username": "Foydalanuvchi nomi",
+    "password": "Parol",
+    "firstName": "Ism",
+    "lastName": "Familiya",
+    "email": "Elektron pochta"
   }
 }

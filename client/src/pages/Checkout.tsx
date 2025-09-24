@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
@@ -33,7 +33,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/context/AuthContext";
+import { userApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
+import { Address } from "@/types";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -68,7 +71,7 @@ const formSchema = z.object({
     message: "Zip code must be at least 4 characters",
   }),
   deliveryTime: z.string(),
-  paymentMethod: z.enum(["creditCard", "paypal", "applePay"]),
+  paymentMethod: z.enum(["uzcard", "humo", "click", "payme", "international"]),
   saveAddress: z.boolean().default(false),
   contactFree: z.boolean().default(false),
   notes: z.string().optional(),
@@ -80,28 +83,86 @@ const CheckoutPage = () => {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const { cartItems, subtotal, deliveryFee, total, clearCart } = useCart();
+  const { user } = useAuth();
   const [paymentStep, setPaymentStep] = useState<"address" | "delivery" | "payment" | "confirmation">("address");
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+
+  // Debug current step
+  console.log("🛒 CHECKOUT: Current step:", paymentStep);
+
+  // Redirect to login if user is not authenticated
+  useEffect(() => {
+    if (!user) {
+      setLocation("/auth");
+    }
+  }, [user, setLocation]);
+
+  const loadSavedAddresses = useCallback(async () => {
+    try {
+      const data = await userApi.getAddresses();
+      setSavedAddresses(data.addresses || []);
+      
+      // Set default address if available
+      const defaultAddress = data.addresses?.find((addr: Address) => addr.isDefault);
+      if (defaultAddress) {
+        setSelectedAddressId(defaultAddress.id);
+        fillFormWithAddress(defaultAddress);
+      }
+    } catch (error) {
+      console.error("Failed to load addresses:", error);
+    }
+  }, []);
+
+  // Load saved addresses when user is available
+  useEffect(() => {
+    if (user) {
+      loadSavedAddresses();
+    }
+  }, [user, loadSavedAddresses]);
+
+  const fillFormWithAddress = (address: Address) => {
+    form.setValue("fullName", address.fullName);
+    form.setValue("address", address.address);
+    form.setValue("city", address.city);
+    form.setValue("state", address.state);
+    form.setValue("zipCode", address.postalCode);
+  };
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
-      phone: "",
+      fullName: user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "",
+      email: user?.email || "",
+      phone: user?.phone || "",
       address: "",
       city: "",
       state: "",
       zipCode: "",
       deliveryTime: "asap",
-      paymentMethod: "creditCard",
+      paymentMethod: "uzcard",
       saveAddress: false,
       contactFree: false,
       notes: "",
     },
   });
+
+  // Auto-advance to payment step if user has filled out payment details
+  useEffect(() => {
+    const paymentMethod = form.watch("paymentMethod");
+    if (paymentMethod && paymentStep !== "payment") {
+      console.log("🛒 CHECKOUT: Auto-advancing to payment step");
+      setPaymentStep("payment");
+    }
+  }, [form.watch("paymentMethod"), paymentStep]);
   
   const onSubmit = (data: FormValues) => {
+    console.log("🚀 CHECKOUT: Form submitted!");
+    console.log("🚀 CHECKOUT: Form data:", data);
+    console.log("🚀 CHECKOUT: Form errors:", form.formState.errors);
+    console.log("🚀 CHECKOUT: Form is valid:", form.formState.isValid);
+    
     // In a real app, this would send the order to an API
     console.log("Order submitted:", data);
     
@@ -222,6 +283,46 @@ const CheckoutPage = () => {
                         <MapPin className="mr-2 h-5 w-5 text-primary" />
                         {t("checkout.deliveryAddress")}
                       </h2>
+                      
+                      {/* Saved Addresses */}
+                      {savedAddresses.length > 0 && (
+                        <div className="mb-6">
+                          <h3 className="text-md font-medium mb-3">Saved Addresses</h3>
+                          <div className="space-y-2">
+                            {savedAddresses.map((address) => (
+                              <div
+                                key={address.id}
+                                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                                  selectedAddressId === address.id
+                                    ? "border-primary bg-primary/5"
+                                    : "border-neutral-200 hover:border-neutral-300"
+                                }`}
+                                onClick={() => {
+                                  setSelectedAddressId(address.id);
+                                  fillFormWithAddress(address);
+                                }}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <p className="font-medium">{address.title}</p>
+                                    <p className="text-sm text-neutral-600">
+                                      {address.fullName}, {address.address}, {address.city}, {address.state} {address.postalCode}
+                                    </p>
+                                  </div>
+                                  {address.isDefault && (
+                                    <span className="text-xs bg-primary text-white px-2 py-1 rounded">
+                                      Default
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="mt-3 text-sm text-neutral-500">
+                            Or fill in a new address below:
+                          </div>
+                        </div>
+                      )}
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
@@ -492,52 +593,98 @@ const CheckoutPage = () => {
                                 defaultValue={field.value}
                                 className="space-y-3"
                               >
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "creditCard" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
-                                  <RadioGroupItem value="creditCard" id="creditCard" className="sr-only" />
-                                  <label htmlFor="creditCard" className="flex items-center justify-between cursor-pointer">
+                                {/* UzCard - National Payment System */}
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "uzcard" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                  <RadioGroupItem value="uzcard" id="uzcard" className="sr-only" />
+                                  <label htmlFor="uzcard" className="flex items-center justify-between cursor-pointer">
                                     <div className="flex items-center">
                                       <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "creditCard" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
-                                          {field.value === "creditCard" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "uzcard" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                          {field.value === "uzcard" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">{t("checkout.creditCard")}</div>
+                                      <div className="ml-3 font-medium">UzCard</div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <div className="w-8 h-6 bg-blue-600 rounded text-white text-xs font-bold flex items-center justify-center">UZ</div>
+                                      <span className="text-sm text-neutral-500">National</span>
+                                    </div>
+                                  </label>
+                                </div>
+
+                                {/* Humo - Popular Payment System */}
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "humo" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                  <RadioGroupItem value="humo" id="humo" className="sr-only" />
+                                  <label htmlFor="humo" className="flex items-center justify-between cursor-pointer">
+                                    <div className="flex items-center">
+                                      <div className="shrink-0">
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "humo" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                          {field.value === "humo" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
+                                        </div>
+                                      </div>
+                                      <div className="ml-3 font-medium">Humo</div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <div className="w-8 h-6 bg-green-600 rounded text-white text-xs font-bold flex items-center justify-center">H</div>
+                                      <span className="text-sm text-neutral-500">Contactless</span>
+                                    </div>
+                                  </label>
+                                </div>
+
+                                {/* Click - Mobile Payment */}
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "click" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                  <RadioGroupItem value="click" id="click" className="sr-only" />
+                                  <label htmlFor="click" className="flex items-center justify-between cursor-pointer">
+                                    <div className="flex items-center">
+                                      <div className="shrink-0">
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "click" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                          {field.value === "click" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
+                                        </div>
+                                      </div>
+                                      <div className="ml-3 font-medium">Click</div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <div className="w-8 h-6 bg-purple-600 rounded text-white text-xs font-bold flex items-center justify-center">C</div>
+                                      <span className="text-sm text-neutral-500">Mobile</span>
+                                    </div>
+                                  </label>
+                                </div>
+
+                                {/* Payme - Mobile Payment */}
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "payme" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                  <RadioGroupItem value="payme" id="payme" className="sr-only" />
+                                  <label htmlFor="payme" className="flex items-center justify-between cursor-pointer">
+                                    <div className="flex items-center">
+                                      <div className="shrink-0">
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "payme" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                          {field.value === "payme" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
+                                        </div>
+                                      </div>
+                                      <div className="ml-3 font-medium">Payme</div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <div className="w-8 h-6 bg-orange-600 rounded text-white text-xs font-bold flex items-center justify-center">P</div>
+                                      <span className="text-sm text-neutral-500">Mobile</span>
+                                    </div>
+                                  </label>
+                                </div>
+
+                                {/* International Cards */}
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "international" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                  <RadioGroupItem value="international" id="international" className="sr-only" />
+                                  <label htmlFor="international" className="flex items-center justify-between cursor-pointer">
+                                    <div className="flex items-center">
+                                      <div className="shrink-0">
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "international" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                          {field.value === "international" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
+                                        </div>
+                                      </div>
+                                      <div className="ml-3 font-medium">International Cards</div>
                                     </div>
                                     <div className="flex space-x-2 rtl:space-x-reverse">
                                       <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" className="h-6 w-auto" />
                                       <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" alt="MasterCard" className="h-6 w-auto" />
-                                      <img src="https://cdn-icons-png.flaticon.com/512/196/196539.png" alt="Amex" className="h-6 w-auto" />
                                     </div>
-                                  </label>
-                                </div>
-                                
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "paypal" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
-                                  <RadioGroupItem value="paypal" id="paypal" className="sr-only" />
-                                  <label htmlFor="paypal" className="flex items-center justify-between cursor-pointer">
-                                    <div className="flex items-center">
-                                      <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "paypal" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
-                                          {field.value === "paypal" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
-                                        </div>
-                                      </div>
-                                      <div className="ml-3 font-medium">PayPal</div>
-                                    </div>
-                                    <img src="https://cdn-icons-png.flaticon.com/512/196/196566.png" alt="PayPal" className="h-6 w-auto" />
-                                  </label>
-                                </div>
-                                
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "applePay" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
-                                  <RadioGroupItem value="applePay" id="applePay" className="sr-only" />
-                                  <label htmlFor="applePay" className="flex items-center justify-between cursor-pointer">
-                                    <div className="flex items-center">
-                                      <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "applePay" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
-                                          {field.value === "applePay" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
-                                        </div>
-                                      </div>
-                                      <div className="ml-3 font-medium">Apple Pay</div>
-                                    </div>
-                                    <img src="https://cdn-icons-png.flaticon.com/512/888/888871.png" alt="Apple Pay" className="h-6 w-auto" />
                                   </label>
                                 </div>
                               </RadioGroup>
@@ -547,33 +694,148 @@ const CheckoutPage = () => {
                         )}
                       />
                       
-                      {form.watch("paymentMethod") === "creditCard" && (
+                      {/* UzCard Payment Form */}
+                      {form.watch("paymentMethod") === "uzcard" && (
                         <div className="mt-6 space-y-4">
+                          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <p className="text-sm text-blue-800">
+                              <strong>UzCard</strong> - National payment system of Uzbekistan
+                            </p>
+                          </div>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <FormLabel>{t("checkout.cardNumber")}</FormLabel>
+                              <FormLabel>UzCard Number</FormLabel>
                               <Input placeholder="•••• •••• •••• ••••" />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                               <div>
-                                <FormLabel>{t("checkout.expiryDate")}</FormLabel>
+                                <FormLabel>Expiry Date</FormLabel>
                                 <Input placeholder="MM/YY" />
                               </div>
                               <div>
-                                <FormLabel>{t("checkout.cvv")}</FormLabel>
+                                <FormLabel>CVV</FormLabel>
                                 <Input placeholder="•••" />
                               </div>
                             </div>
                           </div>
                           <div>
-                            <FormLabel>{t("checkout.nameOnCard")}</FormLabel>
-                            <Input placeholder={t("checkout.nameOnCardPlaceholder")} />
+                            <FormLabel>Cardholder Name</FormLabel>
+                            <Input placeholder="Enter cardholder name" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Humo Payment Form */}
+                      {form.watch("paymentMethod") === "humo" && (
+                        <div className="mt-6 space-y-4">
+                          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <p className="text-sm text-green-800">
+                              <strong>Humo</strong> - Contactless payment system
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <FormLabel>Humo Card Number</FormLabel>
+                              <Input placeholder="•••• •••• •••• ••••" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <FormLabel>Expiry Date</FormLabel>
+                                <Input placeholder="MM/YY" />
+                              </div>
+                              <div>
+                                <FormLabel>CVV</FormLabel>
+                                <Input placeholder="•••" />
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <FormLabel>Cardholder Name</FormLabel>
+                            <Input placeholder="Enter cardholder name" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Click Mobile Payment */}
+                      {form.watch("paymentMethod") === "click" && (
+                        <div className="mt-6 space-y-4">
+                          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <p className="text-sm text-purple-800">
+                              <strong>Click</strong> - Mobile payment system
+                            </p>
+                          </div>
+                          <div>
+                            <FormLabel>Phone Number</FormLabel>
+                            <Input placeholder="+998 XX XXX XX XX" />
+                          </div>
+                          <div>
+                            <FormLabel>Click PIN</FormLabel>
+                            <Input placeholder="Enter your Click PIN" type="password" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Payme Mobile Payment */}
+                      {form.watch("paymentMethod") === "payme" && (
+                        <div className="mt-6 space-y-4">
+                          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <p className="text-sm text-orange-800">
+                              <strong>Payme</strong> - Mobile payment system
+                            </p>
+                          </div>
+                          <div>
+                            <FormLabel>Phone Number</FormLabel>
+                            <Input placeholder="+998 XX XXX XX XX" />
+                          </div>
+                          <div>
+                            <FormLabel>Payme PIN</FormLabel>
+                            <Input placeholder="Enter your Payme PIN" type="password" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* International Cards */}
+                      {form.watch("paymentMethod") === "international" && (
+                        <div className="mt-6 space-y-4">
+                          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <p className="text-sm text-gray-800">
+                              <strong>International Cards</strong> - Visa, MasterCard
+                            </p>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <FormLabel>Card Number</FormLabel>
+                              <Input placeholder="•••• •••• •••• ••••" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <FormLabel>Expiry Date</FormLabel>
+                                <Input placeholder="MM/YY" />
+                              </div>
+                              <div>
+                                <FormLabel>CVV</FormLabel>
+                                <Input placeholder="•••" />
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <FormLabel>Cardholder Name</FormLabel>
+                            <Input placeholder="Enter cardholder name" />
                           </div>
                         </div>
                       )}
                       
                       <div className="mt-8">
-                        <Button type="submit" className="w-full">
+                        <Button 
+                          type="submit" 
+                          className="w-full"
+                          onClick={() => {
+                            console.log("🛒 CHECKOUT: Place Order button clicked!");
+                            console.log("🛒 CHECKOUT: Form state:", form.formState);
+                            console.log("🛒 CHECKOUT: Form values:", form.getValues());
+                            console.log("🛒 CHECKOUT: Form errors:", form.formState.errors);
+                          }}
+                        >
                           {t("checkout.placeOrder")}
                         </Button>
                         <p className="text-xs text-neutral-500 text-center mt-4">
@@ -602,6 +864,20 @@ const CheckoutPage = () => {
                         <Button type="button" onClick={() => handleContinue(paymentStep)}>
                           {paymentStep === "address" ? t("checkout.continueToDelivery") : t("checkout.continueToPayment")}
                           <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      )}
+                      
+                      {/* Debug: Direct payment button */}
+                      {paymentStep !== "payment" && (
+                        <Button 
+                          type="button" 
+                          variant="secondary" 
+                          onClick={() => {
+                            console.log("🛒 CHECKOUT: Direct payment button clicked");
+                            setPaymentStep("payment");
+                          }}
+                        >
+                          🚀 Go to Payment (Debug)
                         </Button>
                       )}
                     </div>

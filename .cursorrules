@@ -1,0 +1,224 @@
+# FreshCart Grocery Delivery Dashboard - Project Intelligence
+
+## Project Overview
+FreshCart is a modern grocery delivery web application built with React, TypeScript, and Express.js. It features a 30-minute delivery promise, multi-language support, and a comprehensive e-commerce experience.
+
+## Critical Implementation Paths
+
+### Frontend Architecture
+- **Component Structure**: Feature-based organization in `client/src/components/`
+  - `layout/` - Header, Footer, MobileMenu
+  - `home/` - Homepage-specific components
+  - `shop/` - Shopping-related components (ShoppingCart)
+  - `ui/` - Reusable UI components (Radix-based)
+- **State Management**: React Context for global state (Cart, Language, Theme)
+- **Routing**: Wouter for lightweight client-side routing
+- **Styling**: Tailwind CSS with custom design system
+
+### Backend Architecture
+- **Server Structure**: Express.js with TypeScript in `server/`
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Passport.js with session management
+- **API Design**: RESTful endpoints with JSON responses
+
+### Key File Locations
+- **Main App**: `client/src/App.tsx` - Root component with routing
+- **Cart Logic**: `client/src/context/CartContext.tsx` - Cart state management
+- **Product Data**: `client/src/data/products.ts` - Mock product data
+- **Types**: `client/src/types/index.ts` - TypeScript type definitions
+- **Server Entry**: `server/index.ts` - Express server setup
+- **Database Schema**: `shared/schema.ts` - Drizzle schema definitions
+
+## User Preferences and Workflow
+
+### Development Preferences
+- **TypeScript First**: Always use TypeScript with strict mode
+- **Component Composition**: Prefer composition over inheritance
+- **Custom Hooks**: Extract reusable logic into custom hooks
+- **Context Pattern**: Use React Context for global state management
+- **Radix UI**: Use Radix UI primitives for accessible components
+
+### Code Organization Patterns
+- **Feature-Based**: Organize components by feature/domain
+- **Shared Types**: Keep common types in `shared/` directory
+- **Mock Data**: Use realistic mock data for development
+- **Context Providers**: Centralize state management with providers
+
+### Styling Approach
+- **Tailwind CSS**: Utility-first CSS with custom design system
+- **Responsive Design**: Mobile-first approach with desktop optimization
+- **Component Variants**: Use class-variance-authority for component variants
+- **Dark Mode**: Support for light/dark theme switching
+
+## Project-Specific Patterns
+
+### Internationalization Pattern
+```typescript
+// Always use useTranslation hook for text
+const { t } = useTranslation();
+return <h1>{t('hero.title')}</h1>;
+
+// Language files in client/src/data/locales/
+// Support for RTL languages (Arabic) with automatic direction switching
+```
+
+### Cart Management Pattern
+```typescript
+// Use CartContext for all cart operations
+const { addToCart, removeFromCart, cartItems } = useCart();
+
+// Cart persistence with localStorage
+// Real-time cart updates with context
+// Recommended products in cart sidebar
+```
+
+### Component Composition Pattern
+```typescript
+// Compose complex components from smaller ones
+<Card>
+  <CardHeader>
+    <CardTitle>{product.name}</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <ProductImage src={product.image} alt={product.name} />
+    <ProductPrice price={product.price} />
+  </CardContent>
+</Card>
+```
+
+### Form Handling Pattern
+```typescript
+// Use React Hook Form with Zod validation
+const form = useForm<FormData>({
+  resolver: zodResolver(schema),
+  defaultValues: { /* ... */ }
+});
+```
+
+## Known Challenges
+
+### Technical Challenges
+1. **Mock Data Transition**: Currently using mock data, needs real database integration
+2. **Payment Processing**: Payment forms ready but not connected to payment gateway
+3. **Real-time Updates**: Need WebSocket or polling for real-time order tracking
+4. **Performance**: Bundle size optimization needed for production
+
+### Architecture Challenges
+1. **State Management**: Context works well for current scale, may need Redux for growth
+2. **Database Operations**: Need to implement real CRUD operations
+3. **Authentication**: Session management needs real user database
+4. **Error Handling**: Need more comprehensive error boundaries
+
+### User Experience Challenges
+1. **Loading States**: Need better loading indicators and skeleton screens
+2. **Error Messages**: Need more user-friendly error communication
+3. **Accessibility**: Need comprehensive accessibility testing
+4. **Mobile Performance**: Need to optimize for mobile devices
+
+## Evolution of Project Decisions
+
+### State Management Evolution
+- **Initial**: Considered Redux for state management
+- **Decision**: Chose React Context for simplicity and current scale
+- **Rationale**: Context provides sufficient state management without complexity
+- **Future**: May need Redux if application grows significantly
+
+### Routing Evolution
+- **Initial**: Considered React Router
+- **Decision**: Chose Wouter for lightweight routing
+- **Rationale**: Wouter provides necessary routing without bundle size overhead
+- **Future**: Wouter should scale well for current needs
+
+### Styling Evolution
+- **Initial**: Considered CSS modules or styled-components
+- **Decision**: Chose Tailwind CSS with Radix UI
+- **Rationale**: Tailwind provides rapid development with consistent design
+- **Future**: Tailwind scales well and provides good performance
+
+### Database Evolution
+- **Initial**: Considered MongoDB or other NoSQL databases
+- **Decision**: Chose PostgreSQL with Drizzle ORM
+- **Rationale**: PostgreSQL provides ACID compliance and Drizzle provides type safety
+- **Future**: PostgreSQL scales well for e-commerce applications
+
+## Tool Usage Patterns
+
+### Development Tools
+- **Vite**: Fast development server and build tool
+- **TypeScript**: Strict type checking across entire application
+- **ESLint/Prettier**: Code formatting and linting
+- **Drizzle Kit**: Database migrations and introspection
+
+### Testing Strategy
+- **Current**: No automated tests implemented
+- **Planned**: React Testing Library for component tests
+- **Planned**: Jest for unit tests
+- **Planned**: Playwright for E2E tests
+
+### Deployment Strategy
+- **Current**: Netlify-ready configuration
+- **Frontend**: Static site deployment
+- **Backend**: Serverless functions or container deployment
+- **Database**: Neon PostgreSQL for serverless database
+
+## Performance Considerations
+
+### Bundle Optimization
+- **Code Splitting**: Route-based code splitting with Vite
+- **Tree Shaking**: Automatic tree shaking with ES modules
+- **Image Optimization**: External CDN for product images
+- **Lazy Loading**: Component lazy loading for better performance
+
+### Runtime Performance
+- **Context Optimization**: Memoized context values to prevent re-renders
+- **Component Memoization**: React.memo for expensive components
+- **State Updates**: Batched state updates for better performance
+- **localStorage**: Efficient cart persistence without server round-trips
+
+## Security Considerations
+
+### Frontend Security
+- **Input Validation**: Zod schemas for runtime validation
+- **XSS Prevention**: Sanitized user inputs
+- **CSRF Protection**: CSRF tokens for form submissions
+- **Content Security Policy**: CSP headers for XSS protection
+
+### Backend Security
+- **Authentication**: Secure session management with Passport.js
+- **Password Hashing**: bcrypt for password security
+- **Input Validation**: Server-side validation with Zod
+- **SQL Injection**: Parameterized queries with Drizzle ORM
+
+## Accessibility Patterns
+
+### ARIA Implementation
+- **Radix UI**: Built-in accessibility with Radix primitives
+- **Keyboard Navigation**: Full keyboard navigation support
+- **Screen Readers**: Proper ARIA labels and descriptions
+- **Focus Management**: Proper focus management for modals and navigation
+
+### Internationalization Accessibility
+- **RTL Support**: Automatic RTL layout for Arabic
+- **Language Switching**: Accessible language selector
+- **Cultural Adaptation**: Proper date, number, and currency formatting
+- **Font Support**: Proper font loading for different languages
+
+## Future Considerations
+
+### Scalability
+- **Component Library**: Radix UI scales well for complex UIs
+- **State Management**: May need Redux for complex state management
+- **Database**: PostgreSQL scales well for e-commerce
+- **Caching**: May need Redis for session and data caching
+
+### Feature Expansion
+- **Real-time Features**: WebSocket integration for live updates
+- **Mobile App**: React Native or PWA for mobile experience
+- **Admin Dashboard**: Separate admin interface for management
+- **Analytics**: User behavior tracking and analytics
+
+### Performance Optimization
+- **CDN**: Content delivery network for static assets
+- **Caching**: Redis for database query caching
+- **Image Optimization**: WebP format and responsive images
+- **Bundle Analysis**: Regular bundle size monitoring and optimization

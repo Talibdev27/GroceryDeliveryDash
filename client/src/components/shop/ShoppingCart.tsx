@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useCart } from "@/hooks/use-cart";
-import { formatCurrency } from "@/lib/utils";
+import { formatPrice } from "@/lib/currency";
 import { Plus, Minus, Trash2, X } from "lucide-react";
 
 export default function ShoppingCart() {
@@ -21,8 +21,12 @@ export default function ShoppingCart() {
     total,
   } = useCart();
 
+  console.log("ShoppingCart: isCartOpen =", isCartOpen, "cartItems.length =", cartItems.length);
+
+  if (!isCartOpen) return null;
+
   return (
-    <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 ${isCartOpen ? "" : "hidden"}`} onClick={closeCart}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={closeCart}>
       <div 
         className="fixed top-0 right-0 rtl:right-auto rtl:left-0 h-full w-full max-w-md bg-white shadow-lg transform transition-transform duration-300 translate-x-0" 
         onClick={(e) => e.stopPropagation()}
@@ -68,7 +72,18 @@ export default function ShoppingCart() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">{formatCurrency(item.price)}</p>
+                      <p className="font-medium">
+                        {item.sale && item.salePrice ? (
+                          <div className="flex flex-col">
+                            <span>{formatPrice(item.salePrice)}</span>
+                            <span className="text-xs text-neutral-400 line-through">
+                              {formatPrice(item.price)}
+                            </span>
+                          </div>
+                        ) : (
+                          formatPrice(item.price)
+                        )}
+                      </p>
                       <Button 
                         variant="ghost" 
                         size="icon" 
@@ -91,11 +106,23 @@ export default function ShoppingCart() {
                         <h4 className="font-medium text-sm">{item.name}</h4>
                         <p className="text-sm text-neutral-500">{item.unit}</p>
                         <div className="flex justify-between items-center mt-2">
-                          <span className="font-medium">{formatCurrency(item.price)}</span>
+                          <span className="font-medium">
+                            {item.sale && item.salePrice ? (
+                              <div className="flex flex-col">
+                                <span>{formatPrice(item.salePrice)}</span>
+                                <span className="text-xs text-neutral-400 line-through">
+                                  {formatPrice(item.price)}
+                                </span>
+                              </div>
+                            ) : (
+                              formatPrice(item.price)
+                            )}
+                          </span>
                           <Button
                             size="icon"
                             className="h-7 w-7 rounded-full bg-primary text-white hover:bg-primary/90"
                             onClick={() => addToCart(item)}
+                            disabled={!item.inStock}
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -127,15 +154,15 @@ export default function ShoppingCart() {
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span className="text-neutral-500">{t("cart.subtotal")}</span>
-                  <span className="font-medium">{formatCurrency(subtotal)}</span>
+                  <span className="font-medium">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-500">{t("cart.deliveryFee")}</span>
-                  <span className="font-medium">{formatCurrency(deliveryFee)}</span>
+                  <span className="font-medium">{formatPrice(deliveryFee)}</span>
                 </div>
                 <div className="flex justify-between border-t border-neutral-200 pt-2 mt-2">
                   <span className="font-medium">{t("cart.total")}</span>
-                  <span className="font-bold text-lg">{formatCurrency(total)}</span>
+                  <span className="font-bold text-lg">{formatPrice(total)}</span>
                 </div>
               </div>
               

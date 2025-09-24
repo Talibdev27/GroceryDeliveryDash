@@ -1,14 +1,19 @@
 import React, { createContext, useState, useEffect } from "react";
 import { generateUniqueId } from "@/lib/utils";
+import { formatPrice, DEFAULT_CURRENCY } from "@/lib/currency";
 
 export interface CartProduct {
-  id: string;
+  id: number;
   name: string;
   image: string;
-  price: number;
+  price: string;
   quantity: number;
   unit: string;
-  category: string;
+  categoryId: number;
+  inStock: boolean;
+  featured?: boolean;
+  sale?: boolean;
+  salePrice?: string;
 }
 
 interface RecommendedProduct extends Omit<CartProduct, "quantity"> {}
@@ -17,9 +22,9 @@ interface CartContextType {
   cartItems: CartProduct[];
   recommended: RecommendedProduct[];
   addToCart: (product: Omit<CartProduct, "quantity">) => void;
-  removeFromCart: (productId: string) => void;
-  incrementQuantity: (productId: string) => void;
-  decrementQuantity: (productId: string) => void;
+  removeFromCart: (productId: number) => void;
+  incrementQuantity: (productId: number) => void;
+  decrementQuantity: (productId: number) => void;
   clearCart: () => void;
   isCartOpen: boolean;
   toggleCart: () => void;
@@ -43,7 +48,7 @@ export const CartContext = createContext<CartContextType>({
   closeCart: () => {},
   openCart: () => {},
   subtotal: 0,
-  deliveryFee: 2.99,
+  deliveryFee: DEFAULT_CURRENCY === 'UZS' ? 37500 : 2.99,
   total: 0,
 });
 
@@ -56,24 +61,27 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [recommended, setRecommended] = useState<RecommendedProduct[]>([
     {
-      id: generateUniqueId(),
+      id: 1,
       name: "Fresh Strawberries",
       image: "https://images.unsplash.com/photo-1518635017480-01fe63a46f50?w=800&auto=format&fit=crop",
-      price: 4.99,
+      price: DEFAULT_CURRENCY === 'UZS' ? "62500" : "4.99",
       unit: "1 lb package",
-      category: "Fruits",
+      categoryId: 1,
+      inStock: true,
     },
     {
-      id: generateUniqueId(),
+      id: 2,
       name: "Organic Eggs",
       image: "https://images.unsplash.com/photo-1506976785307-8732e854ad03?w=800&auto=format&fit=crop",
-      price: 5.49,
+      price: DEFAULT_CURRENCY === 'UZS' ? "68750" : "5.49",
       unit: "12 count",
-      category: "Dairy",
+      categoryId: 2,
+      inStock: true,
     },
   ]);
 
-  const deliveryFee = 2.99;
+  // Delivery fee in Uzbek Som (approximately $2.99 USD)
+  const deliveryFee = DEFAULT_CURRENCY === 'UZS' ? 37500 : 2.99;
 
   // Try to load cart from localStorage on initial load
   useEffect(() => {
@@ -93,27 +101,33 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = (product: Omit<CartProduct, "quantity">) => {
+    console.log("CartContext: Adding product to cart:", product);
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       
       if (existingItem) {
-        return prevItems.map((item) =>
+        const newItems = prevItems.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
+        console.log("CartContext: Updated existing item, new cart:", newItems);
+        return newItems;
       } else {
-        return [...prevItems, { ...product, quantity: 1 }];
+        const newItems = [...prevItems, { ...product, quantity: 1 }];
+        console.log("CartContext: Added new item, new cart:", newItems);
+        return newItems;
       }
     });
     
     // Open cart when adding a new item
+    console.log("CartContext: Opening cart after adding item");
     setIsCartOpen(true);
   };
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = (productId: number) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId));
   };
 
-  const incrementQuantity = (productId: string) => {
+  const incrementQuantity = (productId: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
@@ -121,7 +135,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     );
   };
 
-  const decrementQuantity = (productId: string) => {
+  const decrementQuantity = (productId: number) => {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
         if (item.id === productId) {
@@ -138,20 +152,29 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const toggleCart = () => {
-    setIsCartOpen((prev) => !prev);
+    console.log("CartContext: toggleCart called, current state:", isCartOpen);
+    setIsCartOpen((prev) => {
+      console.log("CartContext: Setting cart open to:", !prev);
+      return !prev;
+    });
   };
 
   const closeCart = () => {
+    console.log("CartContext: closeCart called");
     setIsCartOpen(false);
   };
 
   const openCart = () => {
+    console.log("CartContext: openCart called");
     setIsCartOpen(true);
   };
 
   // Calculate subtotal and total
   const subtotal = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) => {
+      const price = item.sale && item.salePrice ? parseFloat(item.salePrice) : parseFloat(item.price);
+      return total + price * item.quantity;
+    },
     0
   );
   

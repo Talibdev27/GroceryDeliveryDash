@@ -21,7 +21,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/ui/ProductCard";
 import { useCart } from "@/hooks/use-cart";
-import { generateUniqueId } from "@/lib/utils";
+import { useProducts, useCategories } from "@/hooks/use-api";
+import { formatPrice, getCurrencySymbol } from "@/lib/currency";
 import { Search, RefreshCw, SlidersHorizontal, ChevronRight } from "lucide-react";
 
 export default function Products() {
@@ -29,13 +30,31 @@ export default function Products() {
   const [location] = useLocation();
   const { addToCart } = useCart();
   
+  // API data
+  const { data: productsData, loading: productsLoading, error: productsError } = useProducts();
+  const { data: categoriesData, loading: categoriesLoading } = useCategories();
+  
   // State for filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [priceRange, setPriceRange] = useState([0, 50]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState("popularity");
-  const [isLoading, setIsLoading] = useState(true);
   const [mobileFiltersVisible, setMobileFiltersVisible] = useState(false);
+  
+  // Get products and categories from API
+  const products = productsData?.products || [];
+  const categories = categoriesData?.categories || [];
+  
+  // Calculate price range from actual products
+  const maxPrice = Math.max(...products.map(p => parseFloat(p.price)), 50);
+  const [priceRange, setPriceRange] = useState([0, maxPrice]);
+  
+  // Update price range when products load
+  useEffect(() => {
+    if (products.length > 0) {
+      const newMaxPrice = Math.max(...products.map(p => parseFloat(p.price)), 50);
+      setPriceRange([0, newMaxPrice]);
+    }
+  }, [products]);
   
   // Parse query params
   useEffect(() => {
@@ -45,89 +64,7 @@ export default function Products() {
     if (category) {
       setSelectedCategory(category);
     }
-    
-    // Simulate loading
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
   }, [location]);
-  
-  // Sample product data
-  const products = [
-    {
-      id: generateUniqueId(),
-      name: t("products.apples.name"),
-      image: "https://images.unsplash.com/photo-1584306670957-acf935f5033c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 3.99,
-      unit: t("products.apples.unit"),
-      category: t("categories.fruits"),
-      slug: "organic-apples",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.milk.name"),
-      image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 4.99,
-      unit: t("products.milk.unit"),
-      category: t("categories.dairy"),
-      slug: "organic-milk",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.bread.name"),
-      image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 3.49,
-      unit: t("products.bread.unit"),
-      category: t("categories.bakery"),
-      slug: "whole-grain-bread",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.avocados.name"),
-      image: "https://images.unsplash.com/photo-1519162808019-7de1683fa2ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 4.99,
-      unit: t("products.avocados.unit"),
-      category: t("categories.fruits"),
-      slug: "organic-avocados",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.eggs.name"),
-      image: "https://images.unsplash.com/photo-1506976785307-8732e854ad03?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 5.49,
-      unit: t("products.eggs.unit"),
-      category: t("categories.dairy"),
-      slug: "organic-eggs",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.tomatoes.name"),
-      image: "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 2.99,
-      unit: t("products.tomatoes.unit"),
-      category: t("categories.vegetables"),
-      slug: "organic-tomatoes",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.chicken.name"),
-      image: "https://images.unsplash.com/photo-1623059678066-176639ed7069?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 8.99,
-      unit: t("products.chicken.unit"),
-      category: t("categories.meat"),
-      slug: "organic-chicken",
-    },
-    {
-      id: generateUniqueId(),
-      name: t("products.bananas.name"),
-      image: "https://images.unsplash.com/photo-1603833665858-e61d17a86224?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300",
-      price: 1.99,
-      unit: t("products.bananas.unit"),
-      category: t("categories.fruits"),
-      slug: "organic-bananas",
-    }
-  ];
   
   // Filter products
   const filteredProducts = products.filter(product => {
@@ -136,13 +73,17 @@ export default function Products() {
       return false;
     }
     
-    // Filter by category
-    if (selectedCategory && product.category !== selectedCategory) {
-      return false;
+    // Filter by category (using categoryId)
+    if (selectedCategory) {
+      const category = categories.find(cat => cat.name === selectedCategory);
+      if (category && product.categoryId !== category.id) {
+        return false;
+      }
     }
     
     // Filter by price range
-    if (product.price < priceRange[0] || product.price > priceRange[1]) {
+    const productPrice = parseFloat(product.price);
+    if (productPrice < priceRange[0] || productPrice > priceRange[1]) {
       return false;
     }
     
@@ -153,9 +94,9 @@ export default function Products() {
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortOption) {
       case "price-asc":
-        return a.price - b.price;
+        return parseFloat(a.price) - parseFloat(b.price);
       case "price-desc":
-        return b.price - a.price;
+        return parseFloat(b.price) - parseFloat(a.price);
       case "name-asc":
         return a.name.localeCompare(b.name);
       case "name-desc":
@@ -248,24 +189,24 @@ export default function Products() {
                   <AccordionTrigger>{t("products.filterCategories")}</AccordionTrigger>
                   <AccordionContent>
                     <div className="space-y-2">
-                      {["fruits", "vegetables", "dairy", "bakery", "meat", "seafood", "frozen", "snacks"].map((category) => (
-                        <div key={category} className="flex items-center space-x-2">
+                      {categories.map((category) => (
+                        <div key={category.id} className="flex items-center space-x-2">
                           <Checkbox 
-                            id={`category-${category}`} 
-                            checked={selectedCategory === t(`categories.${category}`)}
+                            id={`category-${category.id}`} 
+                            checked={selectedCategory === category.name}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                setSelectedCategory(t(`categories.${category}`));
-                              } else if (selectedCategory === t(`categories.${category}`)) {
+                                setSelectedCategory(category.name);
+                              } else if (selectedCategory === category.name) {
                                 setSelectedCategory(null);
                               }
                             }}
                           />
                           <label 
-                            htmlFor={`category-${category}`}
+                            htmlFor={`category-${category.id}`}
                             className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           >
-                            {t(`categories.${category}`)}
+                            {category.name}
                           </label>
                         </div>
                       ))}
@@ -278,14 +219,14 @@ export default function Products() {
                   <AccordionContent>
                     <div className="space-y-4">
                       <Slider
-                        defaultValue={[priceRange[0], priceRange[1]]}
-                        max={50}
-                        step={1}
+                        value={priceRange}
+                        max={maxPrice}
+                        step={0.5}
                         onValueChange={(value) => setPriceRange([value[0], value[1]])}
                       />
                       <div className="flex items-center justify-between">
-                        <span>${priceRange[0]}</span>
-                        <span>${priceRange[1]}</span>
+                        <span>{formatPrice(priceRange[0].toString())}</span>
+                        <span>{formatPrice(priceRange[1].toString())}</span>
                       </div>
                     </div>
                   </AccordionContent>
@@ -339,7 +280,12 @@ export default function Products() {
           </div>
           
           <div className="flex-1">
-            {isLoading ? (
+            {productsError ? (
+              <div className="flex flex-col items-center justify-center h-64 bg-white p-6 rounded-lg border border-neutral-200">
+                <div className="text-red-500 mb-4">Error loading products</div>
+                <p className="text-neutral-500 text-center">{productsError}</p>
+              </div>
+            ) : productsLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {Array.from({ length: 8 }).map((_, index) => (
                   <div key={index} className="bg-white rounded-xl border border-neutral-200 overflow-hidden">

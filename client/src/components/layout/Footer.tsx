@@ -20,7 +20,7 @@ export default function Footer() {
           <div>
             <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse mb-4">
               <Leaf className="h-6 w-6 text-primary" />
-              <span className="font-heading font-bold text-xl">{t("header.brand")}</span>
+              <span className="font-heading font-bold text-xl">Diyor Market</span>
             </Link>
             <p className="text-neutral-400 mb-4">{t("footer.tagline")}</p>
             <div className="flex space-x-4 rtl:space-x-reverse">
@@ -115,7 +115,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center space-x-2 rtl:space-x-reverse">
                 <Mail className="h-5 w-5 text-neutral-400 flex-shrink-0" />
-                <a href="mailto:help@freshcart.com" className="text-neutral-400 hover:text-white">
+                <a href="mailto:help@diyormarket.com" className="text-neutral-400 hover:text-white">
                   {t("footer.email")}
                 </a>
               </li>
@@ -125,7 +125,7 @@ export default function Footer() {
         
         <div className="mt-10 pt-6 border-t border-neutral-700 flex flex-col md:flex-row justify-between items-center">
           <p className="text-neutral-400 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} {t("header.brand")}. {t("footer.allRightsReserved")}
+            &copy; {new Date().getFullYear()} Diyor Market. {t("footer.allRightsReserved")}
           </p>
           <div className="flex space-x-4 rtl:space-x-reverse items-center">
             <Link href="/privacy-policy" className="text-neutral-400 hover:text-white text-sm">
