@@ -415,8 +415,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { items, addressId, paymentMethod } = req.body;
       
-      // Calculate totals (this would be more complex in a real app)
-      const subtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
+      // Calculate totals correctly by converting string prices to numbers and handling sale prices
+      const subtotal = items.reduce((sum: number, item: any) => {
+        const price = item.sale && item.salePrice 
+          ? parseFloat(item.salePrice) 
+          : parseFloat(item.price);
+        return sum + (price * item.quantity);
+      }, 0);
       const deliveryFee = 2.99;
       const tax = subtotal * 0.08; // 8% tax
       const total = subtotal + deliveryFee + tax;
