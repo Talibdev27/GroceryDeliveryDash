@@ -379,6 +379,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Order Management routes
+  app.get("/api/admin/orders", authenticateUser, requireRole(["super_admin", "admin"]), async (req: Request, res: Response) => {
+    try {
+      const orders = await storage.getAllOrders();
+      
+      // Enrich orders with user information
+      const enrichedOrders = await Promise.all(
+        orders.map(async (order) => {
+          const user = order.userId ? await storage.getUser(order.userId) : null;
+          const address = order.addressId ? await storage.getAddress(order.addressId) : null;
+          const items = await storage.getOrderItems(order.id);
+          
+          // Get product details for each item
+          const itemsWithProducts = await Promise.all(
+            items.map(async (item) => {
+              const product = await storage.getProduct(item.productId);
+              return {
+                ...item,
+                productName: product?.name || 'Unknown Product',
+                productImage: product?.image || ''
+              };
+            })
+          );
+          
+          return {
+            ...order,
+            userName: user ? `${user.firstName} ${user.lastName}` : 'Unknown User',
+            userEmail: user?.email || '',
+            userPhone: user?.phone || '',
+            address: address,
+            items: itemsWithProducts,
+            itemCount: items.length
+          };
+        })
+      );
+      
+      res.json({ orders: enrichedOrders });
+    } catch (error) {
+      console.error("Get all orders error:", error);
+      res.status(500).json({ error: "Failed to get orders" });
+    }
+  });
+
+  app.patch("/api/admin/orders/:id/status", authenticateUser, requireRole(["super_admin", "admin"]), async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (!status) {
+        return res.status(400).json({ error: "Status is required" });
+      }
+      
+      const validStatuses = ["pending", "confirmed", "preparing", "ready", "in_transit", "delivered", "cancelled"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+      
+      const order = await storage.updateOrderStatus(orderId, status);
+      
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      
+      res.json({ order });
+    } catch (error) {
+      console.error("Update order status error:", error);
+      res.status(500).json({ error: "Failed to update order status" });
+    }
+  });
+
   // Order routes
   app.get("/api/orders", authenticateUser, async (req: Request, res: Response) => {
     try {

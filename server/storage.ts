@@ -77,7 +77,9 @@ export interface IStorage {
   
   // Order operations
   getUserOrders(userId: number): Promise<Order[]>;
+  getAllOrders(): Promise<Order[]>;
   getOrder(id: number): Promise<Order | undefined>;
+  getOrderItems(orderId: number): Promise<OrderItem[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: number, status: string): Promise<Order | undefined>;
 }
@@ -215,6 +217,14 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return result[0];
+  }
+
+  async getAllOrders(): Promise<Order[]> {
+    return await db.select().from(orders).orderBy(sql`${orders.createdAt} DESC`);
+  }
+
+  async getOrderItems(orderId: number): Promise<OrderItem[]> {
+    return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
   }
 
   // Product Management Methods
