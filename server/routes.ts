@@ -423,6 +423,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Address and payment method are required" });
       }
       
+      // Validate that the address belongs to the user (security)
+      const address = await storage.getAddress(addressId);
+      if (!address || address.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Invalid address" });
+      }
+      
       // Fetch actual product prices from database (security: never trust client prices)
       let subtotal = 0;
       const validatedItems = [];
