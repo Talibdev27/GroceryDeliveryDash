@@ -71,7 +71,7 @@ const formSchema = z.object({
     message: "Zip code must be at least 4 characters",
   }),
   deliveryTime: z.string(),
-  paymentMethod: z.enum(["uzcard", "humo", "click", "payme", "international"]),
+  paymentMethod: z.enum(["uzcard", "humo", "click", "payme", "international", "cash"]),
   saveAddress: z.boolean().default(false),
   contactFree: z.boolean().default(false),
   notes: z.string().optional(),
@@ -747,6 +747,25 @@ const CheckoutPage = () => {
                                     </div>
                                   </label>
                                 </div>
+                                
+                                {/* Cash - Pay on Delivery */}
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "cash" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                  <RadioGroupItem value="cash" id="cash" className="sr-only" />
+                                  <label htmlFor="cash" className="flex items-center justify-between cursor-pointer">
+                                    <div className="flex items-center">
+                                      <div className="shrink-0">
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "cash" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                          {field.value === "cash" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
+                                        </div>
+                                      </div>
+                                      <div className="ml-3 font-medium">Cash on Delivery</div>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <div className="w-8 h-6 bg-emerald-600 rounded text-white text-xs font-bold flex items-center justify-center">💵</div>
+                                      <span className="text-sm text-neutral-500">Pay when delivered</span>
+                                    </div>
+                                  </label>
+                                </div>
                               </RadioGroup>
                             </FormControl>
                             <FormMessage />
@@ -881,6 +900,25 @@ const CheckoutPage = () => {
                           <div>
                             <FormLabel>Cardholder Name</FormLabel>
                             <Input placeholder="Enter cardholder name" />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Cash on Delivery */}
+                      {form.watch("paymentMethod") === "cash" && (
+                        <div className="mt-6 space-y-4">
+                          <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                            <p className="text-sm text-emerald-800">
+                              <strong>Cash on Delivery</strong> - Pay when your order arrives
+                            </p>
+                            <p className="text-xs text-emerald-700 mt-2">
+                              Our rider will collect the cash payment when delivering your order. Please have the exact amount ready.
+                            </p>
+                          </div>
+                          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <p className="text-sm text-yellow-800">
+                              💡 <strong>Note:</strong> The rider will bring the cash to the admin after delivery is complete.
+                            </p>
                           </div>
                         </div>
                       )}
