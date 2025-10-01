@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,46 +50,123 @@ export default function AdminDashboard() {
   const outOfStockProducts = products.filter(p => !p.inStock).length;
   const totalCategories = categories.length;
 
-  const navigationItems = [
+  // Define role-based access to navigation items
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case "super_admin":
+        return "Super Admin";
+      case "admin":
+        return "Admin";
+      case "product_manager":
+        return "Product Manager";
+      case "rider":
+        return "Rider";
+      default:
+        return "User";
+    }
+  };
+
+  const allNavigationItems = [
     {
       id: "overview" as AdminSection,
       label: "Overview",
       icon: LayoutDashboard,
-      description: "Dashboard overview and key metrics"
+      description: "Dashboard overview and key metrics",
+      allowedRoles: ["super_admin", "admin"]
     },
     {
       id: "products" as AdminSection,
       label: "Product Manager",
       icon: Package,
-      description: "Manage products, inventory, and pricing"
+      description: "Manage products, inventory, and pricing",
+      allowedRoles: ["super_admin", "admin", "product_manager"]
     },
     {
       id: "users" as AdminSection,
       label: "User Management",
       icon: Users,
-      description: "Manage users and permissions"
+      description: "Manage users and permissions",
+      allowedRoles: ["super_admin", "admin"]
     },
     {
       id: "orders" as AdminSection,
       label: "Order Management",
       icon: ShoppingCart,
-      description: "View and manage orders"
+      description: "View and manage orders",
+      allowedRoles: ["super_admin", "admin"]
     },
     {
       id: "analytics" as AdminSection,
       label: "Analytics",
       icon: BarChart3,
-      description: "Business insights and reports"
+      description: "Business insights and reports",
+      allowedRoles: ["super_admin", "admin"]
     },
     {
       id: "settings" as AdminSection,
       label: "Settings",
       icon: Settings,
-      description: "System configuration"
+      description: "System configuration",
+      allowedRoles: ["super_admin", "admin"]
     }
   ];
 
+  // Filter navigation items based on user role
+  const navigationItems = allNavigationItems.filter(item => 
+    item.allowedRoles.includes(user?.role || "customer")
+  );
+
+  // Set active section to first allowed item when user loads or role changes
+  useEffect(() => {
+    if (user && navigationItems.length > 0) {
+      const allowedIds = new Set(navigationItems.map(item => item.id));
+      
+      // If current section is not allowed, switch to first allowed section
+      if (!allowedIds.has(activeSection)) {
+        setActiveSection(navigationItems[0].id);
+      }
+    }
+  }, [user, navigationItems]);
+
+  // Check if user is authorized to access admin dashboard
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const isAuthorizedRole = ["super_admin", "admin", "product_manager"].includes(user.role);
+  
+  if (!isAuthorizedRole) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-600">You don't have permission to access this page.</p>
+        </div>
+      </div>
+    );
+  }
+
   const renderActiveSection = () => {
+    // Check if user has access to the current section
+    const allowedIds = new Set(navigationItems.map(item => item.id));
+    
+    if (!allowedIds.has(activeSection)) {
+      return (
+        <div className="text-center py-12">
+          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-600">You don't have permission to access this section.</p>
+        </div>
+      );
+    }
+
     switch (activeSection) {
       case "overview":
         return <AdminOverview />;
@@ -104,7 +181,8 @@ export default function AdminDashboard() {
       case "settings":
         return <AdminSettings />;
       default:
-        return <AdminOverview />;
+        // Fallback to first allowed section
+        return navigationItems.length > 0 ? renderActiveSection() : null;
     }
   };
 
@@ -152,7 +230,9 @@ export default function AdminDashboard() {
                 {user?.firstName} {user?.lastName}
               </p>
               <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-              <Badge variant="secondary" className="text-xs mt-0.5 h-4">Admin</Badge>
+              <Badge variant="secondary" className="text-xs mt-0.5 h-4">
+                {getRoleDisplayName(user?.role || "customer")}
+              </Badge>
             </div>
           </div>
         </div>
@@ -205,10 +285,10 @@ export default function AdminDashboard() {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  {navigationItems.find(item => item.id === activeSection)?.label}
+                  {navigationItems.find(item => item.id === activeSection)?.label || "Dashboard"}
                 </h1>
                 <p className="text-sm text-gray-500">
-                  {navigationItems.find(item => item.id === activeSection)?.description}
+                  {navigationItems.find(item => item.id === activeSection)?.description || "Manage your dashboard"}
                 </p>
               </div>
             </div>
