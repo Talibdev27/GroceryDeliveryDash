@@ -415,14 +415,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { items, addressId, paymentMethod } = req.body;
       
-      // Calculate totals correctly by converting string prices to numbers and handling sale prices
-      const subtotal = items.reduce((sum: number, item: any) => {
-        const price = item.sale && item.salePrice 
-          ? parseFloat(item.salePrice) 
-          : parseFloat(item.price);
-        return sum + (price * item.quantity);
-      }, 0);
-      const deliveryFee = 2.99;
+      if (!items || items.length === 0) {
+        return res.status(400).json({ error: "Order must contain at least one item" });
+      }
+      
+      if (!addressId || !paymentMethod) {
+        return res.status(400).json({ error: "Address and payment method are required" });
+      }
+      
+      // Fetch actual product prices from database (security: never trust client prices)
+      let subtotal = 0;
+      const validatedItems = [];
+      
+      for (const item of items) {
+        const product = await storage.getProduct(item.productId);
+        
+        if (!product) {
+          return res.status(400).json({ error: `Product ${item.productId} not found` });
+        }
+        
+        if (!product.inStock || product.stockQuantity < item.quantity) {
+          return res.status(400).json({ error: `Product ${product.name} is out of stock` });
+        }
+        
+        // Use database prices, not client prices
+        const price = product.sale && product.salePrice 
+          ? parseFloat(product.salePrice) 
+          : parseFloat(product.price);
+        
+        subtotal += price * item.quantity;
+        validatedItems.push({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: price,
+        });
+      }
+      
+      const deliveryFee = 37500; // 37,500 UZS delivery fee
       const tax = subtotal * 0.08; // 8% tax
       const total = subtotal + deliveryFee + tax;
 
@@ -439,8 +468,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         paymentStatus: "pending",
       });
 
-      // Decrement stock quantity for each item in the order
-      for (const item of items) {
+      // Decrement stock quantity for each validated item
+      for (const item of validatedItems) {
         await storage.decrementProductStock(item.productId, item.quantity);
       }
 
