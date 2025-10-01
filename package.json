@@ -14,7 +14,9 @@
     "seed": "tsx scripts/seed-data.ts",
     "setup-db": "tsx scripts/setup-database.ts",
     "fix-prod-schema": "tsx scripts/fix-production-schema.ts",
-    "deploy-db": "tsx scripts/deploy-database.ts"
+    "deploy-db": "tsx scripts/deploy-database.ts",
+    "quick-fix": "tsx scripts/quick-fix-render.ts",
+    "post-deploy": "tsx scripts/post-deploy.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
