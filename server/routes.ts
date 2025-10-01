@@ -21,6 +21,32 @@ const authenticateUser = (req: Request, res: Response, next: any) => {
   }
 };
 
+// Middleware to check if user has required role
+const requireRole = (roles: string[]) => {
+  return async (req: Request, res: Response, next: any) => {
+    try {
+      // Check if user is authenticated first
+      if (!req.session?.userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      
+      if (!roles.includes(user.role)) {
+        return res.status(403).json({ error: "Forbidden: Insufficient permissions" });
+      }
+      
+      next();
+    } catch (error) {
+      console.error("Role check error:", error);
+      res.status(500).json({ error: "Authorization check failed" });
+    }
+  };
+};
+
 // Middleware to validate request body with Zod schema
 const validateBody = (schema: any) => {
   return (req: Request, res: Response, next: any) => {
@@ -284,7 +310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Product Management routes (Admin/Product Manager)
-  app.post("/api/admin/products", authenticateUser, async (req: Request, res: Response) => {
+  app.post("/api/admin/products", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (req: Request, res: Response) => {
     try {
       const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
       
@@ -308,7 +334,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/products/:id", authenticateUser, async (req: Request, res: Response) => {
+  app.put("/api/admin/products/:id", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (req: Request, res: Response) => {
     try {
       const productId = parseInt(req.params.id);
       const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
@@ -337,7 +363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/products/:id", authenticateUser, async (req: Request, res: Response) => {
+  app.delete("/api/admin/products/:id", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (req: Request, res: Response) => {
     try {
       const productId = parseInt(req.params.id);
       const success = await storage.deleteProduct(productId);
@@ -421,7 +447,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Super Admin Routes
-  app.get("/api/super-admin/users", async (req, res) => {
+  app.get("/api/super-admin/users", requireRole(["super_admin"]), async (req, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
@@ -431,7 +457,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/super-admin/users/:id", async (req, res) => {
+  app.get("/api/super-admin/users/:id", requireRole(["super_admin"]), async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const user = await storage.getUserById(id);
@@ -445,7 +471,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/super-admin/users", async (req, res) => {
+  app.post("/api/super-admin/users", requireRole(["super_admin"]), async (req, res) => {
     try {
       const { username, email, password, firstName, lastName, role, permissions } = req.body;
       
@@ -481,7 +507,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/super-admin/users/:id/role", async (req, res) => {
+  app.put("/api/super-admin/users/:id/role", requireRole(["super_admin"]), async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const { role, permissions } = req.body;
@@ -509,7 +535,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/super-admin/users/:id/activate", async (req, res) => {
+  app.put("/api/super-admin/users/:id/activate", requireRole(["super_admin"]), async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const success = await storage.activateUser(id);
@@ -534,7 +560,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/super-admin/users/:id/deactivate", async (req, res) => {
+  app.put("/api/super-admin/users/:id/deactivate", requireRole(["super_admin"]), async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deactivateUser(id);
@@ -559,7 +585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/super-admin/users/:id", async (req, res) => {
+  app.delete("/api/super-admin/users/:id", requireRole(["super_admin"]), async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const success = await storage.deleteUser(id);
@@ -584,7 +610,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/super-admin/logs", async (req, res) => {
+  app.get("/api/super-admin/logs", requireRole(["super_admin"]), async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 100;
       const offset = parseInt(req.query.offset as string) || 0;
@@ -596,7 +622,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/super-admin/stats", async (req, res) => {
+  app.get("/api/super-admin/stats", requireRole(["super_admin"]), async (req, res) => {
     try {
       const stats = await storage.getSystemStats();
       res.json(stats);
