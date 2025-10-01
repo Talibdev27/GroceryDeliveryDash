@@ -161,12 +161,9 @@ export default function OrderManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Order Management</h2>
-          <p className="text-gray-600">Track and manage customer orders</p>
-        </div>
+        <h2 className="text-xl font-bold text-gray-900">Order Management</h2>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]" data-testid="select-status-filter">
             <SelectValue placeholder="Filter by status" />
@@ -184,50 +181,50 @@ export default function OrderManagement() {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center">
-              <Clock className="h-8 w-8 text-blue-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-2xl font-bold text-gray-900" data-testid="text-pending-count">{pendingOrders}</p>
+              <Clock className="h-7 w-7 text-blue-600" />
+              <div className="ml-3">
+                <p className="text-xs font-medium text-gray-600">Pending</p>
+                <p className="text-xl font-bold text-gray-900" data-testid="text-pending-count">{pendingOrders}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center">
-              <Package className="h-8 w-8 text-orange-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Processing</p>
-                <p className="text-2xl font-bold text-gray-900" data-testid="text-processing-count">{confirmedOrders}</p>
+              <Package className="h-7 w-7 text-orange-600" />
+              <div className="ml-3">
+                <p className="text-xs font-medium text-gray-600">Processing</p>
+                <p className="text-xl font-bold text-gray-900" data-testid="text-processing-count">{confirmedOrders}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center">
-              <Truck className="h-8 w-8 text-purple-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">In Transit</p>
-                <p className="text-2xl font-bold text-gray-900" data-testid="text-transit-count">{inTransitOrders}</p>
+              <Truck className="h-7 w-7 text-purple-600" />
+              <div className="ml-3">
+                <p className="text-xs font-medium text-gray-600">In Transit</p>
+                <p className="text-xl font-bold text-gray-900" data-testid="text-transit-count">{inTransitOrders}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="flex items-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Delivered</p>
-                <p className="text-2xl font-bold text-gray-900" data-testid="text-delivered-count">{deliveredOrders}</p>
+              <CheckCircle className="h-7 w-7 text-green-600" />
+              <div className="ml-3">
+                <p className="text-xs font-medium text-gray-600">Delivered</p>
+                <p className="text-xl font-bold text-gray-900" data-testid="text-delivered-count">{deliveredOrders}</p>
               </div>
             </div>
           </CardContent>
@@ -235,56 +232,56 @@ export default function OrderManagement() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">Recent Orders</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3">
           {filteredOrders.length === 0 ? (
-            <div className="text-center py-12">
-              <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No orders found</h3>
-              <p className="text-gray-600">
+            <div className="text-center py-8">
+              <ShoppingCart className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+              <h3 className="text-base font-semibold text-gray-900 mb-1">No orders found</h3>
+              <p className="text-sm text-gray-600">
                 {statusFilter === "all" 
                   ? "No customer orders have been placed yet." 
                   : `No orders with status "${statusFilter}".`}
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {filteredOrders.map((order) => (
                 <div
                   key={order.id}
-                  className="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                  className="border rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer"
                   onClick={() => setSelectedOrder(order)}
                   data-testid={`card-order-${order.id}`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-3">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <p className="font-semibold text-gray-900" data-testid={`text-order-id-${order.id}`}>
+                          <p className="font-semibold text-sm text-gray-900" data-testid={`text-order-id-${order.id}`}>
                             Order #{order.id}
                           </p>
-                          <Badge className={getStatusColor(order.status)} data-testid={`badge-status-${order.id}`}>
+                          <Badge className={`${getStatusColor(order.status)} text-xs`} data-testid={`badge-status-${order.id}`}>
                             <span className="flex items-center gap-1">
                               {getStatusIcon(order.status)}
                               {order.status}
                             </span>
                           </Badge>
                         </div>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-xs text-gray-600 mt-0.5">
                           {order.userName} • {order.itemCount} items
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 mt-0.5">
                           {new Date(order.createdAt).toLocaleString()}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-lg text-gray-900" data-testid={`text-total-${order.id}`}>
+                      <p className="font-bold text-base text-gray-900" data-testid={`text-total-${order.id}`}>
                         ${parseFloat(order.total).toFixed(2)}
                       </p>
-                      <p className="text-sm text-gray-600 capitalize">
+                      <p className="text-xs text-gray-600 capitalize">
                         {order.paymentMethod}
                       </p>
                     </div>
@@ -300,13 +297,13 @@ export default function OrderManagement() {
         <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
           <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Order Details #{selectedOrder.id}</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-lg">Order Details #{selectedOrder.id}</DialogTitle>
+              <DialogDescription className="text-xs">
                 Placed on {new Date(selectedOrder.createdAt).toLocaleString()}
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Status Update */}
               <div className="flex items-center justify-between">
                 <div>
@@ -342,12 +339,12 @@ export default function OrderManagement() {
               </div>
 
               {/* Customer Information */}
-              <div className="border rounded-lg p-4 space-y-3">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <User className="h-4 w-4" />
+              <div className="border rounded-lg p-3 space-y-2">
+                <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                  <User className="h-3.5 w-3.5" />
                   Customer Information
                 </h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <p className="text-gray-600">Name</p>
                     <p className="font-medium">{selectedOrder.userName}</p>
@@ -365,12 +362,12 @@ export default function OrderManagement() {
 
               {/* Delivery Address */}
               {selectedOrder.address && (
-                <div className="border rounded-lg p-4 space-y-3">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
+                <div className="border rounded-lg p-3 space-y-2">
+                  <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <MapPin className="h-3.5 w-3.5" />
                     Delivery Address
                   </h3>
-                  <div className="text-sm">
+                  <div className="text-xs">
                     <p className="font-medium">{selectedOrder.address.fullName}</p>
                     <p className="text-gray-600">{selectedOrder.address.phone}</p>
                     <p className="text-gray-600 mt-2">{selectedOrder.address.address}</p>
@@ -382,25 +379,25 @@ export default function OrderManagement() {
               )}
 
               {/* Order Items */}
-              <div className="border rounded-lg p-4 space-y-3">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Package className="h-4 w-4" />
+              <div className="border rounded-lg p-3 space-y-2">
+                <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                  <Package className="h-3.5 w-3.5" />
                   Order Items
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {selectedOrder.items.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
+                    <div key={item.id} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
                         {item.productImage && (
                           <img 
                             src={item.productImage} 
                             alt={item.productName}
-                            className="w-12 h-12 object-cover rounded"
+                            className="w-10 h-10 object-cover rounded"
                           />
                         )}
                         <div>
                           <p className="font-medium">{item.productName}</p>
-                          <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                          <p className="text-gray-600">Qty: {item.quantity}</p>
                         </div>
                       </div>
                       <p className="font-medium">${(parseFloat(item.price) * item.quantity).toFixed(2)}</p>
@@ -410,12 +407,12 @@ export default function OrderManagement() {
               </div>
 
               {/* Order Summary */}
-              <div className="border rounded-lg p-4 space-y-2">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2 mb-3">
-                  <DollarSign className="h-4 w-4" />
+              <div className="border rounded-lg p-3 space-y-2">
+                <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-2">
+                  <DollarSign className="h-3.5 w-3.5" />
                   Order Summary
                 </h3>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
                     <span className="font-medium">${parseFloat(selectedOrder.subtotal).toFixed(2)}</span>

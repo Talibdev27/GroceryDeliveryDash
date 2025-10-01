@@ -216,30 +216,30 @@ export default function AdminDashboard() {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-56 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:flex-shrink-0 ${
+      <div className={`fixed inset-y-0 left-0 z-50 w-52 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:flex-shrink-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
-        <div className="flex items-center justify-between h-14 px-3 border-b border-gray-200">
+        <div className="flex items-center justify-between h-12 px-3 border-b border-gray-200">
           <div className="flex items-center space-x-2">
-            <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
-              <LayoutDashboard className="h-4 w-4 text-white" />
+            <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
+              <LayoutDashboard className="h-3.5 w-3.5 text-white" />
             </div>
-            <span className="text-lg font-bold text-gray-900">Admin Panel</span>
+            <span className="text-base font-bold text-gray-900">Admin</span>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="lg:hidden h-8 w-8 p-0"
+            className="lg:hidden h-7 w-7 p-0"
             onClick={() => setSidebarOpen(false)}
           >
-            <X className="h-4 w-4" />
+            <X className="h-3.5 w-3.5" />
           </Button>
         </div>
 
         {/* User info */}
-        <div className="px-3 py-2 border-b border-gray-200">
+        <div className="px-2 py-2 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center space-x-2">
-            <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center">
+            <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
               <span className="text-white font-medium text-xs">
                 {user?.firstName?.[0]}{user?.lastName?.[0]}
               </span>
@@ -248,8 +248,7 @@ export default function AdminDashboard() {
               <p className="text-xs font-medium text-gray-900 truncate">
                 {user?.firstName} {user?.lastName}
               </p>
-              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-              <Badge variant="secondary" className="text-xs mt-0.5 h-4">
+              <Badge variant="secondary" className="text-[10px] mt-0.5 h-4 px-1">
                 {getRoleDisplayName(user?.role || "customer")}
               </Badge>
             </div>
@@ -257,7 +256,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-2 space-y-1">
+        <nav className="flex-1 px-2 py-2 space-y-0.5">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -267,21 +266,14 @@ export default function AdminDashboard() {
                   setActiveSection(item.id);
                   setSidebarOpen(false);
                 }}
-                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition-all duration-200 ${
+                className={`w-full flex items-center space-x-2.5 px-2.5 py-2 rounded text-left transition-colors ${
                   activeSection === item.id
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-gray-700 hover:bg-gray-100 hover:shadow-sm'
+                    ? 'bg-primary text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
                 <Icon className="h-4 w-4 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{item.label}</p>
-                  <p className={`text-xs truncate ${
-                    activeSection === item.id ? 'text-white/80' : 'text-gray-500'
-                  }`}>
-                    {item.description}
-                  </p>
-                </div>
+                <span className="text-sm font-medium truncate">{item.label}</span>
               </button>
             );
           })}
@@ -289,47 +281,42 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-56 flex-1">
+      <div className="lg:pl-52 flex-1">
         {/* Top bar */}
         <div className="sticky top-0 z-30 bg-white shadow-sm border-b border-gray-200">
-          <div className="flex items-center justify-between h-14 px-6">
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-between h-12 px-4">
+            <div className="flex items-center space-x-3">
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden"
+                className="lg:hidden h-8 w-8 p-0"
                 onClick={() => setSidebarOpen(true)}
               >
-                <Menu className="h-5 w-5" />
+                <Menu className="h-4 w-4" />
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {navigationItems.find(item => item.id === activeSection)?.label || "Dashboard"}
-                </h1>
-                <p className="text-sm text-gray-500">
-                  {navigationItems.find(item => item.id === activeSection)?.description || "Manage your dashboard"}
-                </p>
-              </div>
+              <h1 className="text-lg font-bold text-gray-900">
+                {navigationItems.find(item => item.id === activeSection)?.label || "Dashboard"}
+              </h1>
             </div>
 
             {/* Quick stats for overview */}
             {activeSection === "overview" && (
-              <div className="hidden md:flex items-center space-x-6">
+              <div className="hidden md:flex items-center space-x-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-gray-900">{totalProducts}</p>
-                  <p className="text-xs text-gray-500">Products</p>
+                  <p className="text-lg font-bold text-gray-900">{totalProducts}</p>
+                  <p className="text-[10px] text-gray-500">Products</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-green-600">{inStockProducts}</p>
-                  <p className="text-xs text-gray-500">In Stock</p>
+                  <p className="text-lg font-bold text-green-600">{inStockProducts}</p>
+                  <p className="text-[10px] text-gray-500">In Stock</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-red-600">{outOfStockProducts}</p>
-                  <p className="text-xs text-gray-500">Out of Stock</p>
+                  <p className="text-lg font-bold text-red-600">{outOfStockProducts}</p>
+                  <p className="text-[10px] text-gray-500">Out of Stock</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-600">{totalCategories}</p>
-                  <p className="text-xs text-gray-500">Categories</p>
+                  <p className="text-lg font-bold text-blue-600">{totalCategories}</p>
+                  <p className="text-[10px] text-gray-500">Categories</p>
                 </div>
               </div>
             )}
@@ -337,10 +324,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Page content */}
-        <main className="p-4 lg:p-6 min-h-screen">
-          <div className="max-w-7xl mx-auto">
-            {renderActiveSection()}
-          </div>
+        <main className="p-3 lg:p-4 min-h-screen">
+          {renderActiveSection()}
         </main>
       </div>
     </div>
