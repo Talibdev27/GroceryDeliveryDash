@@ -649,7 +649,7 @@ const CheckoutPage = () => {
                                     </div>
                                   </label>
                                 </div>
-
+                                
                                 {/* Payme - Mobile Payment */}
                                 <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "payme" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
                                   <RadioGroupItem value="payme" id="payme" className="sr-only" />
@@ -668,7 +668,7 @@ const CheckoutPage = () => {
                                     </div>
                                   </label>
                                 </div>
-
+                                
                                 {/* International Cards */}
                                 <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "international" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
                                   <RadioGroupItem value="international" id="international" className="sr-only" />

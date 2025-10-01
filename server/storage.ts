@@ -25,7 +25,7 @@ import {
   type UserRole,
   type Permission
 } from "@shared/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 // Load environment variables
@@ -428,6 +428,28 @@ export class DatabaseStorage implements IStorage {
     await db.update(users)
       .set({ lastLoginAt: new Date() })
       .where(eq(users.id, id));
+  }
+
+  async decrementProductStock(productId: number, quantity: number): Promise<void> {
+    // First get the current stock quantity
+    const product = await db.select({ stockQuantity: products.stockQuantity })
+      .from(products)
+      .where(eq(products.id, productId))
+      .limit(1);
+    
+    if (product.length === 0) {
+      throw new Error("Product not found");
+    }
+    
+    const newStockQuantity = product[0].stockQuantity - quantity;
+    
+    // Update the product with new stock quantity
+    await db.update(products)
+      .set({ 
+        stockQuantity: newStockQuantity,
+        inStock: newStockQuantity > 0
+      })
+      .where(eq(products.id, productId));
   }
 }
 

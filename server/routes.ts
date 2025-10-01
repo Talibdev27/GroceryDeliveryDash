@@ -4,6 +4,14 @@ import { storage, verifyPassword } from "./storage";
 import { insertUserSchema, insertAddressSchema } from "@shared/schema";
 import { ZodError } from "zod";
 
+// Extend the session interface to include our custom properties
+declare module "express-session" {
+  interface SessionData {
+    userId?: number;
+    username?: string;
+  }
+}
+
 // Middleware to check if user is authenticated
 const authenticateUser = (req: Request, res: Response, next: any) => {
   if (req.session?.userId) {
@@ -120,7 +128,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/me", authenticateUser, async (req: Request, res: Response) => {
     try {
-      const user = await storage.getUser(req.session.userId);
+      const user = await storage.getUser(req.session.userId!);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
@@ -137,7 +145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User profile routes
   app.get("/api/user/profile", authenticateUser, async (req: Request, res: Response) => {
     try {
-      const user = await storage.getUser(req.session.userId);
+      const user = await storage.getUser(req.session.userId!);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
@@ -154,7 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { firstName, lastName, phone } = req.body;
       
-      const updatedUser = await storage.updateUser(req.session.userId, {
+      const updatedUser = await storage.updateUser(req.session.userId!, {
         firstName,
         lastName,
         phone,
@@ -175,7 +183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Address routes
   app.get("/api/user/addresses", authenticateUser, async (req: Request, res: Response) => {
     try {
-      const addresses = await storage.getUserAddresses(req.session.userId);
+      const addresses = await storage.getUserAddresses(req.session.userId!);
       res.json({ addresses });
     } catch (error) {
       console.error("Get addresses error:", error);
@@ -187,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const address = await storage.createAddress({
         ...req.body,
-        userId: req.session.userId,
+        userId: req.session.userId!,
       });
       res.status(201).json({ address });
     } catch (error) {
@@ -279,23 +287,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/products", authenticateUser, async (req: Request, res: Response) => {
     try {
       const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
-      const priceNum = Number(price);
-      const salePriceNum = salePrice === undefined || salePrice === null || salePrice === '' ? null : Number(salePrice);
-      const categoryIdNum = Number(categoryId);
-      const stockQtyNum = Number(stockQuantity ?? 0);
-      const unitStr = typeof unit === 'string' && unit.trim().length > 0 ? unit.trim() : 'pcs';
       
       const product = await storage.createProduct({
         name,
         description,
-        price: priceNum,
-        salePrice: salePriceNum,
-        categoryId: categoryIdNum,
-        stockQuantity: stockQtyNum,
+        price: parseFloat(price),
+        salePrice: salePrice ? parseFloat(salePrice) : null,
+        categoryId: parseInt(categoryId),
+        stockQuantity: parseInt(stockQuantity),
         featured: Boolean(featured),
         sale: Boolean(sale),
         image,
-        unit: unitStr,
+        unit: unit || "шт" // Default unit if not provided
       });
       
       res.status(201).json({ product });
@@ -309,23 +312,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const productId = parseInt(req.params.id);
       const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
-      const priceNum = Number(price);
-      const salePriceNum = salePrice === undefined || salePrice === null || salePrice === '' ? null : Number(salePrice);
-      const categoryIdNum = Number(categoryId);
-      const stockQtyNum = Number(stockQuantity ?? 0);
-      const unitStr = typeof unit === 'string' && unit.trim().length > 0 ? unit.trim() : 'pcs';
       
       const product = await storage.updateProduct(productId, {
         name,
         description,
-        price: priceNum,
-        salePrice: salePriceNum,
-        categoryId: categoryIdNum,
-        stockQuantity: stockQtyNum,
+        price: parseFloat(price),
+        salePrice: salePrice ? parseFloat(salePrice) : null,
+        categoryId: parseInt(categoryId),
+        stockQuantity: parseInt(stockQuantity),
         featured: Boolean(featured),
         sale: Boolean(sale),
         image,
-        unit: unitStr,
+        unit: unit || "шт" // Default unit if not provided
       });
       
       if (!product) {
@@ -358,7 +356,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Order routes
   app.get("/api/orders", authenticateUser, async (req: Request, res: Response) => {
     try {
-      const orders = await storage.getUserOrders(req.session.userId);
+      const orders = await storage.getUserOrders(req.session.userId!);
       res.json({ orders });
     } catch (error) {
       console.error("Get orders error:", error);
@@ -376,7 +374,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Check if user owns this order
-      if (order.userId !== req.session.userId) {
+      if (order.userId !== req.session.userId!) {
         return res.status(403).json({ error: "Access denied" });
       }
 
@@ -398,7 +396,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const total = subtotal + deliveryFee + tax;
 
       const order = await storage.createOrder({
-        userId: req.session.userId,
+        userId: req.session.userId!,
         status: "pending",
         total: total.toString(),
         subtotal: subtotal.toString(),
@@ -409,6 +407,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         paymentMethod,
         paymentStatus: "pending",
       });
+
+      // Decrement stock quantity for each item in the order
+      for (const item of items) {
+        await storage.decrementProductStock(item.productId, item.quantity);
+      }
 
       res.status(201).json({ order });
     } catch (error) {

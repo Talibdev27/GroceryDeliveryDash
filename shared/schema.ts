@@ -62,6 +62,7 @@ export const products = pgTable("products", {
   unit: text("unit").notNull(),
   unitEs: text("unit_es"),
   unitAr: text("unit_ar"),
+  stockQuantity: integer("stock_quantity").notNull().default(0),
   inStock: boolean("in_stock").default(true),
   featured: boolean("featured").default(false),
   sale: boolean("sale").default(false),
