@@ -148,16 +148,21 @@ const CheckoutPage = () => {
     },
   });
 
-  // Auto-advance to payment step if user has filled out payment details
-  useEffect(() => {
-    const paymentMethod = form.watch("paymentMethod");
-    if (paymentMethod && paymentStep !== "payment") {
-      console.log("🛒 CHECKOUT: Auto-advancing to payment step");
-      setPaymentStep("payment");
-    }
-  }, [form.watch("paymentMethod"), paymentStep]);
+  // Auto-advance removed - user must manually progress through steps
   
-  const onSubmit = (data: FormValues) => {
+  const onError = (errors: any) => {
+    console.log("🛒 CHECKOUT: Form validation errors:", errors);
+    // Navigate to the first step with errors
+    if (errors.fullName || errors.email || errors.phone || errors.address || errors.city || errors.state || errors.zipCode) {
+      console.log("🛒 CHECKOUT: Address errors found, navigating to address step");
+      setPaymentStep("address");
+    } else if (errors.deliveryTime) {
+      console.log("🛒 CHECKOUT: Delivery errors found, navigating to delivery step");
+      setPaymentStep("delivery");
+    }
+  };
+  
+  const onSubmitActual = (data: FormValues) => {
     console.log("🚀 CHECKOUT: Form submitted!");
     console.log("🚀 CHECKOUT: Form data:", data);
     console.log("🚀 CHECKOUT: Form errors:", form.formState.errors);
@@ -176,29 +181,35 @@ const CheckoutPage = () => {
     }, 5000);
   };
   
+  // Wrapper to ensure we only submit on the payment step, otherwise advance
+  const onSubmit = (data: FormValues) => {
+    if (paymentStep !== "payment") {
+      console.log("🛒 CHECKOUT: Form valid but not on payment step, advancing");
+      handleContinue(paymentStep);
+      return;
+    }
+    onSubmitActual(data);
+  };
+  
   // Determine the next step based on the current step
-  const handleContinue = (step: "address" | "delivery" | "payment") => {
+  const handleContinue = async (step: "address" | "delivery" | "payment") => {
     switch (step) {
       case "address":
-        form.trigger(["fullName", "email", "phone", "address", "city", "state", "zipCode"]);
-        if (
-          form.formState.errors.fullName || 
-          form.formState.errors.email || 
-          form.formState.errors.phone || 
-          form.formState.errors.address || 
-          form.formState.errors.city || 
-          form.formState.errors.state || 
-          form.formState.errors.zipCode
-        ) {
+        const addressValid = await form.trigger(["fullName", "email", "phone", "address", "city", "state", "zipCode"]);
+        if (!addressValid) {
           return;
         }
         setPaymentStep("delivery");
         break;
       case "delivery":
+        const deliveryValid = await form.trigger(["deliveryTime"]);
+        if (!deliveryValid) {
+          return;
+        }
         setPaymentStep("payment");
         break;
       case "payment":
-        form.handleSubmit(onSubmit)();
+        form.handleSubmit(onSubmitActual, onError)();
         break;
     }
   };
@@ -276,7 +287,7 @@ const CheckoutPage = () => {
                 </div>
                 
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-6">
+                  <form onSubmit={form.handleSubmit(onSubmit, onError)} className="p-6 space-y-6">
                     {/* Address Information */}
                     <div className={paymentStep !== "address" ? "hidden" : ""}>
                       <h2 className="text-lg font-medium mb-4 flex items-center">
@@ -829,11 +840,34 @@ const CheckoutPage = () => {
                         <Button 
                           type="submit" 
                           className="w-full"
-                          onClick={() => {
+                          onClick={async (e) => {
+                            e.preventDefault();
                             console.log("🛒 CHECKOUT: Place Order button clicked!");
-                            console.log("🛒 CHECKOUT: Form state:", form.formState);
                             console.log("🛒 CHECKOUT: Form values:", form.getValues());
                             console.log("🛒 CHECKOUT: Form errors:", form.formState.errors);
+                            
+                            // Trigger validation on all fields
+                            const isValid = await form.trigger();
+                            console.log("🛒 CHECKOUT: Form is valid:", isValid);
+                            
+                            if (!isValid) {
+                              // Check which step has errors and navigate to it
+                              const errors = form.formState.errors;
+                              if (errors.fullName || errors.email || errors.phone || errors.address || errors.city || errors.state || errors.zipCode) {
+                                console.log("🛒 CHECKOUT: Address errors found, navigating to address step");
+                                setPaymentStep("address");
+                                return;
+                              }
+                              if (errors.deliveryTime) {
+                                console.log("🛒 CHECKOUT: Delivery errors found, navigating to delivery step");
+                                setPaymentStep("delivery");
+                                return;
+                              }
+                              return;
+                            }
+                            
+                            // If valid, submit the form directly (we're on payment step)
+                            onSubmitActual(form.getValues());
                           }}
                         >
                           {t("checkout.placeOrder")}
@@ -864,20 +898,6 @@ const CheckoutPage = () => {
                         <Button type="button" onClick={() => handleContinue(paymentStep)}>
                           {paymentStep === "address" ? t("checkout.continueToDelivery") : t("checkout.continueToPayment")}
                           <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      )}
-                      
-                      {/* Debug: Direct payment button */}
-                      {paymentStep !== "payment" && (
-                        <Button 
-                          type="button" 
-                          variant="secondary" 
-                          onClick={() => {
-                            console.log("🛒 CHECKOUT: Direct payment button clicked");
-                            setPaymentStep("payment");
-                          }}
-                        >
-                          🚀 Go to Payment (Debug)
                         </Button>
                       )}
                     </div>
