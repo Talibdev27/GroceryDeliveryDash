@@ -162,23 +162,72 @@ const CheckoutPage = () => {
     }
   };
   
-  const onSubmitActual = (data: FormValues) => {
+  const onSubmitActual = async (data: FormValues) => {
     console.log("🚀 CHECKOUT: Form submitted!");
     console.log("🚀 CHECKOUT: Form data:", data);
-    console.log("🚀 CHECKOUT: Form errors:", form.formState.errors);
-    console.log("🚀 CHECKOUT: Form is valid:", form.formState.isValid);
     
-    // In a real app, this would send the order to an API
-    console.log("Order submitted:", data);
-    
-    // Show order confirmation
-    setOrderPlaced(true);
-    
-    // Clear cart after successful order
-    setTimeout(() => {
-      clearCart();
-      setLocation("/");
-    }, 5000);
+    try {
+      // Save address if requested and create order
+      let addressId = selectedAddressId;
+      
+      // If save address is checked or no address is selected, create a new one
+      if (data.saveAddress || !addressId) {
+        const addressResponse = await userApi.createAddress({
+          title: "Home",
+          fullName: data.fullName,
+          address: data.address,
+          city: data.city,
+          state: data.state,
+          postalCode: data.zipCode,
+          country: "Uzbekistan",
+          phone: data.phone,
+          isDefault: savedAddresses.length === 0, // Make first address default
+        });
+        addressId = addressResponse.address.id;
+      }
+      
+      // Prepare order items from cart
+      const orderItems = cartItems.map(item => ({
+        productId: item.id,
+        quantity: item.quantity || 1,
+        price: item.price,
+        salePrice: item.salePrice,
+        sale: item.sale || false,
+      }));
+      
+      // Create the order
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          items: orderItems,
+          addressId,
+          paymentMethod: data.paymentMethod,
+        }),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to create order");
+      }
+      
+      const result = await response.json();
+      console.log("✅ Order created:", result);
+      
+      // Show order confirmation
+      setOrderPlaced(true);
+      
+      // Clear cart after successful order
+      setTimeout(() => {
+        clearCart();
+        setLocation("/");
+      }, 5000);
+    } catch (error) {
+      console.error("❌ Order creation failed:", error);
+      alert("Failed to place order. Please try again.");
+    }
   };
   
   // Wrapper to ensure we only submit on the payment step, otherwise advance
