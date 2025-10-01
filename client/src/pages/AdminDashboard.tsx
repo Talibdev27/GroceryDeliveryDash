@@ -181,8 +181,27 @@ export default function AdminDashboard() {
       case "settings":
         return <AdminSettings />;
       default:
-        // Fallback to first allowed section
-        return navigationItems.length > 0 ? renderActiveSection() : null;
+        // Fallback to first allowed section component (non-recursive)
+        if (navigationItems.length > 0) {
+          const firstSection = navigationItems[0].id;
+          switch (firstSection) {
+            case "overview":
+              return <AdminOverview />;
+            case "products":
+              return <ProductManager />;
+            case "users":
+              return <UserManagement />;
+            case "orders":
+              return <OrderManagement />;
+            case "analytics":
+              return <Analytics />;
+            case "settings":
+              return <AdminSettings />;
+            default:
+              return null;
+          }
+        }
+        return null;
     }
   };
 
