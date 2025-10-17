@@ -406,5 +406,72 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "email": "Email"
+  },
+  "orders": {
+    "title": "Your Orders",
+    "description": "Track and manage your orders",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "preparing": "Preparing",
+      "inTransit": "In Transit",
+      "delivered": "Delivered"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "preparing": "Preparing",
+      "ready": "Ready",
+      "inTransit": "In Transit",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "sections": {
+      "items": "Items",
+      "delivery": "Delivery",
+      "payment": "Payment"
+    },
+    "labels": {
+      "orderedOn": "Ordered on",
+      "orderNumber": "Order",
+      "method": "Method",
+      "status": "Status",
+      "total": "Total",
+      "quantity": "Quantity"
+    },
+    "payment": {
+      "cash": "cash",
+      "card": "card",
+      "pending": "pending",
+      "paid": "paid"
+    },
+    "delivery": {
+      "noAddress": "No address available"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "tryAgain": "Try Again",
+      "startShopping": "Start Shopping"
+    },
+    "empty": {
+      "title": "No Orders Yet",
+      "description": "You haven't placed any orders yet. Start shopping to see your orders here."
+    },
+    "loading": {
+      "message": "Loading your orders..."
+    },
+    "error": {
+      "title": "Error Loading Orders",
+      "message": "Failed to load orders. Please try again."
+    },
+    "details": {
+      "orderItems": "Order Items",
+      "orderSummary": "Order Summary",
+      "subtotal": "Subtotal",
+      "deliveryFee": "Delivery Fee",
+      "tax": "Tax",
+      "discount": "Discount",
+      "total": "Total"
+    }
   }
 }

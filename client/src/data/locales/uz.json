@@ -406,5 +406,72 @@
     "firstName": "Ism",
     "lastName": "Familiya",
     "email": "Elektron pochta"
+  },
+  "orders": {
+    "title": "Sizning buyurtmalaringiz",
+    "description": "Buyurtmalaringizni kuzating va boshqaring",
+    "tabs": {
+      "all": "Hammasi",
+      "pending": "Kutilmoqda",
+      "preparing": "Tayyorlanmoqda",
+      "inTransit": "Yo'lda",
+      "delivered": "Yetkazilgan"
+    },
+    "status": {
+      "pending": "Kutilmoqda",
+      "confirmed": "Tasdiqlangan",
+      "preparing": "Tayyorlanmoqda",
+      "ready": "Tayyor",
+      "inTransit": "Yo'lda",
+      "delivered": "Yetkazilgan",
+      "cancelled": "Bekor qilingan"
+    },
+    "sections": {
+      "items": "Mahsulotlar",
+      "delivery": "Yetkazib berish",
+      "payment": "To'lov"
+    },
+    "labels": {
+      "orderedOn": "Buyurtma sanasi",
+      "orderNumber": "Buyurtma",
+      "method": "Usul",
+      "status": "Holat",
+      "total": "Jami",
+      "quantity": "Miqdor"
+    },
+    "payment": {
+      "cash": "naqd pul",
+      "card": "karta",
+      "pending": "kutilmoqda",
+      "paid": "to'langan"
+    },
+    "delivery": {
+      "noAddress": "Manzil mavjud emas"
+    },
+    "actions": {
+      "viewDetails": "Tafsilotlarni ko'rish",
+      "tryAgain": "Qayta urinish",
+      "startShopping": "Xaridni boshlash"
+    },
+    "empty": {
+      "title": "Hali buyurtmalar yo'q",
+      "description": "Siz hali buyurtma bermagansiz. Buyurtmalaringizni ko'rish uchun xarid qilishni boshlang."
+    },
+    "loading": {
+      "message": "Buyurtmalaringiz yuklanmoqda..."
+    },
+    "error": {
+      "title": "Buyurtmalarni yuklashda xatolik",
+      "message": "Buyurtmalarni yuklab bo'lmadi. Iltimos, qayta urinib ko'ring."
+    },
+    "details": {
+      "orderItems": "Buyurtma mahsulotlari",
+      "orderSummary": "Buyurtma xulosasi",
+      "subtotal": "Oraliq jami",
+      "deliveryFee": "Yetkazib berish to'lovi",
+      "tax": "Soliq",
+      "discount": "Chegirma",
+      "total": "Jami"
+    }
   }
 }

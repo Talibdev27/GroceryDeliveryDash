@@ -121,14 +121,11 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         const testTranslation = i18n.t('hero.title');
         console.log("LanguageContext: Test translation:", testTranslation);
         
-        // Force a re-render
+        // Force a re-render - React will handle the language change reactively
         setForceUpdate(prev => prev + 1);
         
-        // Force a page reload to ensure all translations are applied
-        console.log("LanguageContext: Forcing page reload to apply translations");
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        // REMOVED: window.location.reload() - let React handle the language change
+        console.log("LanguageContext: Language change complete, React will handle re-rendering");
       }).catch((error) => {
         console.error("LanguageContext: Error changing language", error);
       });
