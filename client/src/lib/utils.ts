@@ -5,10 +5,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amount: number, currency: string = "USD", locale: string = "en-US") {
-  return new Intl.NumberFormat(locale, {
+export function formatCurrency(amount: number, currency: string = "UZS", locale: string = "uz-UZ") {
+  if (currency === "UZS") {
+    // Format for Uzbek Sum (so'm)
+    return new Intl.NumberFormat("uz-UZ", {
+      style: "currency",
+      currency: "UZS",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
+  
+  // Default to USD for other currencies
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency,
+    currency: "USD",
     minimumFractionDigits: 2,
   }).format(amount);
 }

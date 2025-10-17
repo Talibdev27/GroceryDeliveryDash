@@ -23,7 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
-import { userApi } from "@/hooks/use-api";
+import { userApi, orderApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
 import { 
   User, 
@@ -107,7 +107,7 @@ export default function Account() {
     try {
       setOrdersLoading(true);
       setOrdersError(null);
-      const data = await userApi.getOrders();
+      const data = await orderApi.getOrders();
       setOrders(data.orders || []);
     } catch (error) {
       console.error("Failed to fetch orders:", error);

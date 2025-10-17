@@ -72,10 +72,12 @@ export default function OrderManagement() {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
-      return await apiRequest(`/api/admin/orders/${orderId}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
+      const response = await apiRequest(
+        "PATCH",
+        `/api/admin/orders/${orderId}/status`,
+        { status }
+      );
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
@@ -85,10 +87,16 @@ export default function OrderManagement() {
       });
       setSelectedOrder(null);
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("❌ Order status update error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response,
+        status: error.status
+      });
       toast({
         title: "Error",
-        description: "Failed to update order status",
+        description: error.message || "Failed to update order status",
         variant: "destructive",
       });
     },

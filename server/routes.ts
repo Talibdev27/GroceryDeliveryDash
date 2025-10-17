@@ -424,27 +424,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/admin/orders/:id/status", authenticateUser, requireRole(["super_admin", "admin"]), async (req: Request, res: Response) => {
     try {
+      console.log("📝 Order status update request:", {
+        orderId: req.params.id,
+        requestBody: req.body,
+        userId: req.session?.userId,
+        userRole: req.session?.user?.role
+      });
+      
       const orderId = parseInt(req.params.id);
       const { status } = req.body;
       
       if (!status) {
+        console.error("❌ Status is missing from request body");
         return res.status(400).json({ error: "Status is required" });
       }
       
       const validStatuses = ["pending", "confirmed", "preparing", "ready", "in_transit", "delivered", "cancelled"];
       if (!validStatuses.includes(status)) {
+        console.error("❌ Invalid status:", status);
         return res.status(400).json({ error: "Invalid status" });
       }
       
+      console.log("✅ Updating order", orderId, "to status:", status);
       const order = await storage.updateOrderStatus(orderId, status);
       
       if (!order) {
+        console.error("❌ Order not found:", orderId);
         return res.status(404).json({ error: "Order not found" });
       }
       
+      console.log("✅ Order status updated successfully:", { orderId, newStatus: status });
       res.json({ order });
     } catch (error) {
-      console.error("Update order status error:", error);
+      console.error("❌ Update order status error:", error);
+      console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
       res.status(500).json({ error: "Failed to update order status" });
     }
   });

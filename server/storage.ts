@@ -197,7 +197,58 @@ export class DatabaseStorage implements IStorage {
 
   // Order operations
   async getUserOrders(userId: number): Promise<Order[]> {
-    return await db.select().from(orders).where(eq(orders.userId, userId));
+    console.log("💾 Fetching user orders with items and address for userId:", userId);
+    
+    // Get all orders for the user
+    const userOrders = await db.select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(sql`${orders.createdAt} DESC`);
+    
+    console.log("💾 Found orders:", userOrders.length);
+    
+    // For each order, fetch its items with product details and address
+    const ordersWithDetails = await Promise.all(
+      userOrders.map(async (order) => {
+        console.log("💾 Processing order:", order.id);
+        
+        // Fetch order items with product details
+        const items = await db.select({
+          id: orderItems.id,
+          orderId: orderItems.orderId,
+          productId: orderItems.productId,
+          quantity: orderItems.quantity,
+          price: orderItems.price,
+          productName: products.name,
+          productImage: products.image,
+        })
+        .from(orderItems)
+        .leftJoin(products, eq(orderItems.productId, products.id))
+        .where(eq(orderItems.orderId, order.id));
+        
+        console.log("💾 Order", order.id, "items:", items.length);
+        
+        // Fetch address if addressId exists
+        let addressData = null;
+        if (order.addressId) {
+          const addressResult = await db.select()
+            .from(addresses)
+            .where(eq(addresses.id, order.addressId))
+            .limit(1);
+          addressData = addressResult[0] || null;
+          console.log("💾 Order", order.id, "address:", addressData ? "found" : "not found");
+        }
+        
+        return {
+          ...order,
+          items: items || [],
+          address: addressData
+        };
+      })
+    );
+    
+    console.log("💾 Returning orders with details:", ordersWithDetails.length);
+    return ordersWithDetails;
   }
 
   async getOrder(id: number): Promise<Order | undefined> {
@@ -211,16 +262,73 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateOrderStatus(id: number, status: string): Promise<Order | undefined> {
-    const result = await db.update(orders)
-      .set({ status })
-      .where(eq(orders.id, id))
-      .returning();
-    
-    return result[0];
+    console.log("💾 Updating order status in database:", { id, status });
+    try {
+      const result = await db.update(orders)
+        .set({ status })
+        .where(eq(orders.id, id))
+        .returning();
+      
+      console.log("💾 Database update result:", result[0] ? "Success" : "No rows updated");
+      return result[0];
+    } catch (error) {
+      console.error("💾 Database update error:", error);
+      throw error;
+    }
   }
 
   async getAllOrders(): Promise<Order[]> {
-    return await db.select().from(orders).orderBy(sql`${orders.createdAt} DESC`);
+    console.log("💾 Fetching all orders with items and address for admin");
+    
+    // Get all orders
+    const allOrders = await db.select()
+      .from(orders)
+      .orderBy(sql`${orders.createdAt} DESC`);
+    
+    console.log("💾 Found orders:", allOrders.length);
+    
+    // For each order, fetch its items with product details and address
+    const ordersWithDetails = await Promise.all(
+      allOrders.map(async (order) => {
+        console.log("💾 Processing admin order:", order.id);
+        
+        // Fetch order items with product details
+        const items = await db.select({
+          id: orderItems.id,
+          orderId: orderItems.orderId,
+          productId: orderItems.productId,
+          quantity: orderItems.quantity,
+          price: orderItems.price,
+          productName: products.name,
+          productImage: products.image,
+        })
+        .from(orderItems)
+        .leftJoin(products, eq(orderItems.productId, products.id))
+        .where(eq(orderItems.orderId, order.id));
+        
+        console.log("💾 Admin order", order.id, "items:", items.length);
+        
+        // Fetch address if addressId exists
+        let addressData = null;
+        if (order.addressId) {
+          const addressResult = await db.select()
+            .from(addresses)
+            .where(eq(addresses.id, order.addressId))
+            .limit(1);
+          addressData = addressResult[0] || null;
+          console.log("💾 Admin order", order.id, "address:", addressData ? "found" : "not found");
+        }
+        
+        return {
+          ...order,
+          items: items || [],
+          address: addressData
+        };
+      })
+    );
+    
+    console.log("💾 Returning admin orders with details:", ordersWithDetails.length);
+    return ordersWithDetails;
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {

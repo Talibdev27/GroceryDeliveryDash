@@ -61,20 +61,34 @@ export const useFeaturedProducts = () => {
 
 // API utility functions
 export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  });
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      // Try to get error details from response
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      console.error('API Request failed:', {
+        endpoint,
+        status: response.status,
+        statusText: response.statusText,
+        errorData
+      });
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('API Request exception:', { endpoint, error });
+    throw error;
   }
-
-  return response.json();
 };
 
 // Authentication API functions

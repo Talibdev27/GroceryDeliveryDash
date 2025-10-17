@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { Link } from "wouter";
 import { useAuth } from "@/context/AuthContext";
-import { userApi } from "@/hooks/use-api";
+import { orderApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
 import { 
   Package, 
@@ -129,7 +129,7 @@ export default function Orders() {
     try {
       setLoading(true);
       setError(null);
-      const data = await userApi.getOrders();
+      const data = await orderApi.getOrders();
       setOrders(data.orders || []);
     } catch (err) {
       console.error("Failed to fetch orders:", err);
@@ -250,10 +250,10 @@ export default function Orders() {
                             <div>
                               <h4 className="font-medium mb-3 flex items-center">
                                 <Package className="h-4 w-4 mr-2" />
-                                Items ({order.items.length})
+                                Items ({order.items?.length || 0})
                               </h4>
                               <div className="space-y-2">
-                                {order.items.map((item) => (
+                                {(order.items || []).map((item) => (
                                   <div key={item.id} className="flex items-center space-x-3">
                                     {item.productImage && (
                                       <img 
@@ -360,7 +360,7 @@ export default function Orders() {
                 <div>
                   <h3 className="font-medium mb-3">Order Items</h3>
                   <div className="space-y-3">
-                    {selectedOrder.items.map((item) => (
+                    {(selectedOrder.items || []).map((item) => (
                       <div key={item.id} className="flex items-center space-x-3 p-3 bg-neutral-50 rounded">
                         {item.productImage && (
                           <img 
