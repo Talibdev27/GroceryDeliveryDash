@@ -23,6 +23,8 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
+import { userApi } from "@/hooks/use-api";
+import { formatCurrency } from "@/lib/utils";
 import { 
   User, 
   Package, 
@@ -31,8 +33,39 @@ import {
   Heart, 
   Bell, 
   Settings, 
-  LogOut 
+  LogOut,
+  Plus,
+  Edit,
+  Trash2,
+  Eye
 } from "lucide-react";
+
+interface Order {
+  id: number;
+  status: string;
+  total: string;
+  createdAt: string;
+  items: Array<{
+    id: number;
+    productId: number;
+    quantity: number;
+    price: string;
+    productName?: string;
+    productImage?: string;
+  }>;
+}
+
+interface Address {
+  id: number;
+  title: string;
+  fullName: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault: boolean;
+}
 
 export default function Account() {
   const { t } = useTranslation();
@@ -41,12 +74,62 @@ export default function Account() {
   const { user, logout, loading } = useAuth();
   const [, setLocation] = useLocation();
   
+  // State for real data
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [addressesLoading, setAddressesLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState<string | null>(null);
+  const [addressesError, setAddressesError] = useState<string | null>(null);
+  
   // Redirect to auth page if not authenticated
   useEffect(() => {
     if (!loading && !user) {
       setLocation("/auth");
     }
   }, [loading, user, setLocation]);
+
+  // Fetch orders when user is available
+  useEffect(() => {
+    if (user && activeTab === "orders") {
+      fetchOrders();
+    }
+  }, [user, activeTab]);
+
+  // Fetch addresses when user is available
+  useEffect(() => {
+    if (user && activeTab === "addresses") {
+      fetchAddresses();
+    }
+  }, [user, activeTab]);
+
+  const fetchOrders = async () => {
+    try {
+      setOrdersLoading(true);
+      setOrdersError(null);
+      const data = await userApi.getOrders();
+      setOrders(data.orders || []);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+      setOrdersError("Failed to load orders. Please try again.");
+    } finally {
+      setOrdersLoading(false);
+    }
+  };
+
+  const fetchAddresses = async () => {
+    try {
+      setAddressesLoading(true);
+      setAddressesError(null);
+      const data = await userApi.getAddresses();
+      setAddresses(data.addresses || []);
+    } catch (error) {
+      console.error("Failed to fetch addresses:", error);
+      setAddressesError("Failed to load addresses. Please try again.");
+    } finally {
+      setAddressesLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -67,52 +150,53 @@ export default function Account() {
     return null; // Will redirect to auth page
   }
   
-  // Mock orders
-  const orders = [
-    {
-      id: "ORD12345",
-      date: "2023-06-15",
-      status: "delivered",
-      total: 35.97,
-      items: 4
-    },
-    {
-      id: "ORD12346",
-      date: "2023-06-01",
-      status: "delivered",
-      total: 28.45,
-      items: 3
-    },
-    {
-      id: "ORD12347",
-      date: "2023-05-20",
-      status: "delivered",
-      total: 42.10,
-      items: 5
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "confirmed":
+      case "preparing":
+        return "bg-blue-100 text-blue-800";
+      case "ready":
+      case "in_transit":
+        return "bg-purple-100 text-purple-800";
+      case "delivered":
+        return "bg-green-100 text-green-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
-  ];
-  
-  // Mock addresses
-  const addresses = [
-    {
-      id: "addr1",
-      name: "Home",
-      address: "123 Main Street, Apt 4B",
-      city: "Brooklyn",
-      state: "NY",
-      zipCode: "11201",
-      isDefault: true
-    },
-    {
-      id: "addr2",
-      name: "Work",
-      address: "456 Office Boulevard",
-      city: "Manhattan",
-      state: "NY",
-      zipCode: "10001",
-      isDefault: false
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Pending";
+      case "confirmed":
+        return "Confirmed";
+      case "preparing":
+        return "Preparing";
+      case "ready":
+        return "Ready";
+      case "in_transit":
+        return "In Transit";
+      case "delivered":
+        return "Delivered";
+      case "cancelled":
+        return "Cancelled";
+      default:
+        return status;
     }
-  ];
+  };
   
   // Mock payment methods
   const paymentMethods = [
@@ -355,35 +439,52 @@ export default function Account() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {orders.length > 0 ? (
+                      {ordersLoading ? (
+                        <div className="text-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                          <p className="text-neutral-500">Loading orders...</p>
+                        </div>
+                      ) : ordersError ? (
+                        <div className="text-center py-12">
+                          <Package className="h-12 w-12 text-red-300 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium mb-1">Error Loading Orders</h3>
+                          <p className="text-neutral-500 mb-6">{ordersError}</p>
+                          <Button onClick={fetchOrders}>Try Again</Button>
+                        </div>
+                      ) : orders.length > 0 ? (
                         <div className="space-y-4">
                           {orders.map((order) => (
                             <div key={order.id} className="border rounded-lg overflow-hidden">
                               <div className="bg-neutral-50 p-4 flex flex-col md:flex-row md:items-center justify-between border-b">
                                 <div>
-                                  <div className="font-medium text-lg">{t("account.orderNumber")}: {order.id}</div>
-                                  <div className="text-sm text-neutral-500">{formatOrderDate(order.date)}</div>
+                                  <div className="font-medium text-lg">Order #{order.id}</div>
+                                  <div className="text-sm text-neutral-500">{formatDate(order.createdAt)}</div>
                                 </div>
                                 <div className="mt-2 md:mt-0 flex items-center space-x-4">
-                                  <Badge variant="outline" className={getOrderStatusColor(order.status)}>
-                                    {t(`account.orderStatus.${order.status}`)}
+                                  <Badge className={getStatusColor(order.status)}>
+                                    {getStatusText(order.status)}
                                   </Badge>
-                                  <Button variant="outline" size="sm">
-                                    {t("account.viewDetails")}
-                                  </Button>
+                                  <Link href="/orders">
+                                    <Button variant="outline" size="sm">
+                                      <Eye className="h-4 w-4 mr-2" />
+                                      View Details
+                                    </Button>
+                                  </Link>
                                 </div>
                               </div>
                               <div className="p-4">
                                 <div className="flex justify-between text-sm">
-                                  <span>{t("account.items", { count: order.items })}</span>
-                                  <span className="font-medium">{formatCurrency(order.total)}</span>
+                                  <span>{order.items.length} items</span>
+                                  <span className="font-medium">{formatCurrency(parseFloat(order.total))}</span>
                                 </div>
                                 <div className="mt-3 space-x-2">
+                                  <Link href="/orders">
+                                    <Button variant="outline" size="sm">
+                                      Track Order
+                                    </Button>
+                                  </Link>
                                   <Button variant="outline" size="sm">
-                                    {t("account.trackOrder")}
-                                  </Button>
-                                  <Button variant="outline" size="sm">
-                                    {t("account.reorder")}
+                                    Reorder
                                   </Button>
                                 </div>
                               </div>
@@ -393,10 +494,10 @@ export default function Account() {
                       ) : (
                         <div className="text-center py-12">
                           <Package className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium mb-1">{t("account.noOrders")}</h3>
-                          <p className="text-neutral-500 mb-6">{t("account.noOrdersDescription")}</p>
+                          <h3 className="text-lg font-medium mb-1">No Orders Yet</h3>
+                          <p className="text-neutral-500 mb-6">You haven't placed any orders yet. Start shopping to see your orders here.</p>
                           <Link href="/products">
-                            <Button>{t("account.startShopping")}</Button>
+                            <Button>Start Shopping</Button>
                           </Link>
                         </div>
                       )}
@@ -419,37 +520,51 @@ export default function Account() {
                       </Button>
                     </CardHeader>
                     <CardContent>
-                      {addresses.length > 0 ? (
+                      {addressesLoading ? (
+                        <div className="text-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                          <p className="text-neutral-500">Loading addresses...</p>
+                        </div>
+                      ) : addressesError ? (
+                        <div className="text-center py-12">
+                          <MapPin className="h-12 w-12 text-red-300 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium mb-1">Error Loading Addresses</h3>
+                          <p className="text-neutral-500 mb-6">{addressesError}</p>
+                          <Button onClick={fetchAddresses}>Try Again</Button>
+                        </div>
+                      ) : addresses.length > 0 ? (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                           {addresses.map((address) => (
                             <div key={address.id} className="border rounded-lg p-4">
                               <div className="flex justify-between items-start">
                                 <div>
                                   <div className="flex items-center space-x-2">
-                                    <h3 className="font-medium">{address.name}</h3>
+                                    <h3 className="font-medium">{address.title}</h3>
                                     {address.isDefault && (
                                       <Badge variant="outline" className="bg-primary/10 text-primary">
-                                        {t("account.default")}
+                                        Default
                                       </Badge>
                                     )}
                                   </div>
                                   <div className="text-neutral-600 mt-2">
+                                    <div>{address.fullName}</div>
                                     <div>{address.address}</div>
-                                    <div>{address.city}, {address.state} {address.zipCode}</div>
+                                    <div>{address.city}, {address.state} {address.postalCode}</div>
+                                    <div>{address.country}</div>
                                   </div>
                                 </div>
                                 <div className="space-x-2">
                                   <Button variant="ghost" size="sm">
-                                    {t("account.edit")}
+                                    <Edit className="h-4 w-4" />
                                   </Button>
                                   <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                                    {t("account.delete")}
+                                    <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>
                               </div>
                               {!address.isDefault && (
                                 <Button variant="outline" size="sm" className="mt-4">
-                                  {t("account.setAsDefault")}
+                                  Set as Default
                                 </Button>
                               )}
                             </div>
@@ -458,9 +573,12 @@ export default function Account() {
                       ) : (
                         <div className="text-center py-12">
                           <MapPin className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium mb-1">{t("account.noAddresses")}</h3>
-                          <p className="text-neutral-500 mb-6">{t("account.noAddressesDescription")}</p>
-                          <Button>{t("account.addFirstAddress")}</Button>
+                          <h3 className="text-lg font-medium mb-1">No Saved Addresses</h3>
+                          <p className="text-neutral-500 mb-6">You haven't saved any addresses yet. Add an address to make checkout faster.</p>
+                          <Button>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add New Address
+                          </Button>
                         </div>
                       )}
                     </CardContent>

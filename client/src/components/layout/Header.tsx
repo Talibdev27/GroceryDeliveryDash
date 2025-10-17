@@ -135,7 +135,7 @@ export default function Header() {
                   <User className="h-4 w-4" />
                   <span className="hidden sm:inline">{user.firstName || user.username}</span>
                 </Link>
-                <Link href="/account/orders" className="flex items-center space-x-1 rtl:space-x-reverse hover:text-primary">
+                <Link href="/orders" className="flex items-center space-x-1 rtl:space-x-reverse hover:text-primary">
                   <Package className="h-4 w-4" />
                   <span className="hidden sm:inline">{t("header.orders")}</span>
                 </Link>

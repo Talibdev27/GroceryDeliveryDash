@@ -46,7 +46,7 @@ export const categories: Category[] = [
     name: 'Seafood',
     nameEs: 'Mariscos',
     nameAr: 'مأكولات بحرية',
-    image: 'https://pixabay.com/get/g3b2f65637c9ebdd836ef26232eb2e1d67562771d3d1cb5986fa9505adac14bc4c14b54c37d7009b7fe0d424e639a96b1d06e4c2ec4725b93bd7a0db1d1fce1a4_1280.jpg',
+    image: 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300',
     slug: 'seafood'
   },
   {
@@ -54,7 +54,7 @@ export const categories: Category[] = [
     name: 'Frozen',
     nameEs: 'Congelados',
     nameAr: 'مجمدة',
-    image: 'https://pixabay.com/get/g5442f5379c6eb0b33c03e2a043da8b29a55f10fa2941da88146b2d46f81d99e68f8ef150942d9831c15811034f5bff7a2dbc55ce55282fac8023bc7f57f2b8d2_1280.jpg',
+    image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300',
     slug: 'frozen'
   },
   {

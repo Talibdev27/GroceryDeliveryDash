@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useProducts, useCategories } from "@/hooks/use-api";
 import { useProductManagement } from "@/hooks/use-product-management";
+import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getCurrencySymbol, DEFAULT_CURRENCY } from "@/lib/currency";
 
 interface Product {
@@ -48,8 +49,9 @@ interface Product {
 
 export default function ProductManager() {
   const { t } = useTranslation();
-  const { data: productsData, loading: productsLoading, error: productsError } = useProducts();
+  const { data: productsData, loading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts();
   const { data: categoriesData, loading: categoriesLoading } = useCategories();
+  const { toast } = useToast();
   
   // Extract the actual arrays from the API response
   const products = productsData?.products || [];
@@ -100,8 +102,18 @@ export default function ProductManager() {
     if (result) {
       setIsCreateDialogOpen(false);
       resetForm();
-      // Refresh the page to show the new product
-      window.location.reload();
+      // Refresh the products list to show the new product
+      await refetchProducts();
+      toast({
+        title: "Success",
+        description: "Product created successfully!",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to create product. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -128,8 +140,18 @@ export default function ProductManager() {
     if (result) {
       setIsEditDialogOpen(false);
       resetForm();
-      // Refresh the page to show the updated product
-      window.location.reload();
+      // Refresh the products list to show the updated product
+      await refetchProducts();
+      toast({
+        title: "Success",
+        description: "Product updated successfully!",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to update product. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -137,8 +159,18 @@ export default function ProductManager() {
     if (confirm("Are you sure you want to delete this product?")) {
       const success = await deleteProduct(productId);
       if (success) {
-        // Refresh the page to show the updated product list
-        window.location.reload();
+        // Refresh the products list to show the updated product list
+        await refetchProducts();
+        toast({
+          title: "Success",
+          description: "Product deleted successfully!",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to delete product. Please try again.",
+          variant: "destructive",
+        });
       }
     }
   };

@@ -107,7 +107,7 @@ export const products: Product[] = [
     descriptionEs: 'Fresas frescas dulces y jugosas, perfectas para postres o como snack.',
     descriptionAr: 'فراولة طازجة حلوة وعصيرية، مثالية للحلويات أو كوجبة خفيفة.',
     price: 4.99,
-    image: 'https://pixabay.com/get/g539b916a30e5c348d36d51069dc7782044134958643c3b257165b8134af39c3d6284dfb6196e3b27befd187e0e066733b2bf7ea045746d6f4a00cb53891b45b0_1280.jpg',
+    image: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300',
     category: categories[0], // Fruits
     unit: '1 lb package',
     unitEs: 'Paquete de 1 lb',

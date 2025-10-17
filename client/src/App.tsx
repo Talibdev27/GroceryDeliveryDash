@@ -5,6 +5,7 @@ import Home from "@/pages/Home";
 import Products from "@/pages/Products";
 import Product from "@/pages/Product";
 import Checkout from "@/pages/Checkout";
+import Orders from "@/pages/Orders";
 import Account from "@/pages/Account";
 import Auth from "@/pages/Auth";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/products" component={Products} />
       <Route path="/product/:id" component={Product} />
       <Route path="/checkout" component={Checkout} />
+      <Route path="/orders" component={Orders} />
       <Route path="/account" component={Account} />
       <Route path="/auth" component={Auth} />
       <Route path="/admin" component={AdminDashboard} />

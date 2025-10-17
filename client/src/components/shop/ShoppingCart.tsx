@@ -72,7 +72,7 @@ export default function ShoppingCart() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">
+                      <div className="font-medium">
                         {item.sale && item.salePrice ? (
                           <div className="flex flex-col">
                             <span>{formatPrice(item.salePrice)}</span>
@@ -81,9 +81,9 @@ export default function ShoppingCart() {
                             </span>
                           </div>
                         ) : (
-                          formatPrice(item.price)
+                          <span>{formatPrice(item.price)}</span>
                         )}
-                      </p>
+                      </div>
                       <Button 
                         variant="ghost" 
                         size="icon" 
@@ -106,7 +106,7 @@ export default function ShoppingCart() {
                         <h4 className="font-medium text-sm">{item.name}</h4>
                         <p className="text-sm text-neutral-500">{item.unit}</p>
                         <div className="flex justify-between items-center mt-2">
-                          <span className="font-medium">
+                          <div className="font-medium">
                             {item.sale && item.salePrice ? (
                               <div className="flex flex-col">
                                 <span>{formatPrice(item.salePrice)}</span>
@@ -115,9 +115,9 @@ export default function ShoppingCart() {
                                 </span>
                               </div>
                             ) : (
-                              formatPrice(item.price)
+                              <span>{formatPrice(item.price)}</span>
                             )}
-                          </span>
+                          </div>
                           <Button
                             size="icon"
                             className="h-7 w-7 rounded-full bg-primary text-white hover:bg-primary/90"

@@ -11,34 +11,35 @@ export const useApi = <T>(endpoint: string, dependencies: any[] = []) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const response = await fetch(`${API_BASE}${endpoint}`, {
-          credentials: 'include', // Include cookies for authentication
-        });
+  // Define fetchData outside useEffect so it's accessible in return statement
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        credentials: 'include', // Include cookies for authentication
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        setData(result);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-        console.error('API Error:', err);
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
 
+      const result = await response.json();
+      setData(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('API Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, dependencies);
 
-  return { data, loading, error, refetch: () => fetchData() };
+  return { data, loading, error, refetch: fetchData };
 };
 
 // Specific hooks for different data types
