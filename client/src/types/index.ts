@@ -40,7 +40,9 @@ export interface Product {
 export interface Address {
   id: number;
   title: string;
+  addressType: 'home' | 'work' | 'other';
   fullName: string;
+  phone?: string; // NEW: Add phone field (optional)
   address: string;
   city: string;
   state: string;

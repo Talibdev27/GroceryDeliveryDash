@@ -239,9 +239,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/user/addresses", authenticateUser, validateBody(insertAddressSchema), async (req: Request, res: Response) => {
     try {
+      const userId = req.session.userId!;
+      const addressData = req.body;
+      
+      // Check for duplicate addresses
+      const existingAddresses = await storage.getUserAddresses(userId);
+      const isDuplicate = existingAddresses.some(addr => 
+        addr.address.toLowerCase() === addressData.address.toLowerCase() &&
+        addr.city.toLowerCase() === addressData.city.toLowerCase() &&
+        addr.postalCode === addressData.postalCode
+      );
+      
+      if (isDuplicate) {
+        return res.status(400).json({ error: "This address already exists" });
+      }
+      
+      // If this is set as default, unset other defaults
+      if (addressData.isDefault) {
+        await storage.unsetDefaultAddresses(userId);
+      }
+      
       const address = await storage.createAddress({
-        ...req.body,
-        userId: req.session.userId!,
+        ...addressData,
+        userId,
       });
       res.status(201).json({ address });
     } catch (error) {
@@ -739,6 +759,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         paymentMethod,
         paymentStatus: "pending",
       });
+
+      console.log("🛒 Order created successfully:", order.id);
+
+      // Save order items to database
+      await storage.createOrderItems(order.id, validatedItems);
+      console.log("🛒 Order items saved successfully");
 
       // Decrement stock quantity for each validated item
       for (const item of validatedItems) {

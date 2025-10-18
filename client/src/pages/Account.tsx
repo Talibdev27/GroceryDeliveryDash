@@ -25,6 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
 import { userApi, orderApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
+import AddressManager from "@/components/account/AddressManager";
 import { 
   User, 
   Package, 
@@ -76,11 +77,8 @@ export default function Account() {
   
   // State for real data
   const [orders, setOrders] = useState<Order[]>([]);
-  const [addresses, setAddresses] = useState<Address[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
-  const [addressesLoading, setAddressesLoading] = useState(false);
   const [ordersError, setOrdersError] = useState<string | null>(null);
-  const [addressesError, setAddressesError] = useState<string | null>(null);
   
   // Redirect to auth page if not authenticated
   useEffect(() => {
@@ -96,12 +94,6 @@ export default function Account() {
     }
   }, [user, activeTab]);
 
-  // Fetch addresses when user is available
-  useEffect(() => {
-    if (user && activeTab === "addresses") {
-      fetchAddresses();
-    }
-  }, [user, activeTab]);
 
   const fetchOrders = async () => {
     try {
@@ -117,19 +109,6 @@ export default function Account() {
     }
   };
 
-  const fetchAddresses = async () => {
-    try {
-      setAddressesLoading(true);
-      setAddressesError(null);
-      const data = await userApi.getAddresses();
-      setAddresses(data.addresses || []);
-    } catch (error) {
-      console.error("Failed to fetch addresses:", error);
-      setAddressesError("Failed to load addresses. Please try again.");
-    } finally {
-      setAddressesLoading(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -507,82 +486,7 @@ export default function Account() {
                 
                 {/* Addresses Tab */}
                 <TabsContent value="addresses">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                      <div>
-                        <CardTitle>{t("account.savedAddresses")}</CardTitle>
-                        <CardDescription>
-                          {t("account.savedAddressesDescription")}
-                        </CardDescription>
-                      </div>
-                      <Button size="sm">
-                        {t("account.addNewAddress")}
-                      </Button>
-                    </CardHeader>
-                    <CardContent>
-                      {addressesLoading ? (
-                        <div className="text-center py-12">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                          <p className="text-neutral-500">Loading addresses...</p>
-                        </div>
-                      ) : addressesError ? (
-                        <div className="text-center py-12">
-                          <MapPin className="h-12 w-12 text-red-300 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium mb-1">Error Loading Addresses</h3>
-                          <p className="text-neutral-500 mb-6">{addressesError}</p>
-                          <Button onClick={fetchAddresses}>Try Again</Button>
-                        </div>
-                      ) : addresses.length > 0 ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                          {addresses.map((address) => (
-                            <div key={address.id} className="border rounded-lg p-4">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <div className="flex items-center space-x-2">
-                                    <h3 className="font-medium">{address.title}</h3>
-                                    {address.isDefault && (
-                                      <Badge variant="outline" className="bg-primary/10 text-primary">
-                                        Default
-                                      </Badge>
-                                    )}
-                                  </div>
-                                  <div className="text-neutral-600 mt-2">
-                                    <div>{address.fullName}</div>
-                                    <div>{address.address}</div>
-                                    <div>{address.city}, {address.state} {address.postalCode}</div>
-                                    <div>{address.country}</div>
-                                  </div>
-                                </div>
-                                <div className="space-x-2">
-                                  <Button variant="ghost" size="sm">
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
-                                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                              {!address.isDefault && (
-                                <Button variant="outline" size="sm" className="mt-4">
-                                  Set as Default
-                                </Button>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-12">
-                          <MapPin className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
-                          <h3 className="text-lg font-medium mb-1">No Saved Addresses</h3>
-                          <p className="text-neutral-500 mb-6">You haven't saved any addresses yet. Add an address to make checkout faster.</p>
-                          <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add New Address
-                          </Button>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <AddressManager mode="management" />
                 </TabsContent>
                 
                 {/* Payment Methods Tab */}

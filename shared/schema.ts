@@ -24,7 +24,9 @@ export const addresses = pgTable("addresses", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
+  addressType: text("address_type").default("home"), // home, work, other
   fullName: text("full_name").notNull(),
+  phone: text("phone"), // NEW: Add phone field (optional)
   address: text("address").notNull(),
   city: text("city").notNull(),
   state: text("state").notNull(),

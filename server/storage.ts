@@ -261,6 +261,22 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async createOrderItems(orderId: number, items: Array<{productId: number, quantity: number, price: number}>): Promise<void> {
+    console.log("💾 Creating order items for order:", orderId, "items:", items);
+    
+    const itemsToInsert = items.map(item => ({
+      orderId,
+      productId: item.productId,
+      quantity: item.quantity,
+      price: item.price.toString()
+    }));
+    
+    console.log("💾 Order items to insert:", itemsToInsert);
+    
+    const result = await db.insert(orderItems).values(itemsToInsert).returning();
+    console.log("💾 Order items created successfully:", result.length, "items");
+  }
+
   async updateOrderStatus(id: number, status: string): Promise<Order | undefined> {
     console.log("💾 Updating order status in database:", { id, status });
     try {
@@ -660,6 +676,14 @@ export class DatabaseStorage implements IStorage {
     
     console.log("💾 Order assigned to rider successfully:", orderId);
     return result[0];
+  }
+
+  async unsetDefaultAddresses(userId: number): Promise<void> {
+    console.log("💾 Unsetting default addresses for user:", userId);
+    await db.update(addresses)
+      .set({ isDefault: false })
+      .where(eq(addresses.userId, userId));
+    console.log("💾 Default addresses unset successfully");
   }
 }
 

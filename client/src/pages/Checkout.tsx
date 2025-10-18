@@ -37,6 +37,7 @@ import { useAuth } from "@/context/AuthContext";
 import { userApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
 import { Address } from "@/types";
+import AddressManager from "@/components/account/AddressManager";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -86,7 +87,6 @@ const CheckoutPage = () => {
   const { user } = useAuth();
   const [paymentStep, setPaymentStep] = useState<"address" | "delivery" | "payment" | "confirmation">("address");
   const [orderPlaced, setOrderPlaced] = useState(false);
-  const [savedAddresses, setSavedAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
 
   // Debug current step
@@ -99,28 +99,7 @@ const CheckoutPage = () => {
     }
   }, [user, setLocation]);
 
-  const loadSavedAddresses = useCallback(async () => {
-    try {
-      const data = await userApi.getAddresses();
-      setSavedAddresses(data.addresses || []);
-      
-      // Set default address if available
-      const defaultAddress = data.addresses?.find((addr: Address) => addr.isDefault);
-      if (defaultAddress) {
-        setSelectedAddressId(defaultAddress.id);
-        fillFormWithAddress(defaultAddress);
-      }
-    } catch (error) {
-      console.error("Failed to load addresses:", error);
-    }
-  }, []);
 
-  // Load saved addresses when user is available
-  useEffect(() => {
-    if (user) {
-      loadSavedAddresses();
-    }
-  }, [user, loadSavedAddresses]);
 
   const fillFormWithAddress = (address: Address) => {
     form.setValue("fullName", address.fullName);
@@ -174,14 +153,15 @@ const CheckoutPage = () => {
       if (data.saveAddress || !addressId) {
         const addressResponse = await userApi.createAddress({
           title: "Home",
+          addressType: "home",
           fullName: data.fullName,
+          phone: data.phone, // NEW: Include phone from checkout form
           address: data.address,
           city: data.city,
           state: data.state,
           postalCode: data.zipCode,
           country: "Uzbekistan",
-          phone: data.phone,
-          isDefault: savedAddresses.length === 0, // Make first address default
+          isDefault: false, // Don't auto-set as default
         });
         addressId = addressResponse.address.id;
       }
@@ -344,45 +324,17 @@ const CheckoutPage = () => {
                         {t("checkout.deliveryAddress")}
                       </h2>
                       
-                      {/* Saved Addresses */}
-                      {savedAddresses.length > 0 && (
-                        <div className="mb-6">
-                          <h3 className="text-md font-medium mb-3">Saved Addresses</h3>
-                          <div className="space-y-2">
-                            {savedAddresses.map((address) => (
-                              <div
-                                key={address.id}
-                                className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                                  selectedAddressId === address.id
-                                    ? "border-primary bg-primary/5"
-                                    : "border-neutral-200 hover:border-neutral-300"
-                                }`}
-                                onClick={() => {
-                                  setSelectedAddressId(address.id);
-                                  fillFormWithAddress(address);
-                                }}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <p className="font-medium">{address.title}</p>
-                                    <p className="text-sm text-neutral-600">
-                                      {address.fullName}, {address.address}, {address.city}, {address.state} {address.postalCode}
-                                    </p>
-                                  </div>
-                                  {address.isDefault && (
-                                    <span className="text-xs bg-primary text-white px-2 py-1 rounded">
-                                      Default
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="mt-3 text-sm text-neutral-500">
-                            Or fill in a new address below:
-                          </div>
-                        </div>
-                      )}
+                      {/* Address Selection */}
+                      <div className="mb-6">
+                        <AddressManager 
+                          mode="selection"
+                          selectedAddressId={selectedAddressId}
+                          onSelect={(address) => {
+                            setSelectedAddressId(address.id);
+                            fillFormWithAddress(address);
+                          }}
+                        />
+                      </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
