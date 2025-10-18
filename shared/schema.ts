@@ -88,6 +88,11 @@ export const orders = pgTable("orders", {
   addressId: integer("address_id").references(() => addresses.id),
   paymentMethod: text("payment_method"),
   paymentStatus: text("payment_status").default("pending"),
+  // Rider assignment fields
+  riderAssignedId: integer("rider_assigned_id").references(() => users.id),
+  riderAssignedAt: timestamp("rider_assigned_at"),
+  riderPickedUpAt: timestamp("rider_picked_up_at"),
+  riderDeliveredAt: timestamp("rider_delivered_at"),
 });
 
 // Order items table

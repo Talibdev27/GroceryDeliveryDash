@@ -58,6 +58,7 @@ export interface User {
   lastName: string;
   addresses: Address[];
   phone?: string;
+  role?: string;
 }
 
 // Order Item

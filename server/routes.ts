@@ -109,36 +109,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", async (req: Request, res: Response) => {
     try {
       const { username, password } = req.body;
+      
+      console.log("🔐 Login attempt:", { username, passwordLength: password?.length });
 
       if (!username || !password) {
+        console.log("❌ Missing credentials:", { username: !!username, password: !!password });
         return res.status(400).json({ error: "Username and password are required" });
       }
 
       // Find user by username or email
+      console.log("🔍 Searching for user by username:", username);
       let user = await storage.getUserByUsername(username);
       if (!user) {
+        console.log("🔍 User not found by username, trying email:", username);
         user = await storage.getUserByEmail(username);
       }
 
       if (!user) {
+        console.log("❌ User not found:", username);
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
+      console.log("✅ User found:", { id: user.id, username: user.username, email: user.email, role: user.role, isActive: user.isActive });
+
+      // Check if user is active
+      if (!user.isActive) {
+        console.log("❌ User account is inactive:", user.id);
+        return res.status(401).json({ error: "Account is inactive" });
+      }
+
       // Verify password
+      console.log("🔑 Verifying password...");
       const isValidPassword = await verifyPassword(password, user.password);
+      console.log("🔑 Password verification result:", isValidPassword);
+      
       if (!isValidPassword) {
+        console.log("❌ Invalid password for user:", user.id);
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
       // Set session
+      console.log("✅ Setting session for user:", user.id);
       req.session.userId = user.id;
       req.session.username = user.username;
 
       // Return user without password
       const { password: _, ...userWithoutPassword } = user;
+      console.log("✅ Login successful for user:", user.id);
       res.json({ user: userWithoutPassword });
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("❌ Login error:", error);
       res.status(500).json({ error: "Login failed" });
     }
   });
@@ -376,6 +396,169 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Delete product error:", error);
       res.status(500).json({ error: "Failed to delete product" });
+    }
+  });
+
+  // Rider Management routes
+  app.get("/api/admin/riders", authenticateUser, requireRole(["admin", "super_admin"]), async (req: Request, res: Response) => {
+    try {
+      console.log("📋 Fetching all riders for admin");
+      const riders = await storage.getAllRiders();
+      console.log(`✅ Found ${riders.length} riders`);
+      res.json({ riders });
+    } catch (error) {
+      console.error("❌ Error fetching riders:", error);
+      res.status(500).json({ error: "Failed to fetch riders" });
+    }
+  });
+
+  app.post("/api/admin/riders", authenticateUser, requireRole(["admin", "super_admin"]), async (req: Request, res: Response) => {
+    try {
+      const { username, email, firstName, lastName, phone, password } = req.body;
+      console.log("👤 Creating new rider:", { username, email, firstName, lastName });
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+
+      const existingEmail = await storage.getUserByEmail(email);
+      if (existingEmail) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      // Create rider user
+      const rider = await storage.createUser({
+        username,
+        email,
+        password,
+        firstName,
+        lastName,
+        phone,
+        role: "rider",
+      });
+
+      console.log("✅ Rider created successfully:", rider.id);
+      const { password: _, ...riderWithoutPassword } = rider;
+      res.status(201).json({ rider: riderWithoutPassword });
+    } catch (error) {
+      console.error("❌ Error creating rider:", error);
+      res.status(500).json({ error: "Failed to create rider" });
+    }
+  });
+
+  app.put("/api/admin/riders/:id", authenticateUser, requireRole(["admin", "super_admin"]), async (req: Request, res: Response) => {
+    try {
+      const riderId = parseInt(req.params.id);
+      const { username, email, firstName, lastName, phone, password } = req.body;
+      console.log("✏️ Updating rider:", riderId);
+
+      const updateData: any = {
+        username,
+        email,
+        firstName,
+        lastName,
+        phone,
+      };
+
+      // Only update password if provided
+      if (password && password.trim() !== "") {
+        updateData.password = password;
+      }
+
+      const rider = await storage.updateUser(riderId, updateData);
+      if (!rider) {
+        return res.status(404).json({ error: "Rider not found" });
+      }
+
+      console.log("✅ Rider updated successfully:", riderId);
+      const { password: _, ...riderWithoutPassword } = rider;
+      res.json({ rider: riderWithoutPassword });
+    } catch (error) {
+      console.error("❌ Error updating rider:", error);
+      res.status(500).json({ error: "Failed to update rider" });
+    }
+  });
+
+  app.patch("/api/admin/riders/:id/status", authenticateUser, requireRole(["admin", "super_admin"]), async (req: Request, res: Response) => {
+    try {
+      const riderId = parseInt(req.params.id);
+      const { isActive } = req.body;
+      console.log("🔄 Updating rider status:", { riderId, isActive });
+
+      const rider = await storage.updateUser(riderId, { isActive });
+      if (!rider) {
+        return res.status(404).json({ error: "Rider not found" });
+      }
+
+      console.log("✅ Rider status updated:", { riderId, isActive });
+      const { password: _, ...riderWithoutPassword } = rider;
+      res.json({ rider: riderWithoutPassword });
+    } catch (error) {
+      console.error("❌ Error updating rider status:", error);
+      res.status(500).json({ error: "Failed to update rider status" });
+    }
+  });
+
+  app.delete("/api/admin/riders/:id", authenticateUser, requireRole(["admin", "super_admin"]), async (req: Request, res: Response) => {
+    try {
+      const riderId = parseInt(req.params.id);
+      console.log("🗑️ Deleting rider:", riderId);
+
+      const success = await storage.deleteUser(riderId);
+      if (!success) {
+        return res.status(404).json({ error: "Rider not found" });
+      }
+
+      console.log("✅ Rider deleted successfully:", riderId);
+      res.json({ message: "Rider deleted successfully" });
+    } catch (error) {
+      console.error("❌ Error deleting rider:", error);
+      res.status(500).json({ error: "Failed to delete rider" });
+    }
+  });
+
+  // Order assignment routes
+  app.post("/api/admin/orders/:orderId/assign-rider", authenticateUser, requireRole(["admin", "super_admin"]), async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      const { riderId } = req.body;
+      console.log("🚚 Assigning order to rider:", { orderId, riderId });
+
+      if (!riderId) {
+        return res.status(400).json({ error: "Rider ID is required" });
+      }
+
+      // Check if rider exists and is active
+      const rider = await storage.getUser(riderId);
+      if (!rider || rider.role !== "rider" || !rider.isActive) {
+        return res.status(400).json({ error: "Invalid or inactive rider" });
+      }
+
+      // Assign rider to order
+      const order = await storage.assignRiderToOrder(orderId, riderId);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      console.log("✅ Order assigned to rider successfully:", { orderId, riderId });
+      res.json({ order });
+    } catch (error) {
+      console.error("❌ Error assigning order to rider:", error);
+      res.status(500).json({ error: "Failed to assign order to rider" });
+    }
+  });
+
+  app.get("/api/admin/riders/available", authenticateUser, requireRole(["admin", "super_admin"]), async (req: Request, res: Response) => {
+    try {
+      console.log("📋 Fetching available riders");
+      const riders = await storage.getAvailableRiders();
+      console.log(`✅ Found ${riders.length} available riders`);
+      res.json({ riders });
+    } catch (error) {
+      console.error("❌ Error fetching available riders:", error);
+      res.status(500).json({ error: "Failed to fetch available riders" });
     }
   });
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ShoppingCart, Package, Truck, CheckCircle, Clock, AlertCircle, User, MapPin, Phone, Mail, DollarSign } from "lucide-react";
+import { ShoppingCart, Package, Truck, CheckCircle, Clock, AlertCircle, User, MapPin, Phone, Mail, DollarSign, UserPlus } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -65,6 +65,9 @@ export default function OrderManagement() {
   const { toast } = useToast();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [availableRiders, setAvailableRiders] = useState<any[]>([]);
+  const [selectedRiderId, setSelectedRiderId] = useState<string>("");
+  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
 
   const { data, isLoading } = useQuery<{ orders: Order[] }>({
     queryKey: ["/api/admin/orders"],
@@ -101,6 +104,60 @@ export default function OrderManagement() {
       });
     },
   });
+
+  // Fetch available riders
+  const { data: ridersData } = useQuery<{ riders: any[] }>({
+    queryKey: ["/api/admin/riders/available"],
+  });
+
+  useEffect(() => {
+    if (ridersData?.riders) {
+      setAvailableRiders(ridersData.riders);
+    }
+  }, [ridersData]);
+
+  // Assign rider to order mutation
+  const assignRiderMutation = useMutation({
+    mutationFn: async ({ orderId, riderId }: { orderId: number; riderId: number }) => {
+      const response = await apiRequest(
+        "POST",
+        `/api/admin/orders/${orderId}/assign-rider`,
+        { riderId }
+      );
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      toast({
+        title: "Success",
+        description: "Rider assigned to order successfully",
+      });
+      setIsAssignDialogOpen(false);
+      setSelectedRiderId("");
+    },
+    onError: (error: any) => {
+      console.error("❌ Rider assignment error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to assign rider to order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleAssignRider = (order: Order) => {
+    setSelectedOrder(order);
+    setIsAssignDialogOpen(true);
+  };
+
+  const handleConfirmAssignment = () => {
+    if (selectedOrder && selectedRiderId) {
+      assignRiderMutation.mutate({
+        orderId: selectedOrder.id,
+        riderId: parseInt(selectedRiderId),
+      });
+    }
+  };
 
   const orders = data?.orders || [];
   
@@ -346,6 +403,28 @@ export default function OrderManagement() {
                 </div>
               </div>
 
+              {/* Rider Assignment */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Rider Assignment</p>
+                  {selectedOrder.riderAssignedId ? (
+                    <p className="text-sm text-green-600 mt-1">✓ Assigned to Rider #{selectedOrder.riderAssignedId}</p>
+                  ) : (
+                    <p className="text-sm text-gray-500 mt-1">No rider assigned</p>
+                  )}
+                </div>
+                {!selectedOrder.riderAssignedId && (
+                  <Button
+                    onClick={() => handleAssignRider(selectedOrder)}
+                    className="flex items-center gap-2"
+                    size="sm"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Assign Rider
+                  </Button>
+                )}
+              </div>
+
               {/* Customer Information */}
               <div className="border rounded-lg p-3 space-y-2">
                 <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
@@ -464,6 +543,54 @@ export default function OrderManagement() {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Rider Assignment Dialog */}
+      <Dialog open={isAssignDialogOpen} onOpenChange={setIsAssignDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Assign Rider to Order #{selectedOrder?.id}</DialogTitle>
+            <DialogDescription>
+              Select a rider to assign to this order for delivery.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700">Select Rider</label>
+              <Select value={selectedRiderId} onValueChange={setSelectedRiderId}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose a rider..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableRiders.map((rider) => (
+                    <SelectItem key={rider.id} value={rider.id.toString()}>
+                      {rider.firstName} {rider.lastName} ({rider.username})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsAssignDialogOpen(false);
+                  setSelectedRiderId("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmAssignment}
+                disabled={!selectedRiderId || assignRiderMutation.isPending}
+              >
+                {assignRiderMutation.isPending ? "Assigning..." : "Assign Rider"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

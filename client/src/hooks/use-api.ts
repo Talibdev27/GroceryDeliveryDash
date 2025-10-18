@@ -17,19 +17,46 @@ export const useApi = <T>(endpoint: string, dependencies: any[] = []) => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`${API_BASE}${endpoint}`, {
+      const url = `${API_BASE}${endpoint}`;
+      console.log(`🌐 API Request: GET ${url}`);
+      
+      const response = await fetch(url, {
         credentials: 'include', // Include cookies for authentication
       });
 
+      console.log(`📡 API Response: ${response.status} ${response.statusText}`, {
+        url,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Try to get error details
+        const errorText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText || `HTTP ${response.status}` };
+        }
+        
+        const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+        console.error(`❌ API Error:`, {
+          url,
+          status: response.status,
+          errorData
+        });
+        
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
+      console.log(`✅ API Success:`, { url, dataKeys: Object.keys(result) });
       setData(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      console.error('API Error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
+      console.error('💥 API Exception:', { endpoint, error: err });
     } finally {
       setLoading(false);
     }

@@ -569,6 +569,98 @@ export class DatabaseStorage implements IStorage {
       })
       .where(eq(products.id, productId));
   }
+
+  // Rider management methods
+  async getAllRiders(): Promise<User[]> {
+    console.log("💾 Fetching all riders from database");
+    const riders = await db.select()
+      .from(users)
+      .where(eq(users.role, "rider"))
+      .orderBy(sql`${users.createdAt} DESC`);
+    
+    console.log(`💾 Found ${riders.length} riders`);
+    return riders;
+  }
+
+  async createUser(userData: {
+    username: string;
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    role?: string;
+  }): Promise<User> {
+    console.log("💾 Creating new user:", userData.username);
+    
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    
+    const result = await db.insert(users).values({
+      ...userData,
+      password: hashedPassword,
+      role: userData.role || "customer",
+    }).returning();
+    
+    console.log("💾 User created successfully:", result[0].id);
+    return result[0];
+  }
+
+  async updateUser(userId: number, updateData: any): Promise<User | undefined> {
+    console.log("💾 Updating user:", userId);
+    
+    // Hash password if provided
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+    
+    const result = await db.update(users)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    console.log("💾 User updated successfully:", userId);
+    return result[0];
+  }
+
+  async deleteUser(userId: number): Promise<boolean> {
+    console.log("💾 Deleting user:", userId);
+    
+    const result = await db.delete(users)
+      .where(eq(users.id, userId))
+      .returning();
+    
+    console.log("💾 User deleted successfully:", userId);
+    return result.length > 0;
+  }
+
+  async getAvailableRiders(): Promise<User[]> {
+    console.log("💾 Fetching available riders");
+    
+    // Get all active riders
+    const riders = await db.select()
+      .from(users)
+      .where(and(eq(users.role, "rider"), eq(users.isActive, true)))
+      .orderBy(sql`${users.createdAt} DESC`);
+    
+    console.log(`💾 Found ${riders.length} available riders`);
+    return riders;
+  }
+
+  async assignRiderToOrder(orderId: number, riderId: number): Promise<Order | undefined> {
+    console.log("💾 Assigning rider to order:", { orderId, riderId });
+    
+    const result = await db.update(orders)
+      .set({ 
+        riderAssignedId: riderId,
+        riderAssignedAt: new Date(),
+        status: "assigned"
+      })
+      .where(eq(orders.id, orderId))
+      .returning();
+    
+    console.log("💾 Order assigned to rider successfully:", orderId);
+    return result[0];
+  }
 }
 
 // Export the database storage instance

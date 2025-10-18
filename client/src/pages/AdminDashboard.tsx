@@ -8,6 +8,7 @@ import {
   Package, 
   Users, 
   ShoppingCart, 
+  Truck,
   BarChart3, 
   Settings,
   Menu,
@@ -28,8 +29,9 @@ import UserManagement from "@/components/admin/UserManagement";
 import OrderManagement from "@/components/admin/OrderManagement";
 import Analytics from "@/components/admin/Analytics";
 import AdminSettings from "@/components/admin/Settings";
+import RiderManagement from "@/components/admin/RiderManagement";
 
-type AdminSection = "overview" | "products" | "users" | "orders" | "analytics" | "settings";
+type AdminSection = "overview" | "products" | "users" | "orders" | "riders" | "analytics" | "settings";
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -93,6 +95,13 @@ export default function AdminDashboard() {
       label: "Order Management",
       icon: ShoppingCart,
       description: "View and manage orders",
+      allowedRoles: ["super_admin", "admin"]
+    },
+    {
+      id: "riders" as AdminSection,
+      label: "Rider Management",
+      icon: Truck,
+      description: "Manage delivery riders and assignments",
       allowedRoles: ["super_admin", "admin"]
     },
     {
@@ -176,6 +185,8 @@ export default function AdminDashboard() {
         return <UserManagement />;
       case "orders":
         return <OrderManagement />;
+      case "riders":
+        return <RiderManagement />;
       case "analytics":
         return <Analytics />;
       case "settings":
@@ -193,6 +204,8 @@ export default function AdminDashboard() {
               return <UserManagement />;
             case "orders":
               return <OrderManagement />;
+            case "riders":
+              return <RiderManagement />;
             case "analytics":
               return <Analytics />;
             case "settings":
