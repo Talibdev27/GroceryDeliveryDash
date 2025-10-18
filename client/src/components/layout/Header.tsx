@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import CartButton from "@/components/ui/CartButton";
+import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/hooks/use-language";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/context/AuthContext";
@@ -170,13 +171,8 @@ export default function Header() {
         {/* Main navigation bar */}
         <div className="py-3 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="h-6 w-6 text-primary" fill="currentColor">
-              <path d="M12 2C7.03 2 3 6.03 3 11v5.5c0 1.38 1.12 2.5 2.5 2.5h1c.28 0 .5-.22.5-.5v-7c0-.28-.22-.5-.5-.5h-1c-.44 0-.85.09-1.23.27C4.73 6.82 8.06 4 12 4s7.27 2.82 8.73 7.27c-.38-.18-.79-.27-1.23-.27h-1c-.28 0-.5.22-.5.5v7c0 .28.22.5.5.5h1c1.38 0 2.5-1.12 2.5-2.5V11c0-4.97-4.03-9-9-9z" />
-            </svg>
-            <span className="font-heading font-bold text-xl text-neutral-800">
-              Diyor Market
-            </span>
+          <Link href="/">
+            <Logo size="md" showText={false} />
           </Link>
           
           {/* Search bar */}

@@ -1,13 +1,13 @@
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
+import Logo from "@/components/ui/Logo";
 import { 
   Facebook, 
   Twitter, 
   Instagram, 
   MapPin, 
   Phone, 
-  Mail,
-  Leaf
+  Mail
 } from "lucide-react";
 
 export default function Footer() {
@@ -18,9 +18,8 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse mb-4">
-              <Leaf className="h-6 w-6 text-primary" />
-              <span className="font-heading font-bold text-xl">Diyor Market</span>
+            <Link href="/" className="mb-4">
+              <Logo size="md" className="text-white" showText={false} />
             </Link>
             <p className="text-neutral-400 mb-4">{t("footer.tagline")}</p>
             <div className="flex space-x-4 rtl:space-x-reverse">
