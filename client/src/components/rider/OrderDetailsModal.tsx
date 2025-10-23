@@ -138,15 +138,13 @@ export function OrderDetailsModal({
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="font-medium">{order.address.name}</div>
+                  <div className="font-medium">{order.address.fullName}</div>
                   <div className="text-sm text-gray-600">
-                    {order.address.addressLine1}
-                    {order.address.addressLine2 && (
-                      <div>{order.address.addressLine2}</div>
-                    )}
+                    {order.address.address}
                   </div>
                   <div className="text-sm text-gray-500">
                     {order.address.city}, {order.address.state} {order.address.postalCode}
+                    {order.address.country && `, ${order.address.country}`}
                   </div>
                 </div>
               </CardContent>
