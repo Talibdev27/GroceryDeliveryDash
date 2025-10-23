@@ -172,24 +172,45 @@ export const getAddressSuggestions = async (query: string): Promise<Array<{
   address: string;
 }>> => {
   try {
-    const apiKey = import.meta.env.VITE_YANDEX_MAPS_API_KEY;
+    // Use Geosuggest API key if available, otherwise fall back to main API key
+    const apiKey = import.meta.env.VITE_YANDEX_GEO_SUGGEST_API_KEY || import.meta.env.VITE_YANDEX_MAPS_API_KEY;
+    
+    if (!apiKey) {
+      console.error('Yandex Maps API key not found. Please set VITE_YANDEX_MAPS_API_KEY or VITE_YANDEX_GEO_SUGGEST_API_KEY in .env');
+      return [];
+    }
+    
     const url = `https://suggest-maps.yandex.ru/v1/suggest?apikey=${apiKey}&text=${encodeURIComponent(query)}&types=geo,biz&lang=en_US&results=10`;
     
+    console.log('🔍 Fetching address suggestions for:', query);
+    
     const response = await fetch(url);
+    
+    if (!response.ok) {
+      console.error('❌ Yandex Suggest API error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      return [];
+    }
+    
     const data = await response.json();
+    console.log('✅ Yandex Suggest API response:', data);
     
     if (data.results) {
-      return data.results.map((result: any) => ({
+      const suggestions = data.results.map((result: any) => ({
         title: result.title?.text || '',
         subtitle: result.subtitle?.text || '',
         coordinates: result.geometry?.coordinates ? [result.geometry.coordinates[1], result.geometry.coordinates[0]] : [0, 0],
         address: result.title?.text || ''
       }));
+      console.log('📍 Processed suggestions:', suggestions.length);
+      return suggestions;
     }
     
+    console.log('⚠️ No results in API response');
     return [];
   } catch (error) {
-    console.error('Address suggestions error:', error);
+    console.error('❌ Address suggestions error:', error);
     return [];
   }
 };
