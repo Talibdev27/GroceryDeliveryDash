@@ -258,6 +258,12 @@
     "scheduled": "Rejalashtirilgan yetkazib berish",
     "scheduledDescription": "O'zingizga mos vaqtni tanlang",
     "selectTimeSlot": "Vaqt oralig'ini tanlang",
+    "timeSlots": {
+      "slot1": "14:00 - 15:00",
+      "slot2": "15:00 - 16:00",
+      "slot3": "16:00 - 17:00",
+      "slot4": "17:00 - 18:00"
+    },
     "contactFreeDelivery": "Kontaktsiz yetkazib berish",
     "contactFreeDescription": "Kuryer sizning buyurtmangizni eshikda qoldiradi",
     "deliveryNotes": "Yetkazib berish bo'yicha eslatmalar",

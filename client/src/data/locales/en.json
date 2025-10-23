@@ -259,6 +259,12 @@
     "scheduled": "Scheduled Delivery",
     "scheduledDescription": "Choose a delivery time that works for you",
     "selectTimeSlot": "Select Time Slot",
+    "timeSlots": {
+      "slot1": "14:00 - 15:00",
+      "slot2": "15:00 - 16:00",
+      "slot3": "16:00 - 17:00",
+      "slot4": "17:00 - 18:00"
+    },
     "contactFreeDelivery": "Contact-Free Delivery",
     "contactFreeDescription": "Delivery person will leave your order at the door",
     "deliveryNotes": "Delivery Notes",

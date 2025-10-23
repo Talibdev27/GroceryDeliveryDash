@@ -258,6 +258,12 @@
     "scheduled": "Запланированная доставка",
     "scheduledDescription": "Выберите удобное для вас время",
     "selectTimeSlot": "Выберите временной интервал",
+    "timeSlots": {
+      "slot1": "14:00 - 15:00",
+      "slot2": "15:00 - 16:00",
+      "slot3": "16:00 - 17:00",
+      "slot4": "17:00 - 18:00"
+    },
     "contactFreeDelivery": "Бесконтактная доставка",
     "contactFreeDescription": "Курьер оставит ваш заказ у двери",
     "deliveryNotes": "Примечания к доставке",

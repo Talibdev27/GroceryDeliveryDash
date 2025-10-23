@@ -500,10 +500,10 @@ const CheckoutPage = () => {
                               <SelectValue placeholder={t("checkout.selectTimeSlot")} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="slot1">2:00 PM - 3:00 PM</SelectItem>
-                              <SelectItem value="slot2">3:00 PM - 4:00 PM</SelectItem>
-                              <SelectItem value="slot3">4:00 PM - 5:00 PM</SelectItem>
-                              <SelectItem value="slot4">5:00 PM - 6:00 PM</SelectItem>
+                              <SelectItem value="slot1">14:00 - 15:00</SelectItem>
+                              <SelectItem value="slot2">15:00 - 16:00</SelectItem>
+                              <SelectItem value="slot3">16:00 - 17:00</SelectItem>
+                              <SelectItem value="slot4">17:00 - 18:00</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
