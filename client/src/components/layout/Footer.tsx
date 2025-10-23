@@ -18,8 +18,9 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <Link href="/" className="mb-4">
+            <Link href="/" className="mb-4 flex items-center space-x-2 rtl:space-x-reverse">
               <Logo size="md" className="text-white" showText={false} />
+              <span className="text-xl font-bold text-primary">Diyor Market</span>
             </Link>
             <p className="text-neutral-400 mb-4">{t("footer.tagline")}</p>
             <div className="flex space-x-4 rtl:space-x-reverse">

@@ -52,7 +52,10 @@ export default function MobileMenu() {
       <div className="fixed top-0 left-0 rtl:left-auto rtl:right-0 h-full w-4/5 max-w-xs bg-white shadow-lg transform transition-transform duration-300 -translate-x-full rtl:translate-x-full" id="mobileMenu">
         <div className="flex flex-col h-full">
           <div className="p-4 border-b border-neutral-200 flex justify-between items-center">
-            <Logo size="sm" showText={false} />
+            <div className="flex items-center space-x-2 rtl:space-x-reverse">
+              <Logo size="sm" showText={false} />
+              <span className="text-lg font-bold text-primary">Diyor Market</span>
+            </div>
             <Button variant="ghost" size="icon" onClick={closeMobileMenu} className="text-neutral-500">
               <X className="h-5 w-5" />
             </Button>

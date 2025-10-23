@@ -171,8 +171,9 @@ export default function Header() {
         {/* Main navigation bar */}
         <div className="py-3 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/">
+          <Link href="/" className="flex items-center space-x-2 rtl:space-x-reverse">
             <Logo size="md" showText={false} />
+            <span className="text-xl font-bold text-primary">Diyor Market</span>
           </Link>
           
           {/* Search bar */}
