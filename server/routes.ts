@@ -784,8 +784,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const deliveryFee = 37500; // 37,500 UZS delivery fee
-      const tax = subtotal * 0.08; // 8% tax
+      const deliveryFee = 19000; // 19,000 UZS delivery fee (Yunusabad test rate)
+      const tax = 0; // No tax for now
       const total = subtotal + deliveryFee + tax;
 
       const order = await storage.createOrder({
