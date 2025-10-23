@@ -31,7 +31,7 @@ function Router() {
       <Route path="/product/:id" component={Product} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/orders" component={Orders} />
-      <Route path="/account" component={Account} />
+      <Route path="/account/:section?" component={Account} />
       <Route path="/auth" component={Auth} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/super-admin" component={SuperAdminDashboard} />

@@ -17,15 +17,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Address } from "@/types";
 import { userApi } from "@/hooks/use-api";
+import LocationSelector from "@/components/ui/LocationSelector";
 
 const addressSchema = z.object({
   title: z.string().min(1, "Title is required"),
   addressType: z.enum(["home", "work", "other"]),
   fullName: z.string().min(1, "Full name is required"),
-  phone: z.string().min(10, "Phone number must be at least 10 characters").optional(), // NEW
+  phone: z.string().min(10, "Phone number must be at least 10 characters").optional(),
   address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
+  coordinates: z.object({
+    lat: z.number(),
+    lng: z.number(),
+  }).optional(),
   postalCode: z.string().min(1, "Postal code is required"),
   country: z.string().min(1, "Country is required"),
   isDefault: z.boolean().optional(),
@@ -216,57 +219,35 @@ export default function AddressDialog({
           </div>
 
           <div>
-            <Label htmlFor="address">Street Address</Label>
-            <Input
-              id="address"
-              {...register("address")}
-              placeholder="Street address"
-              className={errors.address ? "border-red-500" : ""}
+            <Label htmlFor="address">Address</Label>
+            <LocationSelector
+              value={watch("address")}
+              onLocationSelect={(location) => {
+                setValue("address", location.address);
+                setValue("coordinates", {
+                  lat: location.coordinates[0],
+                  lng: location.coordinates[1]
+                });
+              }}
+              placeholder="Search for your address..."
+              className="w-full"
             />
             {errors.address && (
               <p className="text-sm text-red-500 mt-1">{errors.address.message}</p>
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                {...register("city")}
-                placeholder="City"
-                className={errors.city ? "border-red-500" : ""}
-              />
-              {errors.city && (
-                <p className="text-sm text-red-500 mt-1">{errors.city.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="state">State</Label>
-              <Input
-                id="state"
-                {...register("state")}
-                placeholder="State"
-                className={errors.state ? "border-red-500" : ""}
-              />
-              {errors.state && (
-                <p className="text-sm text-red-500 mt-1">{errors.state.message}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="postalCode">Postal Code</Label>
-              <Input
-                id="postalCode"
-                {...register("postalCode")}
-                placeholder="123456"
-                className={errors.postalCode ? "border-red-500" : ""}
-              />
-              {errors.postalCode && (
-                <p className="text-sm text-red-500 mt-1">{errors.postalCode.message}</p>
-              )}
-            </div>
+          <div>
+            <Label htmlFor="postalCode">Postal Code</Label>
+            <Input
+              id="postalCode"
+              {...register("postalCode")}
+              placeholder="123456"
+              className={errors.postalCode ? "border-red-500" : ""}
+            />
+            {errors.postalCode && (
+              <p className="text-sm text-red-500 mt-1">{errors.postalCode.message}</p>
+            )}
           </div>
 
           <div>

@@ -80,12 +80,45 @@ export default function Account() {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState<string | null>(null);
   
+  // Profile form state
+  const [profileData, setProfileData] = useState({
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+  
   // Redirect to auth page if not authenticated
   useEffect(() => {
     if (!loading && !user) {
       setLocation("/auth");
     }
   }, [loading, user, setLocation]);
+
+  // Sync activeTab with current route
+  useEffect(() => {
+    if (params?.section) {
+      setActiveTab(params.section);
+    }
+  }, [params?.section]);
+
+  // Sync profile data with user data
+  useEffect(() => {
+    if (user) {
+      setProfileData(prev => ({
+        ...prev,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+      }));
+    }
+  }, [user]);
 
   // Fetch orders when user is available
   useEffect(() => {
@@ -106,6 +139,46 @@ export default function Account() {
       setOrdersError("Failed to load orders. Please try again.");
     } finally {
       setOrdersLoading(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setIsSaving(true);
+      setSaveMessage(null);
+
+      // Update profile
+      await userApi.updateProfile({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        email: profileData.email,
+        phone: profileData.phone,
+      });
+
+      // If password fields are filled, update password
+      if (profileData.newPassword) {
+        if (profileData.newPassword !== profileData.confirmPassword) {
+          setSaveMessage({type: 'error', text: 'Passwords do not match'});
+          return;
+        }
+        await userApi.updatePassword({
+          currentPassword: profileData.currentPassword,
+          newPassword: profileData.newPassword,
+        });
+        // Clear password fields
+        setProfileData(prev => ({
+          ...prev,
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        }));
+      }
+
+      setSaveMessage({type: 'success', text: 'Profile updated successfully!'});
+    } catch (error) {
+      setSaveMessage({type: 'error', text: 'Failed to update profile'});
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -365,19 +438,37 @@ export default function Account() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="firstName">{t("account.firstName")}</Label>
-                          <Input id="firstName" defaultValue={user?.firstName || ""} />
+                          <Input 
+                            id="firstName" 
+                            value={profileData.firstName}
+                            onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName">{t("account.lastName")}</Label>
-                          <Input id="lastName" defaultValue={user?.lastName || ""} />
+                          <Input 
+                            id="lastName" 
+                            value={profileData.lastName}
+                            onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="email">{t("account.email")}</Label>
-                          <Input id="email" type="email" defaultValue={user?.email || ""} />
+                          <Input 
+                            id="email" 
+                            type="email" 
+                            value={profileData.email}
+                            onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                          />
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="phone">{t("account.phone")}</Label>
-                          <Input id="phone" type="tel" defaultValue={user?.phone || ""} />
+                          <Input 
+                            id="phone" 
+                            type="tel" 
+                            value={profileData.phone}
+                            onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                          />
                         </div>
                       </div>
                       
@@ -388,21 +479,49 @@ export default function Account() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
                             <Label htmlFor="currentPassword">{t("account.currentPassword")}</Label>
-                            <Input id="currentPassword" type="password" />
+                            <Input 
+                              id="currentPassword" 
+                              type="password" 
+                              value={profileData.currentPassword}
+                              onChange={(e) => setProfileData({...profileData, currentPassword: e.target.value})}
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="newPassword">{t("account.newPassword")}</Label>
-                            <Input id="newPassword" type="password" />
+                            <Input 
+                              id="newPassword" 
+                              type="password" 
+                              value={profileData.newPassword}
+                              onChange={(e) => setProfileData({...profileData, newPassword: e.target.value})}
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="confirmPassword">{t("account.confirmPassword")}</Label>
-                            <Input id="confirmPassword" type="password" />
+                            <Input 
+                              id="confirmPassword" 
+                              type="password" 
+                              value={profileData.confirmPassword}
+                              onChange={(e) => setProfileData({...profileData, confirmPassword: e.target.value})}
+                            />
                           </div>
                         </div>
                       </div>
                       
+                      {/* Save message display */}
+                      {saveMessage && (
+                        <div className={`p-3 rounded-md ${
+                          saveMessage.type === 'success' 
+                            ? 'bg-green-50 text-green-800 border border-green-200' 
+                            : 'bg-red-50 text-red-800 border border-red-200'
+                        }`}>
+                          {saveMessage.text}
+                        </div>
+                      )}
+                      
                       <div className="flex justify-end">
-                        <Button>{t("account.saveChanges")}</Button>
+                        <Button onClick={handleSaveProfile} disabled={isSaving}>
+                          {isSaving ? 'Saving...' : t("account.saveChanges")}
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -762,3 +881,4 @@ export default function Account() {
     </>
   );
 }
+

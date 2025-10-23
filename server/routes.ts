@@ -206,11 +206,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/user/profile", authenticateUser, async (req: Request, res: Response) => {
     try {
-      const { firstName, lastName, phone } = req.body;
+      const { firstName, lastName, email, phone } = req.body;
       
       const updatedUser = await storage.updateUser(req.session.userId!, {
         firstName,
         lastName,
+        email,
         phone,
       });
 
@@ -223,6 +224,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Update profile error:", error);
       res.status(500).json({ error: "Failed to update profile" });
+    }
+  });
+
+  app.patch("/api/user/password", authenticateUser, async (req: Request, res: Response) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: "Current password and new password are required" });
+      }
+
+      // Get current user to verify current password
+      const user = await storage.getUser(req.session.userId!);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Verify current password
+      const bcrypt = require('bcrypt');
+      const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+      if (!isValidPassword) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      // Update password
+      const updatedUser = await storage.updateUser(req.session.userId!, {
+        password: hashedPassword,
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Update password error:", error);
+      res.status(500).json({ error: "Failed to update password" });
     }
   });
 
@@ -961,6 +1002,163 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Get system stats error:", error);
       res.status(500).json({ error: "Failed to get system stats" });
+    }
+  });
+
+  // Rider API endpoints
+  app.get("/api/rider/available-orders", authenticateUser, async (req: Request, res: Response) => {
+    try {
+      // Check if user is a rider
+      const user = await storage.getUser(req.session.userId!);
+      if (!user || user.role !== "rider") {
+        return res.status(403).json({ error: "Access denied. Rider role required." });
+      }
+
+      const orders = await storage.getAvailableOrdersForRider();
+      res.json({ orders });
+    } catch (error) {
+      console.error("Get available orders error:", error);
+      res.status(500).json({ error: "Failed to get available orders" });
+    }
+  });
+
+  app.get("/api/rider/my-deliveries", authenticateUser, async (req: Request, res: Response) => {
+    try {
+      // Check if user is a rider
+      const user = await storage.getUser(req.session.userId!);
+      if (!user || user.role !== "rider") {
+        return res.status(403).json({ error: "Access denied. Rider role required." });
+      }
+
+      const orders = await storage.getRiderOrders(req.session.userId!);
+      res.json({ orders });
+    } catch (error) {
+      console.error("Get rider deliveries error:", error);
+      res.status(500).json({ error: "Failed to get rider deliveries" });
+    }
+  });
+
+  app.post("/api/rider/accept-order/:orderId", authenticateUser, async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      const riderId = req.session.userId!;
+
+      // Check if user is a rider
+      const user = await storage.getUser(riderId);
+      if (!user || user.role !== "rider") {
+        return res.status(403).json({ error: "Access denied. Rider role required." });
+      }
+
+      // Check if order exists and is available
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      if (order.status !== "ready") {
+        return res.status(400).json({ error: "Order is not ready for pickup" });
+      }
+
+      if (order.riderAssignedId) {
+        return res.status(400).json({ error: "Order is already assigned to another rider" });
+      }
+
+      // Assign order to rider
+      const updatedOrder = await storage.assignRiderToOrder(orderId, riderId);
+      res.json({ order: updatedOrder });
+    } catch (error) {
+      console.error("Accept order error:", error);
+      res.status(500).json({ error: "Failed to accept order" });
+    }
+  });
+
+  app.patch("/api/rider/update-delivery-status/:orderId", authenticateUser, async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      const riderId = req.session.userId!;
+      const { status } = req.body;
+
+      // Check if user is a rider
+      const user = await storage.getUser(riderId);
+      if (!user || user.role !== "rider") {
+        return res.status(403).json({ error: "Access denied. Rider role required." });
+      }
+
+      // Check if order is assigned to this rider
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      if (order.riderAssignedId !== riderId) {
+        return res.status(403).json({ error: "Order is not assigned to you" });
+      }
+
+      // Update delivery status
+      const validStatuses = ["picked_up", "in_transit", "delivered"];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+
+      const updatedOrder = await storage.updateRiderDeliveryStatus(orderId, status);
+      res.json({ order: updatedOrder });
+    } catch (error) {
+      console.error("Update delivery status error:", error);
+      res.status(500).json({ error: "Failed to update delivery status" });
+    }
+  });
+
+  app.get("/api/rider/stats", authenticateUser, async (req: Request, res: Response) => {
+    try {
+      const riderId = req.session.userId!;
+
+      // Check if user is a rider
+      const user = await storage.getUser(riderId);
+      if (!user || user.role !== "rider") {
+        return res.status(403).json({ error: "Access denied. Rider role required." });
+      }
+
+      const stats = await storage.getRiderStats(riderId);
+      res.json(stats);
+    } catch (error) {
+      console.error("Get rider stats error:", error);
+      res.status(500).json({ error: "Failed to get rider stats" });
+    }
+  });
+
+  app.get("/api/rider/order/:orderId", authenticateUser, async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.orderId);
+      const riderId = req.session.userId!;
+
+      // Check if user is a rider
+      const user = await storage.getUser(riderId);
+      if (!user || user.role !== "rider") {
+        return res.status(403).json({ error: "Access denied. Rider role required." });
+      }
+
+      // Get the order and verify it's assigned to this rider
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      if (order.riderAssignedId !== riderId) {
+        return res.status(403).json({ error: "Order is not assigned to you" });
+      }
+
+      // Get enriched order details
+      const riderOrders = await storage.getRiderOrders(riderId);
+      const orderDetails = riderOrders.find(o => o.id === orderId);
+
+      if (!orderDetails) {
+        return res.status(404).json({ error: "Order details not found" });
+      }
+
+      res.json({ order: orderDetails });
+    } catch (error) {
+      console.error("Get rider order details error:", error);
+      res.status(500).json({ error: "Failed to get order details" });
     }
   });
 

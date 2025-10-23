@@ -32,6 +32,8 @@ export const addresses = pgTable("addresses", {
   state: text("state").notNull(),
   postalCode: text("postal_code").notNull(),
   country: text("country").notNull().default("US"),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
   isDefault: boolean("is_default").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

@@ -38,6 +38,7 @@ import { userApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
 import { Address } from "@/types";
 import AddressManager from "@/components/account/AddressManager";
+import LocationSelector from "@/components/ui/LocationSelector";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -62,15 +63,10 @@ const formSchema = z.object({
   address: z.string().min(5, {
     message: "Address must be at least 5 characters",
   }),
-  city: z.string().min(2, {
-    message: "City must be at least 2 characters",
-  }),
-  state: z.string().min(2, {
-    message: "State must be at least 2 characters",
-  }),
-  zipCode: z.string().min(4, {
-    message: "Zip code must be at least 4 characters",
-  }),
+  coordinates: z.object({
+    lat: z.number(),
+    lng: z.number(),
+  }).optional(),
   deliveryTime: z.string(),
   paymentMethod: z.enum(["uzcard", "humo", "click", "payme", "international", "cash"]),
   saveAddress: z.boolean().default(false),
@@ -104,9 +100,12 @@ const CheckoutPage = () => {
   const fillFormWithAddress = (address: Address) => {
     form.setValue("fullName", address.fullName);
     form.setValue("address", address.address);
-    form.setValue("city", address.city);
-    form.setValue("state", address.state);
-    form.setValue("zipCode", address.postalCode);
+    if (address.latitude && address.longitude) {
+      form.setValue("coordinates", {
+        lat: parseFloat(address.latitude.toString()),
+        lng: parseFloat(address.longitude.toString())
+      });
+    }
   };
   
   const form = useForm<FormValues>({
@@ -116,9 +115,7 @@ const CheckoutPage = () => {
       email: user?.email || "",
       phone: user?.phone || "",
       address: "",
-      city: "",
-      state: "",
-      zipCode: "",
+      coordinates: undefined,
       deliveryTime: "asap",
       paymentMethod: "uzcard",
       saveAddress: false,
@@ -132,7 +129,7 @@ const CheckoutPage = () => {
   const onError = (errors: any) => {
     console.log("🛒 CHECKOUT: Form validation errors:", errors);
     // Navigate to the first step with errors
-    if (errors.fullName || errors.email || errors.phone || errors.address || errors.city || errors.state || errors.zipCode) {
+    if (errors.fullName || errors.email || errors.phone || errors.address) {
       console.log("🛒 CHECKOUT: Address errors found, navigating to address step");
       setPaymentStep("address");
     } else if (errors.deliveryTime) {
@@ -155,12 +152,14 @@ const CheckoutPage = () => {
           title: "Home",
           addressType: "home",
           fullName: data.fullName,
-          phone: data.phone, // NEW: Include phone from checkout form
+          phone: data.phone,
           address: data.address,
-          city: data.city,
-          state: data.state,
-          postalCode: data.zipCode,
+          city: "Tashkent", // Default city
+          state: "Tashkent", // Default state
+          postalCode: "100000", // Default postal code for Tashkent
           country: "Uzbekistan",
+          latitude: data.coordinates?.lat,
+          longitude: data.coordinates?.lng,
           isDefault: false, // Don't auto-set as default
         });
         addressId = addressResponse.address.id;
@@ -224,7 +223,7 @@ const CheckoutPage = () => {
   const handleContinue = async (step: "address" | "delivery" | "payment") => {
     switch (step) {
       case "address":
-        const addressValid = await form.trigger(["fullName", "email", "phone", "address", "city", "state", "zipCode"]);
+        const addressValid = await form.trigger(["fullName", "email", "phone", "address"]);
         if (!addressValid) {
           return;
         }
@@ -388,51 +387,18 @@ const CheckoutPage = () => {
                             <FormItem>
                               <FormLabel>{t("checkout.address")}</FormLabel>
                               <FormControl>
-                                <Input placeholder={t("checkout.addressPlaceholder")} {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                        <FormField
-                          control={form.control}
-                          name="city"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t("checkout.city")}</FormLabel>
-                              <FormControl>
-                                <Input placeholder={t("checkout.cityPlaceholder")} {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="state"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t("checkout.state")}</FormLabel>
-                              <FormControl>
-                                <Input placeholder={t("checkout.statePlaceholder")} {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="zipCode"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>{t("checkout.zipCode")}</FormLabel>
-                              <FormControl>
-                                <Input placeholder={t("checkout.zipCodePlaceholder")} {...field} />
+                                <LocationSelector
+                                  value={field.value}
+                                  onLocationSelect={(location) => {
+                                    field.onChange(location.address);
+                                    form.setValue("coordinates", {
+                                      lat: location.coordinates[0],
+                                      lng: location.coordinates[1]
+                                    });
+                                  }}
+                                  placeholder={t("checkout.addressPlaceholder")}
+                                  className="w-full"
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -892,7 +858,7 @@ const CheckoutPage = () => {
                             if (!isValid) {
                               // Check which step has errors and navigate to it
                               const errors = form.formState.errors;
-                              if (errors.fullName || errors.email || errors.phone || errors.address || errors.city || errors.state || errors.zipCode) {
+                              if (errors.fullName || errors.email || errors.phone || errors.address) {
                                 console.log("🛒 CHECKOUT: Address errors found, navigating to address step");
                                 setPaymentStep("address");
                                 return;

@@ -158,6 +158,13 @@ export const userApi = {
     });
   },
 
+  updatePassword: async (passwordData: { currentPassword: string; newPassword: string }) => {
+    return apiRequest('/user/password', {
+      method: 'PATCH',
+      body: JSON.stringify(passwordData),
+    });
+  },
+
   getAddresses: async () => {
     return apiRequest('/user/addresses');
   },
@@ -198,5 +205,37 @@ export const orderApi = {
       method: 'POST',
       body: JSON.stringify(orderData),
     });
+  },
+};
+
+// Rider API functions
+export const riderApi = {
+  getAvailableOrders: async () => {
+    return apiRequest('/rider/available-orders');
+  },
+
+  getMyDeliveries: async () => {
+    return apiRequest('/rider/my-deliveries');
+  },
+
+  acceptOrder: async (orderId: number) => {
+    return apiRequest(`/rider/accept-order/${orderId}`, {
+      method: 'POST',
+    });
+  },
+
+  updateDeliveryStatus: async (orderId: number, status: string) => {
+    return apiRequest(`/rider/update-delivery-status/${orderId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  },
+
+  getStats: async () => {
+    return apiRequest('/rider/stats');
+  },
+
+  getOrderDetails: async (orderId: number) => {
+    return apiRequest(`/rider/order/${orderId}`);
   },
 };

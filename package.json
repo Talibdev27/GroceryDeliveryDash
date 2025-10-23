@@ -53,6 +53,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/pg": "^8.15.5",
+    "@yandex/ymaps3-types": "^1.0.17818622",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

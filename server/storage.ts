@@ -685,6 +685,170 @@ export class DatabaseStorage implements IStorage {
       .where(eq(addresses.userId, userId));
     console.log("💾 Default addresses unset successfully");
   }
+
+  // Rider-specific methods
+  async getAvailableOrdersForRider(): Promise<Order[]> {
+    console.log("💾 Fetching available orders for riders");
+    
+    // Get orders that are ready and not assigned to any rider
+    const availableOrders = await db.select()
+      .from(orders)
+      .where(and(
+        eq(orders.status, "ready"),
+        sql`${orders.riderAssignedId} IS NULL`
+      ))
+      .orderBy(sql`${orders.createdAt} DESC`);
+    
+    console.log(`💾 Found ${availableOrders.length} available orders`);
+    return availableOrders;
+  }
+
+  async getRiderOrders(riderId: number): Promise<any[]> {
+    console.log("💾 Fetching orders for rider:", riderId);
+    
+    // Get orders assigned to this rider with full details
+    const riderOrders = await db.select()
+      .from(orders)
+      .where(eq(orders.riderAssignedId, riderId))
+      .orderBy(sql`${orders.createdAt} DESC`);
+    
+    console.log(`💾 Found ${riderOrders.length} orders for rider ${riderId}`);
+    
+    // Enrich orders with user, address, and items information
+    const enrichedOrders = await Promise.all(
+      riderOrders.map(async (order) => {
+        const user = order.userId ? await this.getUser(order.userId) : null;
+        const address = order.addressId ? await this.getAddress(order.addressId) : null;
+        const items = await this.getOrderItems(order.id);
+        
+        // Get product details for each item
+        const itemsWithProducts = await Promise.all(
+          items.map(async (item) => {
+            const product = await this.getProduct(item.productId);
+            return {
+              ...item,
+              productName: product?.name || 'Unknown Product',
+              productImage: product?.image || '',
+              productDescription: product?.description || ''
+            };
+          })
+        );
+        
+        return {
+          ...order,
+          userName: user ? `${user.firstName} ${user.lastName}` : 'Unknown User',
+          userEmail: user?.email || '',
+          userPhone: user?.phone || '',
+          address: address,
+          items: itemsWithProducts,
+          itemCount: items.length
+        };
+      })
+    );
+    
+    console.log(`💾 Returning enriched orders with details for rider ${riderId}`);
+    return enrichedOrders;
+  }
+
+  async updateRiderDeliveryStatus(orderId: number, status: string): Promise<Order | undefined> {
+    console.log("💾 Updating rider delivery status:", { orderId, status });
+    
+    const updateData: any = {};
+    
+    // Set appropriate timestamp based on status
+    if (status === "picked_up") {
+      updateData.riderPickedUpAt = new Date();
+      updateData.status = "in_transit";
+    } else if (status === "delivered") {
+      updateData.riderDeliveredAt = new Date();
+      updateData.status = "delivered";
+    }
+    
+    const result = await db.update(orders)
+      .set(updateData)
+      .where(eq(orders.id, orderId))
+      .returning();
+    
+    console.log("💾 Delivery status updated successfully:", orderId);
+    return result[0];
+  }
+
+  async getRiderStats(riderId: number): Promise<any> {
+    console.log("💾 Fetching rider stats for:", riderId);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    // Get today's deliveries
+    const todayDeliveries = await db.select()
+      .from(orders)
+      .where(and(
+        eq(orders.riderAssignedId, riderId),
+        sql`${orders.createdAt} >= ${today}`,
+        sql`${orders.createdAt} < ${tomorrow}`
+      ));
+    
+    // Get completed deliveries today
+    const completedToday = todayDeliveries.filter(order => order.status === "delivered");
+    
+    // Get pending deliveries
+    const pendingDeliveries = await db.select()
+      .from(orders)
+      .where(and(
+        eq(orders.riderAssignedId, riderId),
+        sql`${orders.status} IN ('assigned', 'in_transit')`
+      ));
+    
+    // Calculate today's earnings (assuming 19,000 сум per delivery)
+    const deliveryFee = 19000;
+    const todayEarnings = completedToday.length * deliveryFee;
+    
+    // Get this week's earnings
+    const weekStart = new Date(today);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+    
+    const weekDeliveries = await db.select()
+      .from(orders)
+      .where(and(
+        eq(orders.riderAssignedId, riderId),
+        eq(orders.status, "delivered"),
+        sql`${orders.createdAt} >= ${weekStart}`,
+        sql`${orders.createdAt} < ${weekEnd}`
+      ));
+    
+    const weekEarnings = weekDeliveries.length * deliveryFee;
+    
+    // Get this month's earnings
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    
+    const monthDeliveries = await db.select()
+      .from(orders)
+      .where(and(
+        eq(orders.riderAssignedId, riderId),
+        eq(orders.status, "delivered"),
+        sql`${orders.createdAt} >= ${monthStart}`,
+        sql`${orders.createdAt} < ${monthEnd}`
+      ));
+    
+    const monthEarnings = monthDeliveries.length * deliveryFee;
+    
+    const stats = {
+      todayDeliveries: todayDeliveries.length,
+      completedToday: completedToday.length,
+      pendingDeliveries: pendingDeliveries.length,
+      todayEarnings,
+      weekEarnings,
+      monthEarnings
+    };
+    
+    console.log("💾 Rider stats calculated:", stats);
+    return stats;
+  }
 }
 
 // Export the database storage instance

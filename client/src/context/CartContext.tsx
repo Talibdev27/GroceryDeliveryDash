@@ -48,7 +48,7 @@ export const CartContext = createContext<CartContextType>({
   closeCart: () => {},
   openCart: () => {},
   subtotal: 0,
-  deliveryFee: DEFAULT_CURRENCY === 'UZS' ? 37500 : 2.99,
+  deliveryFee: DEFAULT_CURRENCY === 'UZS' ? 19000 : 2.99,
   total: 0,
 });
 
@@ -81,7 +81,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   ]);
 
   // Delivery fee in Uzbek Som (approximately $2.99 USD)
-  const deliveryFee = DEFAULT_CURRENCY === 'UZS' ? 37500 : 2.99;
+  const deliveryFee = DEFAULT_CURRENCY === 'UZS' ? 19000 : 2.99;
 
   // Try to load cart from localStorage on initial load
   useEffect(() => {

@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/AuthContext";
-import { User, Mail, Lock, UserPlus, LogIn } from "lucide-react";
+import { User, Mail, Lock, UserPlus, LogIn, Phone } from "lucide-react";
 
 export default function Auth() {
   const { t } = useTranslation();
@@ -46,6 +46,7 @@ export default function Auth() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
+    phone: "",
   });
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -91,6 +92,7 @@ export default function Auth() {
         password: registerData.password,
         firstName: registerData.firstName,
         lastName: registerData.lastName,
+        phone: registerData.phone,
       });
 
       if (success) {
@@ -257,6 +259,24 @@ export default function Auth() {
                             value={registerData.email}
                             onChange={(e) =>
                               setRegisterData({ ...registerData, email: e.target.value })
+                            }
+                            className="pl-10"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="register-phone">Phone Number</Label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                          <Input
+                            id="register-phone"
+                            type="tel"
+                            placeholder="+998 XX XXX XX XX"
+                            value={registerData.phone}
+                            onChange={(e) =>
+                              setRegisterData({ ...registerData, phone: e.target.value })
                             }
                             className="pl-10"
                             required
