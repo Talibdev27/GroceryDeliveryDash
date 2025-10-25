@@ -28,6 +28,7 @@ import { useProducts, useCategories } from "@/hooks/use-api";
 import { useProductManagement } from "@/hooks/use-product-management";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getCurrencySymbol, DEFAULT_CURRENCY } from "@/lib/currency";
+import { translateProductToEnglish, translateProductToRussian } from "@/lib/translate";
 
 interface Product {
   id: number;
@@ -68,14 +69,21 @@ export default function ProductManager() {
   // Form state for creating/editing products
   const [formData, setFormData] = useState({
     name: "",
+    nameRu: "",
+    nameUz: "",
     description: "",
+    descriptionRu: "",
+    descriptionUz: "",
     price: "",
     salePrice: "",
     categoryId: "",
     stockQuantity: "",
     featured: false,
     sale: false,
-    image: ""
+    image: "",
+    unit: "",
+    unitRu: "",
+    unitUz: ""
   });
 
   // Filter products based on search and filters
@@ -178,15 +186,97 @@ export default function ProductManager() {
   const resetForm = () => {
     setFormData({
       name: "",
+      nameRu: "",
+      nameUz: "",
       description: "",
+      descriptionRu: "",
+      descriptionUz: "",
       price: "",
       salePrice: "",
       categoryId: "",
       stockQuantity: "",
       featured: false,
       sale: false,
-      image: ""
+      image: "",
+      unit: "",
+      unitRu: "",
+      unitUz: ""
     });
+  };
+
+  // Translation functions
+  const handleTranslateToEnglish = async () => {
+    if (!formData.nameUz || !formData.descriptionUz || !formData.unitUz) {
+      toast({
+        title: "Error",
+        description: "Please fill in Uzbek fields first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const translations = await translateProductToEnglish({
+        nameUz: formData.nameUz,
+        descriptionUz: formData.descriptionUz,
+        unitUz: formData.unitUz
+      });
+
+      setFormData(prev => ({
+        ...prev,
+        name: translations.name,
+        description: translations.description,
+        unit: translations.unit
+      }));
+
+      toast({
+        title: "Success",
+        description: "English translation completed!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to translate to English",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTranslateToRussian = async () => {
+    if (!formData.nameUz || !formData.descriptionUz || !formData.unitUz) {
+      toast({
+        title: "Error",
+        description: "Please fill in Uzbek fields first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const translations = await translateProductToRussian({
+        nameUz: formData.nameUz,
+        descriptionUz: formData.descriptionUz,
+        unitUz: formData.unitUz
+      });
+
+      setFormData(prev => ({
+        ...prev,
+        nameRu: translations.nameRu,
+        descriptionRu: translations.descriptionRu,
+        unitRu: translations.unitRu
+      }));
+
+      toast({
+        title: "Success",
+        description: "Russian translation completed!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to translate to Russian",
+        variant: "destructive",
+      });
+    }
   };
 
   if (productsLoading) {
