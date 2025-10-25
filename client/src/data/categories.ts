@@ -6,6 +6,8 @@ export const categories: Category[] = [
     name: 'Fruits',
     nameEs: 'Frutas',
     nameAr: 'فواكه',
+    nameRu: 'Фрукты',
+    nameUz: 'Mevalar',
     image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200',
     slug: 'fruits'
   },
@@ -14,6 +16,8 @@ export const categories: Category[] = [
     name: 'Vegetables',
     nameEs: 'Verduras',
     nameAr: 'خضروات',
+    nameRu: 'Овощи',
+    nameUz: 'Sabzavotlar',
     image: 'https://images.unsplash.com/photo-1557844352-761f2565b576?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200',
     slug: 'vegetables'
   },
@@ -22,6 +26,8 @@ export const categories: Category[] = [
     name: 'Dairy',
     nameEs: 'Lácteos',
     nameAr: 'منتجات الألبان',
+    nameRu: 'Молочные продукты',
+    nameUz: 'Sut mahsulotlari',
     image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200',
     slug: 'dairy'
   },
@@ -30,6 +36,8 @@ export const categories: Category[] = [
     name: 'Bakery',
     nameEs: 'Panadería',
     nameAr: 'مخبز',
+    nameRu: 'Хлебобулочные изделия',
+    nameUz: 'Non mahsulotlari',
     image: 'https://images.unsplash.com/photo-1608198093002-ad4e005484ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200',
     slug: 'bakery'
   },
@@ -38,6 +46,8 @@ export const categories: Category[] = [
     name: 'Meat',
     nameEs: 'Carne',
     nameAr: 'لحم',
+    nameRu: 'Мясо',
+    nameUz: 'Go\'sht',
     image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200',
     slug: 'meat'
   },
@@ -46,6 +56,8 @@ export const categories: Category[] = [
     name: 'Seafood',
     nameEs: 'Mariscos',
     nameAr: 'مأكولات بحرية',
+    nameRu: 'Морепродукты',
+    nameUz: 'Dengiz mahsulotlari',
     image: 'https://images.unsplash.com/photo-1535140728325-a4d3707eee61?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
     slug: 'seafood'
   },
@@ -54,6 +66,8 @@ export const categories: Category[] = [
     name: 'Frozen',
     nameEs: 'Congelados',
     nameAr: 'مجمدة',
+    nameRu: 'Замороженные',
+    nameUz: 'Muzlatilgan',
     image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
     slug: 'frozen'
   },
@@ -62,6 +76,8 @@ export const categories: Category[] = [
     name: 'Snacks',
     nameEs: 'Aperitivos',
     nameAr: 'وجبات خفيفة',
+    nameRu: 'Закуски',
+    nameUz: 'Gazaklar',
     image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200',
     slug: 'snacks'
   }

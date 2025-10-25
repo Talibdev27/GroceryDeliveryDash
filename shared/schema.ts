@@ -45,6 +45,8 @@ export const categories = pgTable("categories", {
   name: text("name").notNull(),
   nameEs: text("name_es"),
   nameAr: text("name_ar"),
+  nameRu: text("name_ru"),
+  nameUz: text("name_uz"),
   image: text("image").notNull(),
   slug: text("slug").notNull().unique(),
   isActive: boolean("is_active").default(true),
@@ -157,6 +159,8 @@ export const insertCategorySchema = createInsertSchema(categories).pick({
   name: true,
   nameEs: true,
   nameAr: true,
+  nameRu: true,
+  nameUz: true,
   image: true,
   slug: true,
 });

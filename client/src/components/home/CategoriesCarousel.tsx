@@ -14,6 +14,17 @@ export default function CategoriesCarousel() {
   const { data: categoriesData, loading, error } = useCategories();
   
   const categories = categoriesData?.categories || [];
+
+  // Helper function to get category name based on current language
+  const getCategoryName = (category: any) => {
+    switch (currentLanguage) {
+      case 'ru': return category.nameRu || category.name;
+      case 'uz': return category.nameUz || category.name;
+      case 'es': return category.nameEs || category.name;
+      case 'ar': return category.nameAr || category.name;
+      default: return category.name;
+    }
+  };
   
   const scrollCategories = (direction: "left" | "right") => {
     if (categoriesRef.current) {
@@ -67,7 +78,7 @@ export default function CategoriesCarousel() {
                         backgroundPosition: "center"
                       }}
                     ></div>
-                    <span className="text-sm font-medium group-hover:text-primary">{category.name}</span>
+                    <span className="text-sm font-medium group-hover:text-primary">{getCategoryName(category)}</span>
                   </Link>
                 ))
               )}

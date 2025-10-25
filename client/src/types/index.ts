@@ -4,6 +4,8 @@ export interface Category {
   name: string;
   nameEs: string;
   nameAr: string;
+  nameRu: string;
+  nameUz: string;
   image: string;
   slug: string;
 }
