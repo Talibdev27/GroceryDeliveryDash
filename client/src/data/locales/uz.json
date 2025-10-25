@@ -185,6 +185,7 @@
     },
     "allergens": "Allergenlar",
     "allergensText": "Bu mahsulot yong'oq, bug'doy va soya izlarini o'z ichiga olishi mumkin.",
+    "noNutritionData": "Oziqlanish ma'lumotlari mavjud emas",
     "storage": "Saqlash bo'yicha ko'rsatmalar",
     "storageText": "Salqin va quruq joyda saqlang. Ochilgandan keyin sovutgichda saqlang.",
     "customerReviews": "Mijozlar sharhlari",

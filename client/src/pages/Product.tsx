@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/accordion";
 import { useCart } from "@/hooks/use-cart";
 import { useProduct, useCategories } from "@/hooks/use-api";
+import { useLanguage } from "@/hooks/use-language";
 import { formatCurrency } from "@/lib/utils";
 import { 
   Minus, 
@@ -37,6 +38,7 @@ export default function Product() {
   const { t } = useTranslation();
   const [, params] = useRoute<{ id: string }>("/product/:id");
   const { addToCart } = useCart();
+  const { currentLanguage } = useLanguage();
   
   const [quantity, setQuantity] = useState(1);
   const { data: productData, loading: isLoading, error } = useProduct(params?.id || "");
@@ -44,6 +46,16 @@ export default function Product() {
   
   const product = productData?.product;
   const categories = categoriesData?.categories || [];
+
+  // Get description based on current language
+  const getDescription = () => {
+    if (!product) return '';
+    switch (currentLanguage) {
+      case 'ru': return product.descriptionRu || product.description;
+      case 'uz': return product.descriptionUz || product.description;
+      default: return product.description;
+    }
+  };
 
   // Debug logging
   console.log("Product page: Product ID from URL:", params?.id);
@@ -259,48 +271,45 @@ export default function Product() {
               
               <TabsContent value="description" className="bg-white border border-neutral-200 rounded-lg p-6 mt-4">
                 <h3 className="font-medium text-lg mb-3">{t("product.descriptionTitle")}</h3>
-                <p className="text-neutral-600">
-                  {product.longDescription || t("product.longDescription")}
+                <p className="text-neutral-600 whitespace-pre-wrap">
+                  {getDescription()}
                 </p>
-                
-                <h3 className="font-medium text-lg mt-6 mb-3">{t("product.benefits")}</h3>
-                <ul className="list-disc list-inside space-y-2 text-neutral-600">
-                  <li>{t("product.benefitItems.item1")}</li>
-                  <li>{t("product.benefitItems.item2")}</li>
-                  <li>{t("product.benefitItems.item3")}</li>
-                </ul>
               </TabsContent>
               
               <TabsContent value="nutrition" className="bg-white border border-neutral-200 rounded-lg p-6 mt-4">
                 <h3 className="font-medium text-lg mb-3">{t("product.nutritionFacts")}</h3>
                 
-                <div className="border rounded-lg mb-4">
-                  <div className="p-4 border-b">
-                    <div className="flex justify-between font-medium">
-                      <span>{t("product.servingSize")}</span>
-                      <span>100g</span>
+                {product.nutrition ? (
+                  <div className="border rounded-lg mb-4">
+                    <div className="p-4 border-b">
+                      <div className="flex justify-between font-medium">
+                        <span>{t("product.servingSize")}</span>
+                        <span>100g</span>
+                      </div>
+                    </div>
+                    
+                    <div className="divide-y">
+                      <div className="flex justify-between p-3">
+                        <span>{t("product.nutritionItems.calories")}</span>
+                        <span className="font-medium">{product.nutrition.calories || 'N/A'}</span>
+                      </div>
+                      <div className="flex justify-between p-3">
+                        <span>{t("product.nutritionItems.fat")}</span>
+                        <span className="font-medium">{product.nutrition.fat || 'N/A'}g</span>
+                      </div>
+                      <div className="flex justify-between p-3">
+                        <span>{t("product.nutritionItems.carbs")}</span>
+                        <span className="font-medium">{product.nutrition.carbs || 'N/A'}g</span>
+                      </div>
+                      <div className="flex justify-between p-3">
+                        <span>{t("product.nutritionItems.protein")}</span>
+                        <span className="font-medium">{product.nutrition.protein || 'N/A'}g</span>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="divide-y">
-                    <div className="flex justify-between p-3">
-                      <span>{t("product.nutritionItems.calories")}</span>
-                      <span className="font-medium">150</span>
-                    </div>
-                    <div className="flex justify-between p-3">
-                      <span>{t("product.nutritionItems.fat")}</span>
-                      <span className="font-medium">5g</span>
-                    </div>
-                    <div className="flex justify-between p-3">
-                      <span>{t("product.nutritionItems.carbs")}</span>
-                      <span className="font-medium">20g</span>
-                    </div>
-                    <div className="flex justify-between p-3">
-                      <span>{t("product.nutritionItems.protein")}</span>
-                      <span className="font-medium">3g</span>
-                    </div>
-                  </div>
-                </div>
+                ) : (
+                  <p className="text-neutral-500">{t("product.noNutritionData")}</p>
+                )}
                 
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="allergens">

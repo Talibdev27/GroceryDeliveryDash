@@ -185,6 +185,7 @@
     },
     "allergens": "Allergens",
     "allergensText": "This product may contain traces of nuts, wheat, and soy.",
+    "noNutritionData": "Nutrition information not available",
     "storage": "Storage Instructions",
     "storageText": "Store in a cool, dry place. Refrigerate after opening.",
     "customerReviews": "Customer Reviews",
