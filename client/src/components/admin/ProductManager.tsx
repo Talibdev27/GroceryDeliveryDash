@@ -571,16 +571,179 @@ interface ProductFormProps {
 function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, actionLoading }: ProductFormProps) {
   return (
     <div className="space-y-6">
+      <Tabs defaultValue="uz" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="uz">O'zbek</TabsTrigger>
+          <TabsTrigger value="en">English</TabsTrigger>
+          <TabsTrigger value="ru">Русский</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="uz" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="nameUz">Mahsulot nomi</Label>
+              <Input
+                id="nameUz"
+                value={formData.nameUz}
+                onChange={(e) => setFormData({ ...formData, nameUz: e.target.value })}
+                placeholder="Mahsulot nomini kiriting"
+              />
+            </div>
+            <div>
+              <Label htmlFor="unitUz">O'lchov birligi</Label>
+              <Input
+                id="unitUz"
+                value={formData.unitUz}
+                onChange={(e) => setFormData({ ...formData, unitUz: e.target.value })}
+                placeholder="kg, dona, litr"
+              />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="descriptionUz">Tavsif</Label>
+            <Textarea
+              id="descriptionUz"
+              value={formData.descriptionUz}
+              onChange={(e) => setFormData({ ...formData, descriptionUz: e.target.value })}
+              placeholder="Mahsulot tavsifini kiriting"
+              rows={3}
+            />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="en" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium">English Translation</h3>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm"
+              onClick={async () => {
+                if (!formData.nameUz || !formData.descriptionUz || !formData.unitUz) {
+                  alert("Please fill in Uzbek fields first");
+                  return;
+                }
+                try {
+                  const { translateProductToEnglish } = await import("@/lib/translate");
+                  const translations = await translateProductToEnglish({
+                    nameUz: formData.nameUz,
+                    descriptionUz: formData.descriptionUz,
+                    unitUz: formData.unitUz
+                  });
+                  setFormData(prev => ({
+                    ...prev,
+                    name: translations.name,
+                    description: translations.description,
+                    unit: translations.unit
+                  }));
+                } catch (error) {
+                  console.error("Translation error:", error);
+                }
+              }}
+            >
+              Auto-translate
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="name">Product Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Enter product name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="unit">Unit</Label>
+              <Input
+                id="unit"
+                value={formData.unit}
+                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                placeholder="kg, piece, liter"
+              />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Enter product description"
+              rows={3}
+            />
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="ru" className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium">Русский перевод</h3>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm"
+              onClick={async () => {
+                if (!formData.nameUz || !formData.descriptionUz || !formData.unitUz) {
+                  alert("Please fill in Uzbek fields first");
+                  return;
+                }
+                try {
+                  const { translateProductToRussian } = await import("@/lib/translate");
+                  const translations = await translateProductToRussian({
+                    nameUz: formData.nameUz,
+                    descriptionUz: formData.descriptionUz,
+                    unitUz: formData.unitUz
+                  });
+                  setFormData(prev => ({
+                    ...prev,
+                    nameRu: translations.nameRu,
+                    descriptionRu: translations.descriptionRu,
+                    unitRu: translations.unitRu
+                  }));
+                } catch (error) {
+                  console.error("Translation error:", error);
+                }
+              }}
+            >
+              Авто-перевод
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="nameRu">Название продукта</Label>
+              <Input
+                id="nameRu"
+                value={formData.nameRu}
+                onChange={(e) => setFormData({ ...formData, nameRu: e.target.value })}
+                placeholder="Введите название продукта"
+              />
+            </div>
+            <div>
+              <Label htmlFor="unitRu">Единица измерения</Label>
+              <Input
+                id="unitRu"
+                value={formData.unitRu}
+                onChange={(e) => setFormData({ ...formData, unitRu: e.target.value })}
+                placeholder="кг, штука, литр"
+              />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="descriptionRu">Описание</Label>
+            <Textarea
+              id="descriptionRu"
+              value={formData.descriptionRu}
+              onChange={(e) => setFormData({ ...formData, descriptionRu: e.target.value })}
+              placeholder="Введите описание продукта"
+              rows={3}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Common fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="name">Product Name</Label>
-          <Input
-            id="name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Enter product name"
-          />
-        </div>
         <div>
           <Label htmlFor="category">Category</Label>
           <Select value={formData.categoryId} onValueChange={(value) => setFormData({ ...formData, categoryId: value })}>
@@ -596,17 +759,15 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
             </SelectContent>
           </Select>
         </div>
-      </div>
-
-      <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="Enter product description"
-          rows={3}
-        />
+        <div>
+          <Label htmlFor="image">Image URL</Label>
+          <Input
+            id="image"
+            value={formData.image}
+            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+            placeholder="https://example.com/image.jpg"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -642,16 +803,6 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
             placeholder="0"
           />
         </div>
-      </div>
-
-      <div>
-        <Label htmlFor="image">Image URL</Label>
-        <Input
-          id="image"
-          value={formData.image}
-          onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-          placeholder="https://example.com/image.jpg"
-        />
       </div>
 
       <div className="flex items-center gap-4">

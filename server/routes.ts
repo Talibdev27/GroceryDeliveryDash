@@ -393,11 +393,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Product Management routes (Admin/Product Manager)
   app.post("/api/admin/products", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (req: Request, res: Response) => {
     try {
-      const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
+      const { 
+        name, nameRu, nameUz, 
+        description, descriptionRu, descriptionUz, 
+        price, salePrice, categoryId, stockQuantity, featured, sale, image, 
+        unit, unitRu, unitUz 
+      } = req.body;
       
       const product = await storage.createProduct({
         name,
+        nameRu,
+        nameUz,
         description,
+        descriptionRu,
+        descriptionUz,
         price: parseFloat(price),
         salePrice: salePrice ? parseFloat(salePrice) : null,
         categoryId: parseInt(categoryId),
@@ -405,7 +414,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         featured: Boolean(featured),
         sale: Boolean(sale),
         image,
-        unit: unit || "шт" // Default unit if not provided
+        unit: unit || "шт", // Default unit if not provided
+        unitRu,
+        unitUz
       });
       
       res.status(201).json({ product });
@@ -418,11 +429,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/products/:id", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (req: Request, res: Response) => {
     try {
       const productId = parseInt(req.params.id);
-      const { name, description, price, salePrice, categoryId, stockQuantity, featured, sale, image, unit } = req.body;
+      const { 
+        name, nameRu, nameUz, 
+        description, descriptionRu, descriptionUz, 
+        price, salePrice, categoryId, stockQuantity, featured, sale, image, 
+        unit, unitRu, unitUz 
+      } = req.body;
       
       const product = await storage.updateProduct(productId, {
         name,
+        nameRu,
+        nameUz,
         description,
+        descriptionRu,
+        descriptionUz,
         price: parseFloat(price),
         salePrice: salePrice ? parseFloat(salePrice) : null,
         categoryId: parseInt(categoryId),
@@ -430,7 +450,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         featured: Boolean(featured),
         sale: Boolean(sale),
         image,
-        unit: unit || "шт" // Default unit if not provided
+        unit: unit || "шт", // Default unit if not provided
+        unitRu,
+        unitUz
       });
       
       if (!product) {

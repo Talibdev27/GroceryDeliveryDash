@@ -354,7 +354,11 @@ export class DatabaseStorage implements IStorage {
   // Product Management Methods
   async createProduct(productData: {
     name: string;
+    nameRu?: string;
+    nameUz?: string;
     description: string;
+    descriptionRu?: string;
+    descriptionUz?: string;
     price: number;
     salePrice?: number | null;
     categoryId: number;
@@ -363,14 +367,22 @@ export class DatabaseStorage implements IStorage {
     sale: boolean;
     image: string;
     unit: string;
+    unitRu?: string;
+    unitUz?: string;
   }): Promise<Product> {
     const result = await db.insert(products).values({
       name: productData.name,
+      nameRu: productData.nameRu,
+      nameUz: productData.nameUz,
       description: productData.description,
+      descriptionRu: productData.descriptionRu,
+      descriptionUz: productData.descriptionUz,
       price: productData.price.toString(),
       salePrice: productData.salePrice?.toString(),
       categoryId: productData.categoryId,
       unit: productData.unit,
+      unitRu: productData.unitRu,
+      unitUz: productData.unitUz,
       inStock: productData.stockQuantity > 0,
       featured: productData.featured,
       sale: productData.sale,
@@ -382,7 +394,11 @@ export class DatabaseStorage implements IStorage {
 
   async updateProduct(id: number, productData: {
     name: string;
+    nameRu?: string;
+    nameUz?: string;
     description: string;
+    descriptionRu?: string;
+    descriptionUz?: string;
     price: number;
     salePrice?: number | null;
     categoryId: number;
@@ -391,15 +407,23 @@ export class DatabaseStorage implements IStorage {
     sale: boolean;
     image: string;
     unit: string;
+    unitRu?: string;
+    unitUz?: string;
   }): Promise<Product | undefined> {
     const result = await db.update(products)
       .set({
         name: productData.name,
+        nameRu: productData.nameRu,
+        nameUz: productData.nameUz,
         description: productData.description,
+        descriptionRu: productData.descriptionRu,
+        descriptionUz: productData.descriptionUz,
         price: productData.price.toString(),
         salePrice: productData.salePrice?.toString(),
         categoryId: productData.categoryId,
         unit: productData.unit,
+        unitRu: productData.unitRu,
+        unitUz: productData.unitUz,
         inStock: productData.stockQuantity > 0,
         featured: productData.featured,
         sale: productData.sale,
