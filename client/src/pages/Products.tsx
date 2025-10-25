@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/ui/ProductCard";
 import { useCart } from "@/hooks/use-cart";
 import { useProducts, useCategories } from "@/hooks/use-api";
+import { useLanguage } from "@/hooks/use-language";
 import { formatPrice, getCurrencySymbol } from "@/lib/currency";
 import { Search, RefreshCw, SlidersHorizontal, ChevronRight } from "lucide-react";
 
@@ -29,6 +30,7 @@ export default function Products() {
   const { t } = useTranslation();
   const [location] = useLocation();
   const { addToCart } = useCart();
+  const { currentLanguage } = useLanguage();
   
   // API data
   const { data: productsData, loading: productsLoading, error: productsError } = useProducts();
@@ -43,6 +45,17 @@ export default function Products() {
   // Get products and categories from API
   const products = productsData?.products || [];
   const categories = categoriesData?.categories || [];
+
+  // Helper function to get category name based on current language
+  const getCategoryName = (category: any) => {
+    switch (currentLanguage) {
+      case 'ru': return category.nameRu || category.name;
+      case 'uz': return category.nameUz || category.name;
+      case 'es': return category.nameEs || category.name;
+      case 'ar': return category.nameAr || category.name;
+      default: return category.name;
+    }
+  };
   
   // Calculate price range from actual products
   const maxPrice = Math.max(...products.map(p => parseFloat(p.price)), 50);
@@ -206,7 +219,7 @@ export default function Products() {
                             htmlFor={`category-${category.id}`}
                             className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           >
-                            {category.name}
+                            {getCategoryName(category)}
                           </label>
                         </div>
                       ))}
