@@ -33,7 +33,11 @@ import { translateProductToEnglish, translateProductToRussian } from "@/lib/tran
 interface Product {
   id: number;
   name: string;
+  nameRu?: string;
+  nameUz?: string;
   description: string;
+  descriptionRu?: string;
+  descriptionUz?: string;
   price: string;
   salePrice?: string;
   categoryId?: number;
@@ -42,6 +46,9 @@ interface Product {
   featured: boolean;
   sale: boolean;
   image: string;
+  unit?: string;
+  unitRu?: string;
+  unitUz?: string;
   category?: {
     id: number;
     name: string;
@@ -129,14 +136,21 @@ export default function ProductManager() {
     setSelectedProduct(product);
     setFormData({
       name: product.name,
+      nameRu: product.nameRu || "",
+      nameUz: product.nameUz || "",
       description: product.description,
+      descriptionRu: product.descriptionRu || "",
+      descriptionUz: product.descriptionUz || "",
       price: product.price,
       salePrice: product.salePrice || "",
       categoryId: product.categoryId?.toString() || "",
       stockQuantity: product.stockQuantity?.toString() || "0",
       featured: product.featured,
       sale: product.sale,
-      image: product.image
+      image: product.image,
+      unit: product.unit || "",
+      unitRu: product.unitRu || "",
+      unitUz: product.unitUz || ""
     });
     setIsEditDialogOpen(true);
   };
