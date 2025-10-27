@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import CartButton from "@/components/ui/CartButton";
 import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/hooks/use-language";
-import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import {
@@ -21,15 +20,12 @@ import {
   Package,
   ChevronDown,
   Menu,
-  Moon,
-  Sun,
   LogOut,
 } from "lucide-react";
 
 export default function Header() {
   const { t } = useTranslation();
   const { currentLanguage, setLanguage } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -156,15 +152,6 @@ export default function Header() {
                 <span className="hidden sm:inline">{t("header.account")}</span>
               </Link>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="h-8 w-8 p-0"
-              aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-            >
-              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-            </Button>
           </div>
         </div>
         
