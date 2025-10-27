@@ -138,7 +138,7 @@ export const categories: Category[] = [
     nameAr: 'حبوب',
     nameRu: 'Крупы',
     nameUz: 'Donli mahsulotlar',
-    image: 'https://images.unsplash.com/photo-1574687969693-85f2f9b1e16c?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
     slug: 'cereal'
   },
   {
