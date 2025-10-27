@@ -407,13 +407,39 @@
     "accessibility": "Доступность"
   },
   "auth": {
-    "login": "Войти",
+    "login": "Вход",
     "register": "Регистрация",
     "username": "Имя пользователя",
     "password": "Пароль",
     "firstName": "Имя",
     "lastName": "Фамилия",
-    "email": "Электронная почта"
+    "email": "Электронная почта",
+    "phoneNumber": "Номер телефона",
+    "confirmPassword": "Подтвердите пароль",
+    "signIn": "Войти",
+    "signingIn": "Вход...",
+    "createAccount": "Создать аккаунт",
+    "creatingAccount": "Создание аккаунта...",
+    "welcomeTitle": "Добро пожаловать в Diyor Market",
+    "welcomeDescription": "Войдите в свой аккаунт или создайте новый",
+    "signInDescription": "Войдите в свой аккаунт или создайте новый",
+    "backToHome": "Вернуться на главную",
+    "usernamePlaceholder": "Введите имя пользователя",
+    "chooseUsername": "Выберите имя пользователя",
+    "emailPlaceholder": "Введите вашу электронную почту",
+    "phonePlaceholder": "+998 XX XXX XX XX",
+    "passwordPlaceholder": "Введите ваш пароль",
+    "createPasswordPlaceholder": "Создайте пароль",
+    "confirmPasswordPlaceholder": "Подтвердите ваш пароль",
+    "firstNamePlaceholder": "Имя",
+    "lastNamePlaceholder": "Фамилия",
+    "loginSuccess": "Вход выполнен! Перенаправление...",
+    "loginError": "Неверное имя пользователя или пароль",
+    "loginFailed": "Не удалось войти. Попробуйте снова.",
+    "registerSuccess": "Регистрация успешна! Перенаправление...",
+    "registerError": "Регистрация не удалась. Имя пользователя или электронная почта уже существуют.",
+    "registerFailed": "Регистрация не удалась. Попробуйте снова.",
+    "passwordMismatch": "Пароли не совпадают"
   },
   "orders": {
     "title": "Ваши заказы",
@@ -492,5 +518,12 @@
     "loginRequired": "Войдите в систему, чтобы написать отзыв",
     "noReviews": "Пока нет отзывов. Станьте первым!",
     "stars": "звезд"
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "newOrder": "Новый заказ",
+    "markAllRead": "Отметить все как прочитанное",
+    "noNotifications": "Нет уведомлений",
+    "justNow": "Только что"
   }
 }

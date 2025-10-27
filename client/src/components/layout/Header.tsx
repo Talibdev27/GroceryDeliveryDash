@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import CartButton from "@/components/ui/CartButton";
 import Logo from "@/components/ui/Logo";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -184,6 +185,11 @@ export default function Header() {
             </Button>
             
             <CartButton />
+            
+            {/* Notification Bell for Admins and Riders */}
+            {(user?.role === "admin" || user?.role === "super_admin" || user?.role === "rider") && (
+              <NotificationBell />
+            )}
             
             <Button variant="ghost" className="md:hidden text-neutral-700 hover:text-primary p-2" aria-label="Menu" onClick={toggleMobileMenu}>
               <Menu className="h-5 w-5" />

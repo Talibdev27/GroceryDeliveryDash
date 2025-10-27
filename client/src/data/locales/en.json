@@ -414,7 +414,33 @@
     "password": "Password",
     "firstName": "First Name",
     "lastName": "Last Name",
-    "email": "Email"
+    "email": "Email",
+    "phoneNumber": "Phone Number",
+    "confirmPassword": "Confirm Password",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "createAccount": "Create Account",
+    "creatingAccount": "Creating account...",
+    "welcomeTitle": "Welcome to Diyor Market",
+    "welcomeDescription": "Access your account or create a new one",
+    "signInDescription": "Sign in to your account or create a new one",
+    "backToHome": "Back to Home",
+    "usernamePlaceholder": "Enter your username",
+    "chooseUsername": "Choose a username",
+    "emailPlaceholder": "Enter your email",
+    "phonePlaceholder": "+998 XX XXX XX XX",
+    "passwordPlaceholder": "Enter your password",
+    "createPasswordPlaceholder": "Create a password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "firstNamePlaceholder": "First name",
+    "lastNamePlaceholder": "Last name",
+    "loginSuccess": "Login successful! Redirecting...",
+    "loginError": "Invalid username or password",
+    "loginFailed": "Login failed. Please try again.",
+    "registerSuccess": "Registration successful! Redirecting...",
+    "registerError": "Registration failed. Username or email may already exist.",
+    "registerFailed": "Registration failed. Please try again.",
+    "passwordMismatch": "Passwords do not match"
   },
   "orders": {
     "title": "Your Orders",
@@ -493,5 +519,12 @@
     "loginRequired": "Please login to write a review",
     "noReviews": "No reviews yet. Be the first to review!",
     "stars": "stars"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "newOrder": "New Order",
+    "markAllRead": "Mark all as read",
+    "noNotifications": "No notifications",
+    "justNow": "Just now"
   }
 }

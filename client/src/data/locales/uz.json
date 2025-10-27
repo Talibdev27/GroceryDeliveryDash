@@ -413,7 +413,33 @@
     "password": "Parol",
     "firstName": "Ism",
     "lastName": "Familiya",
-    "email": "Elektron pochta"
+    "email": "Elektron pochta",
+    "phoneNumber": "Telefon raqami",
+    "confirmPassword": "Parolni tasdiqlang",
+    "signIn": "Kirish",
+    "signingIn": "Kirish...",
+    "createAccount": "Akkaunt yaratish",
+    "creatingAccount": "Akkaunt yaratilmoqda...",
+    "welcomeTitle": "Diyor Market ga xush kelibsiz",
+    "welcomeDescription": "Akkauntingizga kiring yoki yangi akkaunt yarating",
+    "signInDescription": "Akkauntingizga kiring yoki yangi akkaunt yarating",
+    "backToHome": "Bosh sahifaga qaytish",
+    "usernamePlaceholder": "Foydalanuvchi nomini kiriting",
+    "chooseUsername": "Foydalanuvchi nomini tanlang",
+    "emailPlaceholder": "Elektron pochtangizni kiriting",
+    "phonePlaceholder": "+998 XX XXX XX XX",
+    "passwordPlaceholder": "Parolingizni kiriting",
+    "createPasswordPlaceholder": "Parol yarating",
+    "confirmPasswordPlaceholder": "Parolni tasdiqlang",
+    "firstNamePlaceholder": "Ism",
+    "lastNamePlaceholder": "Familiya",
+    "loginSuccess": "Muvaffaqiyatli kirildi! Yo'naltirilmoqda...",
+    "loginError": "Noto'g'ri foydalanuvchi nomi yoki parol",
+    "loginFailed": "Kirish muvaffaqiyatsiz. Qaytadan urinib ko'ring.",
+    "registerSuccess": "Ro'yxatdan o'tish muvaffaqiyatli! Yo'naltirilmoqda...",
+    "registerError": "Ro'yxatdan o'tish muvaffaqiyatsiz. Foydalanuvchi nomi yoki elektron pochta allaqachon mavjud bo'lishi mumkin.",
+    "registerFailed": "Ro'yxatdan o'tish muvaffaqiyatsiz. Qaytadan urinib ko'ring.",
+    "passwordMismatch": "Parollar mos kelmaydi"
   },
   "orders": {
     "title": "Sizning buyurtmalaringiz",
@@ -492,5 +518,12 @@
     "loginRequired": "Sharh yozish uchun tizimga kiring",
     "noReviews": "Hali sharhlar yo'q. Birinchi bo'lib sharh yozing!",
     "stars": "yulduz"
+  },
+  "notifications": {
+    "title": "Bildirishnomalar",
+    "newOrder": "Yangi buyurtma",
+    "markAllRead": "Hammasini o'qilgan deb belgilash",
+    "noNotifications": "Bildirishnomalar yo'q",
+    "justNow": "Hozir"
   }
 }

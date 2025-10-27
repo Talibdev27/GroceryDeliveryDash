@@ -906,6 +906,12 @@ export class DatabaseStorage implements IStorage {
     const result = await db.insert(reviews).values(reviewData).returning();
     return result[0];
   }
+
+  async getUsersByRole(roles: string[]) {
+    return await db.select()
+      .from(users)
+      .where(sql`${users.role} = ANY(${roles})`);
+  }
 }
 
 // Export the database storage instance

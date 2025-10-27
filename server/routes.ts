@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
+import { Server as SocketIOServer } from "socket.io";
 import { storage, verifyPassword } from "./storage";
 import { insertUserSchema, insertAddressSchema } from "@shared/schema";
 import { ZodError } from "zod";
@@ -852,6 +853,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.decrementProductStock(item.productId, item.quantity);
       }
 
+      // Get user info for notification
+      const user = await storage.getUser(req.session.userId!);
+      
+      // Get Socket.io instance and emit notification
+      const io = app.get("io");
+      const connectedUsers = app.get("connectedUsers");
+      
+      // Notify all admins and super_admins
+      const admins = await storage.getUsersByRole(["admin", "super_admin"]);
+      for (const admin of admins) {
+        const socketId = connectedUsers.get(admin.id);
+        if (socketId) {
+          io.to(socketId).emit("new-order", {
+            orderId: order.id,
+            orderNumber: order.id,
+            customerName: user?.firstName || user?.username || "Customer",
+            total: order.total,
+            createdAt: order.createdAt
+          });
+        }
+      }
+
       res.status(201).json({ order });
     } catch (error) {
       console.error("Create order error:", error);
@@ -1244,5 +1267,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  
+  // Initialize Socket.io
+  const io = new SocketIOServer(httpServer, {
+    cors: {
+      origin: process.env.CLIENT_URL || "http://localhost:5000",
+      credentials: true
+    }
+  });
+  
+  // Store connected users (userId -> socketId mapping)
+  const connectedUsers = new Map();
+  
+  io.on("connection", (socket) => {
+    console.log("Client connected:", socket.id);
+    
+    // Register user with their socket
+    socket.on("register", (userId) => {
+      connectedUsers.set(userId, socket.id);
+      console.log(`User ${userId} registered with socket ${socket.id}`);
+    });
+    
+    socket.on("disconnect", () => {
+      // Remove user from connected users
+      for (const [userId, socketId] of connectedUsers.entries()) {
+        if (socketId === socket.id) {
+          connectedUsers.delete(userId);
+          break;
+        }
+      }
+      console.log("Client disconnected:", socket.id);
+    });
+  });
+  
+  // Make io available to routes
+  app.set("io", io);
+  app.set("connectedUsers", connectedUsers);
+  
   return httpServer;
 }

@@ -6,6 +6,8 @@ import i18n from "./lib/i18n";
 import { CartProvider } from "./context/CartContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { AuthProvider } from "./context/AuthContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { HelmetProvider } from "react-helmet-async";
@@ -16,9 +18,13 @@ createRoot(document.getElementById("root")!).render(
       <HelmetProvider>
         <LanguageProvider>
           <ThemeProvider>
-            <CartProvider>
-              <App />
-            </CartProvider>
+            <AuthProvider>
+              <NotificationProvider>
+                <CartProvider>
+                  <App />
+                </CartProvider>
+              </NotificationProvider>
+            </AuthProvider>
           </ThemeProvider>
         </LanguageProvider>
       </HelmetProvider>

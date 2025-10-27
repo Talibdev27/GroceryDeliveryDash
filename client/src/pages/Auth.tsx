@@ -58,16 +58,16 @@ export default function Auth() {
     try {
       const success = await login(loginData.username, loginData.password);
       if (success) {
-        setSuccess("Login successful! Redirecting...");
+        setSuccess(t("auth.loginSuccess"));
         // Redirect to products page after successful login
         setTimeout(() => {
           setLocation("/products");
         }, 1500);
       } else {
-        setError("Invalid username or password");
+        setError(t("auth.loginError"));
       }
     } catch (err) {
-      setError("Login failed. Please try again.");
+      setError(t("auth.loginFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +80,7 @@ export default function Auth() {
     setSuccess(null);
 
     if (registerData.password !== registerData.confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("auth.passwordMismatch"));
       setIsLoading(false);
       return;
     }
@@ -96,16 +96,16 @@ export default function Auth() {
       });
 
       if (success) {
-        setSuccess("Registration successful! Redirecting...");
+        setSuccess(t("auth.registerSuccess"));
         // Redirect to products page after successful registration
         setTimeout(() => {
           setLocation("/products");
         }, 1500);
       } else {
-        setError("Registration failed. Username or email may already exist.");
+        setError(t("auth.registerError"));
       }
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      setError(t("auth.registerFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -131,15 +131,15 @@ export default function Auth() {
                 </div>
               </Link>
               <p className="text-neutral-600">
-                Sign in to your account or create a new one
+                {t("auth.signInDescription")}
               </p>
             </div>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-center">Welcome to Diyor Market</CardTitle>
+                <CardTitle className="text-center">{t("auth.welcomeTitle")}</CardTitle>
                 <CardDescription className="text-center">
-                  Access your account or create a new one
+                  {t("auth.welcomeDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -147,24 +147,24 @@ export default function Auth() {
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="login" className="flex items-center gap-2">
                       <LogIn className="h-4 w-4" />
-                      Login
+                      {t("auth.login")}
                     </TabsTrigger>
                     <TabsTrigger value="register" className="flex items-center gap-2">
                       <UserPlus className="h-4 w-4" />
-                      Register
+                      {t("auth.register")}
                     </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="login" className="space-y-4">
                     <form onSubmit={handleLogin} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="login-username">Username</Label>
+                        <Label htmlFor="login-username">{t("auth.username")}</Label>
                         <div className="relative">
                           <User className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="login-username"
                             type="text"
-                            placeholder="Enter your username"
+                            placeholder={t("auth.usernamePlaceholder")}
                             value={loginData.username}
                             onChange={(e) =>
                               setLoginData({ ...loginData, username: e.target.value })
@@ -176,13 +176,13 @@ export default function Auth() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="login-password">Password</Label>
+                        <Label htmlFor="login-password">{t("auth.password")}</Label>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="login-password"
                             type="password"
-                            placeholder="Enter your password"
+                            placeholder={t("auth.passwordPlaceholder")}
                             value={loginData.password}
                             onChange={(e) =>
                               setLoginData({ ...loginData, password: e.target.value })
@@ -194,7 +194,7 @@ export default function Auth() {
                       </div>
 
                       <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? "Signing in..." : "Sign In"}
+                        {isLoading ? t("auth.signingIn") : t("auth.signIn")}
                       </Button>
                     </form>
                   </TabsContent>
@@ -203,11 +203,11 @@ export default function Auth() {
                     <form onSubmit={handleRegister} className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="register-firstName">First Name</Label>
+                          <Label htmlFor="register-firstName">{t("auth.firstName")}</Label>
                           <Input
                             id="register-firstName"
                             type="text"
-                            placeholder="First name"
+                            placeholder={t("auth.firstNamePlaceholder")}
                             value={registerData.firstName}
                             onChange={(e) =>
                               setRegisterData({ ...registerData, firstName: e.target.value })
@@ -216,11 +216,11 @@ export default function Auth() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="register-lastName">Last Name</Label>
+                          <Label htmlFor="register-lastName">{t("auth.lastName")}</Label>
                           <Input
                             id="register-lastName"
                             type="text"
-                            placeholder="Last name"
+                            placeholder={t("auth.lastNamePlaceholder")}
                             value={registerData.lastName}
                             onChange={(e) =>
                               setRegisterData({ ...registerData, lastName: e.target.value })
@@ -231,13 +231,13 @@ export default function Auth() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="register-username">Username</Label>
+                        <Label htmlFor="register-username">{t("auth.username")}</Label>
                         <div className="relative">
                           <User className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="register-username"
                             type="text"
-                            placeholder="Choose a username"
+                            placeholder={t("auth.chooseUsername")}
                             value={registerData.username}
                             onChange={(e) =>
                               setRegisterData({ ...registerData, username: e.target.value })
@@ -249,13 +249,13 @@ export default function Auth() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="register-email">Email</Label>
+                        <Label htmlFor="register-email">{t("auth.email")}</Label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="register-email"
                             type="email"
-                            placeholder="Enter your email"
+                            placeholder={t("auth.emailPlaceholder")}
                             value={registerData.email}
                             onChange={(e) =>
                               setRegisterData({ ...registerData, email: e.target.value })
@@ -267,13 +267,13 @@ export default function Auth() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="register-phone">Phone Number</Label>
+                        <Label htmlFor="register-phone">{t("auth.phoneNumber")}</Label>
                         <div className="relative">
                           <Phone className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="register-phone"
                             type="tel"
-                            placeholder="+998 XX XXX XX XX"
+                            placeholder={t("auth.phonePlaceholder")}
                             value={registerData.phone}
                             onChange={(e) =>
                               setRegisterData({ ...registerData, phone: e.target.value })
@@ -285,13 +285,13 @@ export default function Auth() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="register-password">Password</Label>
+                        <Label htmlFor="register-password">{t("auth.password")}</Label>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="register-password"
                             type="password"
-                            placeholder="Create a password"
+                            placeholder={t("auth.createPasswordPlaceholder")}
                             value={registerData.password}
                             onChange={(e) =>
                               setRegisterData({ ...registerData, password: e.target.value })
@@ -303,13 +303,13 @@ export default function Auth() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="register-confirmPassword">Confirm Password</Label>
+                        <Label htmlFor="register-confirmPassword">{t("auth.confirmPassword")}</Label>
                         <div className="relative">
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="register-confirmPassword"
                             type="password"
-                            placeholder="Confirm your password"
+                            placeholder={t("auth.confirmPasswordPlaceholder")}
                             value={registerData.confirmPassword}
                             onChange={(e) =>
                               setRegisterData({ ...registerData, confirmPassword: e.target.value })
@@ -321,7 +321,7 @@ export default function Auth() {
                       </div>
 
                       <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? "Creating account..." : "Create Account"}
+                        {isLoading ? t("auth.creatingAccount") : t("auth.createAccount")}
                       </Button>
                     </form>
                   </TabsContent>
@@ -342,7 +342,7 @@ export default function Auth() {
                 <div className="mt-6 text-center">
                   <Link href="/">
                     <Button variant="outline" className="w-full">
-                      Back to Home
+                      {t("auth.backToHome")}
                     </Button>
                   </Link>
                 </div>
