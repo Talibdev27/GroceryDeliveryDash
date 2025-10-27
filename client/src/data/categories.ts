@@ -80,5 +80,75 @@ export const categories: Category[] = [
     nameUz: 'Gazaklar',
     image: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&h=200',
     slug: 'snacks'
+  },
+  {
+    id: 9,
+    name: 'Beverages',
+    nameEs: 'Bebidas',
+    nameAr: 'مشروبات',
+    nameRu: 'Напитки',
+    nameUz: 'Ichimliklar',
+    image: 'https://images.unsplash.com/photo-1437418747212-8d9709afab22?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'beverages'
+  },
+  {
+    id: 10,
+    name: 'Baby Care',
+    nameEs: 'Cuidado del Bebé',
+    nameAr: 'رعاية الطفل',
+    nameRu: 'Детские товары',
+    nameUz: 'Bolalar parvarishi',
+    image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'baby-care'
+  },
+  {
+    id: 11,
+    name: 'Personal Care & Health',
+    nameEs: 'Cuidado Personal y Salud',
+    nameAr: 'العناية الشخصية والصحة',
+    nameRu: 'Личная гигиена и здоровье',
+    nameUz: 'Shaxsiy parvarish va salomatlik',
+    image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'personal-care'
+  },
+  {
+    id: 12,
+    name: 'Household & Cleaning',
+    nameEs: 'Hogar y Limpieza',
+    nameAr: 'المنزل والتنظيف',
+    nameRu: 'Товары для дома и уборки',
+    nameUz: 'Uy va tozalash',
+    image: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'household-cleaning'
+  },
+  {
+    id: 13,
+    name: 'Pet Care',
+    nameEs: 'Cuidado de Mascotas',
+    nameAr: 'رعاية الحيوانات الأليفة',
+    nameRu: 'Товары для животных',
+    nameUz: 'Uy hayvonlari parvarishi',
+    image: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'pet-care'
+  },
+  {
+    id: 14,
+    name: 'Cereal',
+    nameEs: 'Cereales',
+    nameAr: 'حبوب',
+    nameRu: 'Крупы',
+    nameUz: 'Donli mahsulotlar',
+    image: 'https://images.unsplash.com/photo-1574687969693-85f2f9b1e16c?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'cereal'
+  },
+  {
+    id: 15,
+    name: 'Oils & Fats',
+    nameEs: 'Aceites y Grasas',
+    nameAr: 'زيوت ودهون',
+    nameRu: 'Масла и жиры',
+    nameUz: "Yog'lar va o'simlik yog'lari",
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'oils-fats'
   }
 ];
