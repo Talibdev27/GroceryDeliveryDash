@@ -481,5 +481,16 @@
       "discount": "Chegirma",
       "total": "Jami"
     }
+  },
+  "reviews": {
+    "title": "Sharhlar",
+    "writeReview": "Sharh yozing",
+    "rating": "Baholash",
+    "reviewTitle": "Sharh sarlavhasi",
+    "comment": "Sizning sharhingiz",
+    "submit": "Sharhni yuborish",
+    "loginRequired": "Sharh yozish uchun tizimga kiring",
+    "noReviews": "Hali sharhlar yo'q. Birinchi bo'lib sharh yozing!",
+    "stars": "yulduz"
   }
 }

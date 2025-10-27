@@ -397,8 +397,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name, nameRu, nameUz, 
         description, descriptionRu, descriptionUz, 
         price, salePrice, categoryId, stockQuantity, featured, sale, image, 
-        unit, unitRu, unitUz 
+        unit, unitRu, unitUz, nutrition
       } = req.body;
+      
+      // Convert nutrition strings to numbers
+      const nutritionData = nutrition ? {
+        calories: parseFloat(nutrition.calories) || 0,
+        fat: parseFloat(nutrition.fat) || 0,
+        carbs: parseFloat(nutrition.carbs) || 0,
+        protein: parseFloat(nutrition.protein) || 0
+      } : null;
       
       const product = await storage.createProduct({
         name,
@@ -416,7 +424,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         image,
         unit: unit || "шт", // Default unit if not provided
         unitRu,
-        unitUz
+        unitUz,
+        nutrition: nutritionData
       });
       
       res.status(201).json({ product });
@@ -433,8 +442,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name, nameRu, nameUz, 
         description, descriptionRu, descriptionUz, 
         price, salePrice, categoryId, stockQuantity, featured, sale, image, 
-        unit, unitRu, unitUz 
+        unit, unitRu, unitUz, nutrition
       } = req.body;
+      
+      // Convert nutrition strings to numbers
+      const nutritionData = nutrition ? {
+        calories: parseFloat(nutrition.calories) || 0,
+        fat: parseFloat(nutrition.fat) || 0,
+        carbs: parseFloat(nutrition.carbs) || 0,
+        protein: parseFloat(nutrition.protein) || 0
+      } : null;
       
       const product = await storage.updateProduct(productId, {
         name,
@@ -452,7 +469,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         image,
         unit: unit || "шт", // Default unit if not provided
         unitRu,
-        unitUz
+        unitUz,
+        nutrition: nutritionData
       });
       
       if (!product) {
@@ -1181,6 +1199,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Get rider order details error:", error);
       res.status(500).json({ error: "Failed to get order details" });
+    }
+  });
+
+  // Review routes
+  app.get("/api/products/:productId/reviews", async (req: Request, res: Response) => {
+    try {
+      const productId = parseInt(req.params.productId);
+      const reviews = await storage.getProductReviews(productId);
+      res.json({ reviews });
+    } catch (error) {
+      console.error("Get product reviews error:", error);
+      res.status(500).json({ error: "Failed to get reviews" });
+    }
+  });
+
+  app.post("/api/products/:productId/reviews", authenticateUser, async (req: Request, res: Response) => {
+    try {
+      const productId = parseInt(req.params.productId);
+      const { rating, title, comment } = req.body;
+      
+      // Validate rating
+      if (!rating || rating < 1 || rating > 5) {
+        return res.status(400).json({ error: "Rating must be between 1 and 5" });
+      }
+      
+      if (!title || !comment) {
+        return res.status(400).json({ error: "Title and comment are required" });
+      }
+      
+      const review = await storage.createReview({
+        productId,
+        userId: req.user!.id,
+        rating: parseInt(rating),
+        title,
+        comment
+      });
+      
+      res.status(201).json({ review });
+    } catch (error) {
+      console.error("Create review error:", error);
+      res.status(500).json({ error: "Failed to create review" });
     }
   });
 

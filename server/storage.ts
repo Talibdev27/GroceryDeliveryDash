@@ -8,6 +8,7 @@ import {
   products, 
   orders, 
   orderItems,
+  reviews,
   systemLogs,
   type User, 
   type InsertUser,
@@ -21,11 +22,13 @@ import {
   type InsertOrder,
   type OrderItem,
   type InsertOrderItem,
+  type Review,
+  type InsertReview,
   type SystemLog,
   type UserRole,
   type Permission
 } from "@shared/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, desc } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 // Load environment variables
@@ -369,6 +372,12 @@ export class DatabaseStorage implements IStorage {
     unit: string;
     unitRu?: string;
     unitUz?: string;
+    nutrition?: {
+      calories: number;
+      fat: number;
+      carbs: number;
+      protein: number;
+    };
   }): Promise<Product> {
     const result = await db.insert(products).values({
       name: productData.name,
@@ -386,7 +395,8 @@ export class DatabaseStorage implements IStorage {
       inStock: productData.stockQuantity > 0,
       featured: productData.featured,
       sale: productData.sale,
-      image: productData.image
+      image: productData.image,
+      nutrition: productData.nutrition
     }).returning();
     
     return result[0];
@@ -409,6 +419,12 @@ export class DatabaseStorage implements IStorage {
     unit: string;
     unitRu?: string;
     unitUz?: string;
+    nutrition?: {
+      calories: number;
+      fat: number;
+      carbs: number;
+      protein: number;
+    };
   }): Promise<Product | undefined> {
     const result = await db.update(products)
       .set({
@@ -428,6 +444,7 @@ export class DatabaseStorage implements IStorage {
         featured: productData.featured,
         sale: productData.sale,
         image: productData.image,
+        nutrition: productData.nutrition,
         updatedAt: new Date()
       })
       .where(eq(products.id, id))
@@ -872,6 +889,22 @@ export class DatabaseStorage implements IStorage {
     
     console.log("💾 Rider stats calculated:", stats);
     return stats;
+  }
+
+  // Review Management Methods
+  async getProductReviews(productId: number) {
+    return await db.query.reviews.findMany({
+      where: eq(reviews.productId, productId),
+      with: {
+        user: true
+      },
+      orderBy: desc(reviews.createdAt)
+    });
+  }
+
+  async createReview(reviewData: InsertReview) {
+    const result = await db.insert(reviews).values(reviewData).returning();
+    return result[0];
   }
 }
 

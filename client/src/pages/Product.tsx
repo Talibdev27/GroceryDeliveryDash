@@ -23,6 +23,8 @@ import { useCart } from "@/hooks/use-cart";
 import { useProduct, useCategories } from "@/hooks/use-api";
 import { useLanguage } from "@/hooks/use-language";
 import { formatCurrency } from "@/lib/utils";
+import { ReviewForm } from "@/components/product/ReviewForm";
+import { ReviewList } from "@/components/product/ReviewList";
 import { 
   Minus, 
   Plus, 
@@ -328,44 +330,15 @@ export default function Product() {
               </TabsContent>
               
               <TabsContent value="reviews" className="bg-white border border-neutral-200 rounded-lg p-6 mt-4">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-medium text-lg">{t("product.customerReviews")}</h3>
-                  <Button>{t("product.writeReview")}</Button>
-                </div>
-                
                 <div className="space-y-6">
-                  {/* Sample reviews - in a real app, these would come from an API */}
-                  <div className="border-b pb-4">
-                    <div className="flex items-center mb-2">
-                      <div className="flex mr-2">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${star <= 5 ? "text-yellow-400 fill-yellow-400" : "text-neutral-300"}`}
-                          />
-                        ))}
-                      </div>
-                      <span className="font-medium">Jane D.</span>
-                    </div>
-                    <p className="text-neutral-600 mb-1">{t("product.reviewSample1")}</p>
-                    <div className="text-sm text-neutral-500">2 {t("product.daysAgo")}</div>
-                  </div>
-                  
-                  <div className="border-b pb-4">
-                    <div className="flex items-center mb-2">
-                      <div className="flex mr-2">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${star <= 4 ? "text-yellow-400 fill-yellow-400" : "text-neutral-300"}`}
-                          />
-                        ))}
-                      </div>
-                      <span className="font-medium">Mike T.</span>
-                    </div>
-                    <p className="text-neutral-600 mb-1">{t("product.reviewSample2")}</p>
-                    <div className="text-sm text-neutral-500">1 {t("product.weekAgo")}</div>
-                  </div>
+                  <ReviewForm 
+                    productId={product.id} 
+                    onReviewAdded={() => {
+                      // Refresh reviews when a new one is added
+                      window.location.reload();
+                    }} 
+                  />
+                  <ReviewList productId={product.id} />
                 </div>
               </TabsContent>
             </Tabs>

@@ -49,6 +49,12 @@ interface Product {
   unit?: string;
   unitRu?: string;
   unitUz?: string;
+  nutrition?: {
+    calories: number;
+    fat: number;
+    carbs: number;
+    protein: number;
+  };
   category?: {
     id: number;
     name: string;
@@ -90,7 +96,13 @@ export default function ProductManager() {
     image: "",
     unit: "",
     unitRu: "",
-    unitUz: ""
+    unitUz: "",
+    nutrition: {
+      calories: "",
+      fat: "",
+      carbs: "",
+      protein: ""
+    }
   });
 
   // Filter products based on search and filters
@@ -150,7 +162,13 @@ export default function ProductManager() {
       image: product.image,
       unit: product.unit || "",
       unitRu: product.unitRu || "",
-      unitUz: product.unitUz || ""
+      unitUz: product.unitUz || "",
+      nutrition: {
+        calories: product.nutrition?.calories?.toString() || "",
+        fat: product.nutrition?.fat?.toString() || "",
+        carbs: product.nutrition?.carbs?.toString() || "",
+        protein: product.nutrition?.protein?.toString() || ""
+      }
     });
     setIsEditDialogOpen(true);
   };
@@ -839,6 +857,68 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
             className="rounded"
           />
           <Label htmlFor="sale">On Sale</Label>
+        </div>
+      </div>
+
+      {/* Nutrition Information */}
+      <div className="space-y-4 border-t pt-4">
+        <h3 className="font-medium">Nutrition Information (per 100g)</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="calories">Calories (kcal)</Label>
+            <Input
+              id="calories"
+              type="number"
+              value={formData.nutrition.calories}
+              onChange={(e) => setFormData({
+                ...formData,
+                nutrition: { ...formData.nutrition, calories: e.target.value }
+              })}
+              placeholder="150"
+            />
+          </div>
+          <div>
+            <Label htmlFor="fat">Fat (g)</Label>
+            <Input
+              id="fat"
+              type="number"
+              step="0.1"
+              value={formData.nutrition.fat}
+              onChange={(e) => setFormData({
+                ...formData,
+                nutrition: { ...formData.nutrition, fat: e.target.value }
+              })}
+              placeholder="10.5"
+            />
+          </div>
+          <div>
+            <Label htmlFor="carbs">Carbs (g)</Label>
+            <Input
+              id="carbs"
+              type="number"
+              step="0.1"
+              value={formData.nutrition.carbs}
+              onChange={(e) => setFormData({
+                ...formData,
+                nutrition: { ...formData.nutrition, carbs: e.target.value }
+              })}
+              placeholder="25"
+            />
+          </div>
+          <div>
+            <Label htmlFor="protein">Protein (g)</Label>
+            <Input
+              id="protein"
+              type="number"
+              step="0.1"
+              value={formData.nutrition.protein}
+              onChange={(e) => setFormData({
+                ...formData,
+                nutrition: { ...formData.nutrition, protein: e.target.value }
+              })}
+              placeholder="8"
+            />
+          </div>
         </div>
       </div>
 

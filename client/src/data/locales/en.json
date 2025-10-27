@@ -482,5 +482,16 @@
       "discount": "Discount",
       "total": "Total"
     }
+  },
+  "reviews": {
+    "title": "Reviews",
+    "writeReview": "Write a Review",
+    "rating": "Rating",
+    "reviewTitle": "Review Title",
+    "comment": "Your Comment",
+    "submit": "Submit Review",
+    "loginRequired": "Please login to write a review",
+    "noReviews": "No reviews yet. Be the first to review!",
+    "stars": "stars"
   }
 }
