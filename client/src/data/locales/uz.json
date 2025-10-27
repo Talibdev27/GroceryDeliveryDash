@@ -229,7 +229,8 @@
   },
   "appPromotion": {
     "title": "Mobil ilovamizni yuklab oling",
-    "description": "Mobil ilovamiz orqali eksklyuziv takliflar va yaxshiroq xarid qilish tajribasiga ega bo'ling. Yetkazib berishlarni real vaqtda kuzating va bir marta bosish bilan qayta buyurtma bering.",
+    "comingSoon": "Tez kunda",
+    "description": "Mobil ilovamiz orqali eksklyuziv takliflar va yaxshiroq xarid qilish tajribasiga ega bo'ling. Yetkazib berishlarni real vaqtda kuzating va bir marta bosish bilan qayta buyurtma bering. Kuting!",
     "googlePlay": "Google Play-dan yuklab olish",
     "appStore": "App Store-dan yuklab olish",
     "appScreenshot": "FreshCart mobil ilovasi"

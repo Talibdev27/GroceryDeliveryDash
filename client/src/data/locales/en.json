@@ -229,7 +229,8 @@
   },
   "appPromotion": {
     "title": "Download Our Mobile App",
-    "description": "Get exclusive deals and a better shopping experience with our mobile app. Track your deliveries in real-time and reorder with one tap.",
+    "comingSoon": "Coming Soon",
+    "description": "Get exclusive deals and a better shopping experience with our mobile app. Track your deliveries in real-time and reorder with one tap. Stay tuned!",
     "googlePlay": "Get it on Google Play",
     "appStore": "Download on the App Store",
     "appScreenshot": "FreshCart mobile app"

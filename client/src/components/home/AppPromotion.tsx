@@ -8,6 +8,9 @@ export default function AppPromotion() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="mb-6 md:mb-0 md:max-w-md">
+            <div className="inline-block bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium mb-3">
+              {t("appPromotion.comingSoon")} 🚀
+            </div>
             <h2 className="text-2xl md:text-3xl font-heading font-bold mb-4">
               {t("appPromotion.title")}
             </h2>
@@ -15,20 +18,20 @@ export default function AppPromotion() {
               {t("appPromotion.description")}
             </p>
             <div className="flex space-x-4 rtl:space-x-reverse">
-              <a href="#" className="block">
+              <div className="opacity-60 cursor-not-allowed" title={t("appPromotion.comingSoon")}>
                 <img 
                   src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" 
                   alt={t("appPromotion.googlePlay")}
-                  className="h-10 w-auto"
+                  className="h-10 w-auto grayscale"
                 />
-              </a>
-              <a href="#" className="block">
+              </div>
+              <div className="opacity-60 cursor-not-allowed" title={t("appPromotion.comingSoon")}>
                 <img 
                   src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" 
                   alt={t("appPromotion.appStore")}
-                  className="h-10 w-auto"
+                  className="h-10 w-auto grayscale"
                 />
-              </a>
+              </div>
             </div>
           </div>
           
