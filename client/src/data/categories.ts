@@ -88,7 +88,7 @@ export const categories: Category[] = [
     nameAr: 'مشروبات',
     nameRu: 'Напитки',
     nameUz: 'Ichimliklar',
-    image: 'https://images.unsplash.com/photo-1437418747212-8d9709afab22?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    image: 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
     slug: 'beverages'
   },
   {
