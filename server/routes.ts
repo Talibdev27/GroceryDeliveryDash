@@ -2,7 +2,7 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { storage, verifyPassword } from "./storage";
-import { insertUserSchema, insertAddressSchema } from "@shared/schema";
+import { insertUserSchema, insertAddressSchema, insertPromotionSchema } from "@shared/schema";
 import { ZodError } from "zod";
 
 // Extend the session interface to include our custom properties
@@ -391,6 +391,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Promotions routes
+  app.get("/api/promotions", async (_req: Request, res: Response) => {
+    try {
+      const promos = await storage.getActivePromotions();
+      res.json({ promotions: promos });
+    } catch (error) {
+      console.error("Get promotions error:", error);
+      res.status(500).json({ error: "Failed to get promotions" });
+    }
+  });
+
+  app.get("/api/admin/promotions", authenticateUser, requireRole(["super_admin", "admin"]), async (_req: Request, res: Response) => {
+    try {
+      const promos = await storage.listPromotions();
+      res.json({ promotions: promos });
+    } catch (error) {
+      console.error("List promotions error:", error);
+      res.status(500).json({ error: "Failed to list promotions" });
+    }
+  });
+
+  app.post("/api/admin/promotions", authenticateUser, requireRole(["super_admin", "admin"]), (req: Request, res: Response, next) => {
+    try {
+      req.body = insertPromotionSchema.parse(req.body);
+      next();
+    } catch (e) {
+      return res.status(400).json({ error: "Validation error" });
+    }
+  }, async (req: Request, res: Response) => {
+    try {
+      const promo = await storage.createPromotion(req.body);
+      res.status(201).json({ promotion: promo });
+    } catch (error) {
+      console.error("Create promotion error:", error);
+      res.status(500).json({ error: "Failed to create promotion" });
+    }
+  });
+
+  app.put("/api/admin/promotions/:id", authenticateUser, requireRole(["super_admin", "admin"]), async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const promo = await storage.updatePromotion(id, req.body);
+      if (!promo) {
+        return res.status(404).json({ error: "Promotion not found" });
+      }
+      res.json({ promotion: promo });
+    } catch (error) {
+      console.error("Update promotion error:", error);
+      res.status(500).json({ error: "Failed to update promotion" });
+    }
+  });
+
+  app.delete("/api/admin/promotions/:id", authenticateUser, requireRole(["super_admin", "admin"]), async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const ok = await storage.deletePromotion(id);
+      if (!ok) {
+        return res.status(404).json({ error: "Promotion not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete promotion error:", error);
+      res.status(500).json({ error: "Failed to delete promotion" });
+    }
+  });
+
   // Product Management routes (Admin/Product Manager)
   app.post("/api/admin/products", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (req: Request, res: Response) => {
     try {
@@ -419,7 +485,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         price: parseFloat(price),
         salePrice: salePrice ? parseFloat(salePrice) : null,
         categoryId: parseInt(categoryId),
-        stockQuantity: parseInt(stockQuantity),
+        stockQuantity: Number.isFinite(parseInt(stockQuantity)) ? parseInt(stockQuantity) : 0,
         featured: Boolean(featured),
         sale: Boolean(sale),
         image,
@@ -454,6 +520,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         protein: parseFloat(nutrition.protein) || 0
       } : null;
       
+      const parsedStock = Number.parseInt(stockQuantity);
       const product = await storage.updateProduct(productId, {
         name,
         nameRu,
@@ -464,7 +531,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         price: parseFloat(price),
         salePrice: salePrice ? parseFloat(salePrice) : null,
         categoryId: parseInt(categoryId),
-        stockQuantity: parseInt(stockQuantity),
+        stockQuantity: Number.isFinite(parsedStock) ? parsedStock : (undefined as any),
         featured: Boolean(featured),
         sale: Boolean(sale),
         image,

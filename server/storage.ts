@@ -9,6 +9,7 @@ import {
   orders, 
   orderItems,
   reviews,
+  promotions,
   systemLogs,
   type User, 
   type InsertUser,
@@ -24,6 +25,8 @@ import {
   type InsertOrderItem,
   type Review,
   type InsertReview,
+  type Promotion,
+  type InsertPromotion,
   type SystemLog,
   type UserRole,
   type Permission
@@ -85,6 +88,13 @@ export interface IStorage {
   getOrderItems(orderId: number): Promise<OrderItem[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrderStatus(id: number, status: string): Promise<Order | undefined>;
+  
+  // Promotions
+  getActivePromotions(): Promise<Promotion[]>;
+  listPromotions(): Promise<Promotion[]>;
+  createPromotion(promo: InsertPromotion): Promise<Promotion>;
+  updatePromotion(id: number, promo: Partial<InsertPromotion>): Promise<Promotion | undefined>;
+  deletePromotion(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -379,6 +389,7 @@ export class DatabaseStorage implements IStorage {
       protein: number;
     };
   }): Promise<Product> {
+    const safeStock = Number.isFinite(productData.stockQuantity) ? productData.stockQuantity : 0;
     const result = await db.insert(products).values({
       name: productData.name,
       nameRu: productData.nameRu,
@@ -392,7 +403,8 @@ export class DatabaseStorage implements IStorage {
       unit: productData.unit,
       unitRu: productData.unitRu,
       unitUz: productData.unitUz,
-      inStock: productData.stockQuantity > 0,
+      stockQuantity: safeStock,
+      inStock: safeStock > 0,
       featured: productData.featured,
       sale: productData.sale,
       image: productData.image,
@@ -426,6 +438,12 @@ export class DatabaseStorage implements IStorage {
       protein: number;
     };
   }): Promise<Product | undefined> {
+    // Read current stock to preserve when incoming value is invalid/undefined
+    const current = await db.select({ stockQuantity: products.stockQuantity }).from(products).where(eq(products.id, id)).limit(1);
+    const currentStock = current[0]?.stockQuantity ?? 0;
+    const incomingStock = Number(productData.stockQuantity);
+    const finalStock = Number.isFinite(incomingStock) && !Number.isNaN(incomingStock) ? incomingStock : currentStock;
+
     const result = await db.update(products)
       .set({
         name: productData.name,
@@ -440,7 +458,8 @@ export class DatabaseStorage implements IStorage {
         unit: productData.unit,
         unitRu: productData.unitRu,
         unitUz: productData.unitUz,
-        inStock: productData.stockQuantity > 0,
+        stockQuantity: finalStock,
+        inStock: finalStock > 0,
         featured: productData.featured,
         sale: productData.sale,
         image: productData.image,
@@ -889,6 +908,35 @@ export class DatabaseStorage implements IStorage {
     
     console.log("💾 Rider stats calculated:", stats);
     return stats;
+  }
+
+  // Promotions
+  async getActivePromotions(): Promise<Promotion[]> {
+    return await db.select().from(promotions)
+      .where(eq(promotions.isActive, true))
+      .orderBy(promotions.sortOrder);
+  }
+
+  async listPromotions(): Promise<Promotion[]> {
+    return await db.select().from(promotions).orderBy(promotions.sortOrder);
+  }
+
+  async createPromotion(promo: InsertPromotion): Promise<Promotion> {
+    const result = await db.insert(promotions).values(promo).returning();
+    return result[0];
+  }
+
+  async updatePromotion(id: number, promo: Partial<InsertPromotion>): Promise<Promotion | undefined> {
+    const result = await db.update(promotions)
+      .set({ ...promo, updatedAt: new Date() })
+      .where(eq(promotions.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deletePromotion(id: number): Promise<boolean> {
+    const result = await db.delete(promotions).where(eq(promotions.id, id));
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Review Management Methods
