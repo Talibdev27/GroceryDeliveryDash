@@ -1,8 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
-import { storage, verifyPassword } from "./storage";
-import { insertUserSchema, insertAddressSchema, insertPromotionSchema } from "@shared/schema";
+import { storage, verifyPassword, db } from "./storage";
+import { insertUserSchema, insertAddressSchema, insertPromotionSchema, products as productsTable } from "@shared/schema";
 import { ZodError } from "zod";
 
 // Extend the session interface to include our custom properties
@@ -351,6 +351,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ products });
     } catch (error) {
       console.error("Get products error:", error);
+      res.status(500).json({ error: "Failed to get products" });
+    }
+  });
+
+  // Admin: list all products including out-of-stock
+  app.get("/api/admin/products", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (_req: Request, res: Response) => {
+    try {
+      const all = await db.select().from(productsTable);
+      res.json({ products: all });
+    } catch (error) {
+      console.error("Get all admin products error:", error);
       res.status(500).json({ error: "Failed to get products" });
     }
   });

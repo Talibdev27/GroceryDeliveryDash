@@ -24,7 +24,7 @@ import {
   CheckCircle,
   XCircle
 } from "lucide-react";
-import { useProducts, useCategories } from "@/hooks/use-api";
+import { useAdminProducts, useCategories } from "@/hooks/use-api";
 import { useProductManagement } from "@/hooks/use-product-management";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getCurrencySymbol, DEFAULT_CURRENCY } from "@/lib/currency";
@@ -63,7 +63,7 @@ interface Product {
 
 export default function ProductManager() {
   const { t } = useTranslation();
-  const { data: productsData, loading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts();
+  const { data: productsData, loading: productsLoading, error: productsError, refetch: refetchProducts } = useAdminProducts();
   const { data: categoriesData, loading: categoriesLoading } = useCategories();
   const { toast } = useToast();
   

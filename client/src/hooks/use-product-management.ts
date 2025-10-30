@@ -34,18 +34,32 @@ export const useProductManagement = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const normalize = (data: ProductFormData) => {
+    const parsedPrice = parseFloat((data.price || '').toString());
+    const parsedSale = parseFloat((data.salePrice || '').toString());
+    const parsedStock = parseInt((data.stockQuantity || '').toString(), 10);
+    return {
+      ...data,
+      price: Number.isFinite(parsedPrice) ? String(parsedPrice) : '0',
+      salePrice: Number.isFinite(parsedSale) ? String(parsedSale) : '',
+      stockQuantity: Number.isFinite(parsedStock) ? String(parsedStock) : '0',
+      categoryId: data.categoryId || '',
+    };
+  };
+
   const createProduct = async (productData: ProductFormData): Promise<Product | null> => {
     setLoading(true);
     setError(null);
 
     try {
+      const payload = normalize(productData);
       const response = await fetch("/api/admin/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(productData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -69,13 +83,14 @@ export const useProductManagement = () => {
     setError(null);
 
     try {
+      const payload = normalize(productData);
       const response = await fetch(`/api/admin/products/${productId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(productData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {

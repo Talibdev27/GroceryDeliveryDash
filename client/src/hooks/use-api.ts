@@ -74,6 +74,11 @@ export const useProducts = () => {
   return useApi<{ products: any[] }>('/products');
 };
 
+// Admin: fetch all products (including out-of-stock)
+export const useAdminProducts = () => {
+  return useApi<{ products: any[] }>('/admin/products');
+};
+
 export const useProduct = (id: string | number) => {
   return useApi<{ product: any }>(`/products/${id}`, [id]);
 };
