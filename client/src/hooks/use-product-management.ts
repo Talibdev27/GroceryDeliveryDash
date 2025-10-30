@@ -34,12 +34,26 @@ export const useProductManagement = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const normalize = (data: ProductFormData) => {
+  const normalize = (data: any) => {
     const parsedPrice = parseFloat((data.price || '').toString());
     const parsedSale = parseFloat((data.salePrice || '').toString());
     const parsedStock = parseInt((data.stockQuantity || '').toString(), 10);
+    // Preserve translations and units explicitly; keep nutrition as-is (server parses)
     return {
-      ...data,
+      // Translations
+      name: data.name ?? '',
+      nameRu: data.nameRu ?? '',
+      nameUz: data.nameUz ?? '',
+      description: data.description ?? '',
+      descriptionRu: data.descriptionRu ?? '',
+      descriptionUz: data.descriptionUz ?? '',
+      unit: data.unit ?? '',
+      unitRu: data.unitRu ?? '',
+      unitUz: data.unitUz ?? '',
+      image: data.image ?? '',
+      featured: !!data.featured,
+      sale: !!data.sale,
+      nutrition: data.nutrition || undefined,
       price: Number.isFinite(parsedPrice) ? String(parsedPrice) : '0',
       salePrice: Number.isFinite(parsedSale) ? String(parsedSale) : '',
       stockQuantity: Number.isFinite(parsedStock) ? String(parsedStock) : '0',

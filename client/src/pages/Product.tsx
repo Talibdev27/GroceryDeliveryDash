@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/accordion";
 import { useCart } from "@/hooks/use-cart";
 import { useProduct, useCategories } from "@/hooks/use-api";
+import { translateText } from "@/lib/translate";
 import { useLanguage } from "@/hooks/use-language";
 import { formatCurrency } from "@/lib/utils";
 import { ReviewForm } from "@/components/product/ReviewForm";
@@ -43,18 +44,22 @@ export default function Product() {
   const { currentLanguage } = useLanguage();
   
   const [quantity, setQuantity] = useState(1);
+  // Client-side translation fallbacks when DB lacks localized fields
+  const [autoName, setAutoName] = useState<string | null>(null);
+  const [autoDescription, setAutoDescription] = useState<string | null>(null);
+  const [autoUnit, setAutoUnit] = useState<string | null>(null);
   const { data: productData, loading: isLoading, error } = useProduct(params?.id || "");
   const { data: categoriesData } = useCategories();
   
   const product = productData?.product;
   const categories = categoriesData?.categories || [];
 
-  // Get description based on current language
+  // Compute localized description with client-side fallback
   const getDescription = () => {
     if (!product) return '';
     switch (currentLanguage) {
-      case 'ru': return product.descriptionRu || product.description;
-      case 'uz': return product.descriptionUz || product.description;
+      case 'ru': return (product.descriptionRu || autoDescription) || product.description;
+      case 'uz': return (product.descriptionUz || autoDescription) || product.description;
       default: return product.description;
     }
   };
@@ -63,8 +68,8 @@ export default function Product() {
   const getName = () => {
     if (!product) return '';
     switch (currentLanguage) {
-      case 'ru': return product.nameRu || product.name;
-      case 'uz': return product.nameUz || product.name;
+      case 'ru': return (product.nameRu || autoName) || product.name;
+      case 'uz': return (product.nameUz || autoName) || product.name;
       default: return product.name;
     }
   };
@@ -72,11 +77,44 @@ export default function Product() {
   const getUnit = () => {
     if (!product) return '';
     switch (currentLanguage) {
-      case 'ru': return product.unitRu || product.unit;
-      case 'uz': return product.unitUz || product.unit;
+      case 'ru': return (product.unitRu || autoUnit) || product.unit;
+      case 'uz': return (product.unitUz || autoUnit) || product.unit;
       default: return product.unit;
     }
   };
+
+  // When language changes and DB lacks translations, attempt client-side translation once
+  useEffect(() => {
+    const run = async () => {
+      if (!product) return;
+      // Avoid translating if we already have DB fields
+      const needsRu = currentLanguage === 'ru' && (!product.nameRu || !product.descriptionRu || !product.unitRu);
+      const needsUz = currentLanguage === 'uz' && (!product.nameUz || !product.descriptionUz || !product.unitUz);
+      if (!needsRu && !needsUz) {
+        setAutoName(null);
+        setAutoDescription(null);
+        setAutoUnit(null);
+        return;
+      }
+      // Decide source language heuristically: assume English base
+      const from = 'en';
+      const to = currentLanguage;
+      try {
+        const [n, d, u] = await Promise.all([
+          translateText(product.name, from, to),
+          translateText(product.description || product.name, from, to),
+          translateText(product.unit || '', from, to),
+        ]);
+        setAutoName(n.translatedText);
+        setAutoDescription(d.translatedText);
+        setAutoUnit(u.translatedText);
+      } catch (e) {
+        // Silent fallback to default strings
+      }
+    };
+    run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id, currentLanguage]);
 
   // Debug logging
   console.log("Product page: Product ID from URL:", params?.id);

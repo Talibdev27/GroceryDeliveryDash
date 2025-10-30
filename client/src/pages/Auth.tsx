@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/AuthContext";
-import { User, Mail, Lock, UserPlus, LogIn, Phone } from "lucide-react";
+import { User, Mail, Lock, UserPlus, LogIn, Phone, Eye, EyeOff } from "lucide-react";
 
 export default function Auth() {
   const { t } = useTranslation();
@@ -24,6 +24,9 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showRegisterConfirm, setShowRegisterConfirm] = useState(false);
 
   // Redirect if user is already logged in
   useEffect(() => {
@@ -51,6 +54,7 @@ export default function Auth() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // debounce
     setIsLoading(true);
     setError(null);
     setSuccess(null);
@@ -75,6 +79,7 @@ export default function Auth() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // debounce
     setIsLoading(true);
     setError(null);
     setSuccess(null);
@@ -181,7 +186,7 @@ export default function Auth() {
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="login-password"
-                            type="password"
+                            type={showLoginPassword ? "text" : "password"}
                             placeholder={t("auth.passwordPlaceholder")}
                             value={loginData.password}
                             onChange={(e) =>
@@ -190,6 +195,14 @@ export default function Auth() {
                             className="pl-10"
                             required
                           />
+                          <button
+                            type="button"
+                            aria-label="toggle password visibility"
+                            className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600"
+                            onClick={() => setShowLoginPassword((v) => !v)}
+                          >
+                            {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
                         </div>
                       </div>
 
@@ -290,7 +303,7 @@ export default function Auth() {
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="register-password"
-                            type="password"
+                            type={showRegisterPassword ? "text" : "password"}
                             placeholder={t("auth.createPasswordPlaceholder")}
                             value={registerData.password}
                             onChange={(e) =>
@@ -299,6 +312,14 @@ export default function Auth() {
                             className="pl-10"
                             required
                           />
+                          <button
+                            type="button"
+                            aria-label="toggle password visibility"
+                            className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600"
+                            onClick={() => setShowRegisterPassword((v) => !v)}
+                          >
+                            {showRegisterPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
                         </div>
                       </div>
 
@@ -308,7 +329,7 @@ export default function Auth() {
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
                           <Input
                             id="register-confirmPassword"
-                            type="password"
+                            type={showRegisterConfirm ? "text" : "password"}
                             placeholder={t("auth.confirmPasswordPlaceholder")}
                             value={registerData.confirmPassword}
                             onChange={(e) =>
@@ -317,6 +338,14 @@ export default function Auth() {
                             className="pl-10"
                             required
                           />
+                          <button
+                            type="button"
+                            aria-label="toggle confirm password visibility"
+                            className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600"
+                            onClick={() => setShowRegisterConfirm((v) => !v)}
+                          >
+                            {showRegisterConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
                         </div>
                       </div>
 

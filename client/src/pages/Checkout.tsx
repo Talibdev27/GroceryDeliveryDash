@@ -88,12 +88,7 @@ const CheckoutPage = () => {
   // Debug current step
   console.log("🛒 CHECKOUT: Current step:", paymentStep);
 
-  // Redirect to login if user is not authenticated
-  useEffect(() => {
-    if (!user) {
-      setLocation("/auth");
-    }
-  }, [user, setLocation]);
+  // Allow guest checkout: no redirect
 
 
 
@@ -324,16 +319,23 @@ const CheckoutPage = () => {
                       </h2>
                       
                       {/* Address Selection */}
-                      <div className="mb-6">
-                        <AddressManager 
-                          mode="selection"
-                          selectedAddressId={selectedAddressId}
-                          onSelect={(address) => {
-                            setSelectedAddressId(address.id);
-                            fillFormWithAddress(address);
-                          }}
-                        />
-                      </div>
+                      {user && (
+                        <div className="mb-6">
+                          <AddressManager 
+                            mode="selection"
+                            selectedAddressId={selectedAddressId}
+                            onSelect={(address) => {
+                              setSelectedAddressId(address.id);
+                              fillFormWithAddress(address);
+                            }}
+                          />
+                        </div>
+                      )}
+                      {!user && (
+                        <div className="mb-6 text-sm text-neutral-600">
+                          {t("checkout.guestNotice")}
+                        </div>
+                      )}
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
@@ -371,7 +373,27 @@ const CheckoutPage = () => {
                             <FormItem>
                               <FormLabel>{t("checkout.phone")}</FormLabel>
                               <FormControl>
-                                <Input placeholder={t("checkout.phonePlaceholder")} {...field} />
+                                <Input 
+                                  placeholder={t("checkout.phonePlaceholder")} 
+                                  inputMode="tel"
+                                  autoComplete="tel"
+                                  maxLength={19}
+                                  onChange={(e) => {
+                                    const raw = e.target.value;
+                                    const digits = raw.replace(/\D/g, "");
+                                    let formatted = raw;
+                                    if (digits.startsWith("998") || raw.startsWith("+998")) {
+                                      const rest = digits.replace(/^998/, "");
+                                      const p1 = rest.slice(0, 2);
+                                      const p2 = rest.slice(2, 5);
+                                      const p3 = rest.slice(5, 7);
+                                      const p4 = rest.slice(7, 9);
+                                      formatted = "+998" + (p1 ? ` ${p1}` : "") + (p2 ? ` ${p2}` : "") + (p3 ? ` ${p3}` : "") + (p4 ? ` ${p4}` : "");
+                                    }
+                                    field.onChange(formatted);
+                                  }}
+                                  value={field.value}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>

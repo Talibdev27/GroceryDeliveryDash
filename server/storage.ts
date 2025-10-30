@@ -473,10 +473,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProduct(id: number): Promise<boolean> {
-    const result = await db.delete(products)
+    // Delete dependent order items first to satisfy FK constraints
+    await db.delete(orderItems).where(eq(orderItems.productId, id));
+
+    const result = await db
+      .delete(products)
       .where(eq(products.id, id))
       .returning();
-    
+
     return result.length > 0;
   }
 
