@@ -28,7 +28,7 @@ import { useAdminProducts, useCategories } from "@/hooks/use-api";
 import { useProductManagement } from "@/hooks/use-product-management";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getCurrencySymbol, DEFAULT_CURRENCY } from "@/lib/currency";
-import { translateProductToEnglish, translateProductToRussian } from "@/lib/translate";
+import { translateProductToEnglish, translateProductToRussian, translateText } from "@/lib/translate";
 
 interface Product {
   id: number;
@@ -719,11 +719,22 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
                     descriptionUz: formData.descriptionUz,
                     unitUz: formData.unitUz
                   });
+                  // Translate allergens list and storage text if provided
+                  const allergensUz = (formData.allergensUz || '').split(',').map((s: string) => s.trim()).filter(Boolean);
+                  const translatedAllergens = await Promise.all(
+                    allergensUz.map((a: string) => translateText(a, 'uz', 'en'))
+                  );
+                  const storageEn = formData.storageInstructionsUz
+                    ? (await translateText(formData.storageInstructionsUz, 'uz', 'en')).translatedText
+                    : formData.storageInstructions || '';
+
                   setFormData(prev => ({
                     ...prev,
                     name: translations.name,
                     description: translations.description,
-                    unit: translations.unit
+                    unit: translations.unit,
+                    allergens: translatedAllergens.map(r => r.translatedText).join(', '),
+                    storageInstructions: storageEn,
                   }));
                 } catch (error) {
                   console.error("Translation error:", error);
@@ -805,11 +816,21 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
                     descriptionUz: formData.descriptionUz,
                     unitUz: formData.unitUz
                   });
+                  const allergensUz = (formData.allergensUz || '').split(',').map((s: string) => s.trim()).filter(Boolean);
+                  const translatedAllergens = await Promise.all(
+                    allergensUz.map((a: string) => translateText(a, 'uz', 'ru'))
+                  );
+                  const storageRu = formData.storageInstructionsUz
+                    ? (await translateText(formData.storageInstructionsUz, 'uz', 'ru')).translatedText
+                    : formData.storageInstructionsRu || '';
+
                   setFormData(prev => ({
                     ...prev,
                     nameRu: translations.nameRu,
                     descriptionRu: translations.descriptionRu,
-                    unitRu: translations.unitRu
+                    unitRu: translations.unitRu,
+                    allergensRu: translatedAllergens.map(r => r.translatedText).join(', '),
+                    storageInstructionsRu: storageRu,
                   }));
                 } catch (error) {
                   console.error("Translation error:", error);
@@ -901,28 +922,7 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
         </div>
       </div>
 
-      {/* Allergens and Storage Instructions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="allergens">Allergens (comma-separated)</Label>
-          <Input
-            id="allergens"
-            value={formData.allergens}
-            onChange={(e) => setFormData({ ...formData, allergens: e.target.value })}
-            placeholder="milk, wheat, peanuts"
-          />
-        </div>
-        <div>
-          <Label htmlFor="storageInstructions">Storage Instructions</Label>
-          <Textarea
-            id="storageInstructions"
-            rows={3}
-            value={formData.storageInstructions}
-            onChange={(e) => setFormData({ ...formData, storageInstructions: e.target.value })}
-            placeholder="Keep refrigerated. Consume within 3 days after opening."
-          />
-        </div>
-      </div>
+      {/* Removed global Allergens/Storage - per-language fields live in tabs above */}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
