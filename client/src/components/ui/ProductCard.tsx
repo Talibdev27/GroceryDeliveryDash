@@ -2,6 +2,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { formatPrice } from "@/lib/currency";
+import { useLanguage } from "@/hooks/use-language";
+import { useTranslation } from "react-i18next";
 
 interface Product {
   id: number;
@@ -22,6 +24,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const { currentLanguage } = useLanguage();
+  const { t } = useTranslation();
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -31,6 +35,8 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   
   const displayPrice = product.sale && product.salePrice ? product.salePrice : product.price;
   const originalPrice = product.sale ? product.price : null;
+  const displayName = currentLanguage === 'ru' ? (product as any).nameRu || product.name : currentLanguage === 'uz' ? (product as any).nameUz || product.name : product.name;
+  const displayUnit = currentLanguage === 'ru' ? (product as any).unitRu || product.unit : currentLanguage === 'uz' ? (product as any).unitUz || product.unit : product.unit;
   
   return (
     <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden transition-all hover:shadow-md">
@@ -38,7 +44,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         <div className="relative">
           <img 
             src={product.image} 
-            alt={product.name}
+            alt={displayName}
             className="w-full h-40 object-cover"
           />
           {product.featured && (
@@ -53,8 +59,8 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           )}
         </div>
         <div className="p-4">
-          <h3 className="font-medium">{product.name}</h3>
-          <p className="text-sm text-neutral-500 mb-2">{product.unit}</p>
+          <h3 className="font-medium">{displayName}</h3>
+          <p className="text-sm text-neutral-500 mb-2">{displayUnit}</p>
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <span className="font-bold">{formatPrice(displayPrice)}</span>
@@ -74,7 +80,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
             </Button>
           </div>
           {!product.inStock && (
-            <div className="text-xs text-red-500 mt-1">Out of Stock</div>
+            <div className="text-xs text-red-500 mt-1">{t('product.outOfStock')}</div>
           )}
         </div>
       </Link>

@@ -59,6 +59,25 @@ export default function Product() {
     }
   };
 
+  // Localized helpers
+  const getName = () => {
+    if (!product) return '';
+    switch (currentLanguage) {
+      case 'ru': return product.nameRu || product.name;
+      case 'uz': return product.nameUz || product.name;
+      default: return product.name;
+    }
+  };
+
+  const getUnit = () => {
+    if (!product) return '';
+    switch (currentLanguage) {
+      case 'ru': return product.unitRu || product.unit;
+      case 'uz': return product.unitUz || product.unit;
+      default: return product.unit;
+    }
+  };
+
   // Debug logging
   console.log("Product page: Product ID from URL:", params?.id);
   console.log("Product page: Product data from API:", productData);
@@ -99,7 +118,12 @@ export default function Product() {
   const getCategoryName = () => {
     if (!product || !product.categoryId) return "";
     const category = categories.find(cat => cat.id === product.categoryId);
-    return category?.name || "";
+    if (!category) return "";
+    switch (currentLanguage) {
+      case 'ru': return category.nameRu || category.name;
+      case 'uz': return category.nameUz || category.name;
+      default: return category.name;
+    }
   };
   
   if (isLoading) {
@@ -141,8 +165,8 @@ export default function Product() {
   return (
     <>
       <Helmet>
-        <title>{`${product.name} | ${t("header.brand")}`}</title>
-        <meta name="description" content={`${product.name} - ${product.description || product.category}`} />
+        <title>{`${getName()} | ${t("header.brand")}`}</title>
+        <meta name="description" content={`${getName()} - ${getDescription() || getCategoryName()}`} />
       </Helmet>
       
       <div className="bg-white border-b">
@@ -157,7 +181,7 @@ export default function Product() {
             </Link>
             <ChevronRight className="h-4 w-4" />
             <span className="font-medium text-neutral-800 truncate max-w-[150px]">
-              {product.name}
+              {getName()}
             </span>
           </div>
         </div>
@@ -178,7 +202,7 @@ export default function Product() {
           <div>
             <div className="bg-white border border-neutral-200 rounded-lg p-6">
               <div className="text-sm text-primary font-medium mb-2">{getCategoryName()}</div>
-              <h1 className="text-2xl md:text-3xl font-heading font-bold mb-2">{product.name}</h1>
+              <h1 className="text-2xl md:text-3xl font-heading font-bold mb-2">{getName()}</h1>
               
               <div className="flex items-center mb-4">
                 <div className="flex items-center">
@@ -206,7 +230,7 @@ export default function Product() {
               </div>
               
               <p className="text-neutral-600 mb-6">
-                {product.description || t("product.defaultDescription")}
+                {getDescription() || t("product.defaultDescription")}
               </p>
               
               <div className="border-t border-b border-neutral-200 py-4 mb-6">
@@ -234,7 +258,7 @@ export default function Product() {
                 </div>
                 
                 <div className="text-sm text-neutral-500 mb-2">
-                  <span className="font-medium">{t("product.unit")}:</span> {product.unit}
+                  <span className="font-medium">{t("product.unit")}:</span> {getUnit()}
                 </div>
                 
                 <div className="text-sm text-neutral-500 mb-2">
