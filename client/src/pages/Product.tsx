@@ -379,23 +379,31 @@ export default function Product() {
                   <AccordionItem value="allergens">
                     <AccordionTrigger>{t("product.allergens")}</AccordionTrigger>
                     <AccordionContent>
-                      {Array.isArray((product as any).allergens) && (product as any).allergens.length > 0 ? (
-                        <ul className="list-disc pl-5 text-neutral-700">
-                          {(product as any).allergens.map((a: string, idx: number) => (
-                            <li key={idx}>{a}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-neutral-600">{t("product.allergensText")}</p>
-                      )}
+                      {(() => {
+                        const p: any = product;
+                        const list = currentLanguage === 'ru' ? (p.allergensRu || p.allergens) : currentLanguage === 'uz' ? (p.allergensUz || p.allergens) : p.allergens;
+                        return Array.isArray(list) && list.length > 0 ? (
+                          <ul className="list-disc pl-5 text-neutral-700">
+                            {list.map((a: string, idx: number) => (
+                              <li key={idx}>{a}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-neutral-600">{t("product.allergensText")}</p>
+                        );
+                      })()}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="storage">
                     <AccordionTrigger>{t("product.storage")}</AccordionTrigger>
                     <AccordionContent>
-                      <p className="text-neutral-600">
-                        {(product.nutrition as any)?.storageInstructions || t("product.storageText")}
-                      </p>
+                      {(() => {
+                        const p: any = product;
+                        const storageText = currentLanguage === 'ru' ? (p.storageInstructionsRu || p.storageInstructions) : currentLanguage === 'uz' ? (p.storageInstructionsUz || p.storageInstructions) : p.storageInstructions;
+                        return (
+                          <p className="text-neutral-600">{storageText || t("product.storageText")}</p>
+                        );
+                      })()}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>

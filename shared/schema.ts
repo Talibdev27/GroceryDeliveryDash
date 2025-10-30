@@ -80,7 +80,13 @@ export const products = pgTable("products", {
   sale: boolean("sale").default(false),
   salePrice: decimal("sale_price", { precision: 10, scale: 2 }),
   nutrition: json("nutrition"),
-  allergens: json("allergens"),
+  // Language-specific allergens and storage instructions
+  allergens: json("allergens"), // English
+  allergensRu: json("allergens_ru"),
+  allergensUz: json("allergens_uz"),
+  storageInstructions: text("storage_instructions"), // English
+  storageInstructionsRu: text("storage_instructions_ru"),
+  storageInstructionsUz: text("storage_instructions_uz"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -222,6 +228,11 @@ export const insertProductSchema = createInsertSchema(products).pick({
   salePrice: true,
   nutrition: true,
   allergens: true,
+  allergensRu: true,
+  allergensUz: true,
+  storageInstructions: true,
+  storageInstructionsRu: true,
+  storageInstructionsUz: true,
 });
 
 export const insertOrderSchema = createInsertSchema(orders).pick({

@@ -19,7 +19,13 @@ interface ProductFormData {
   unitRu?: string;
   unitUz?: string;
   nutrition?: any;
-  allergens?: string; // comma-separated in UI
+  // i18n inputs as comma-separated strings in UI
+  allergens?: string;
+  allergensRu?: string;
+  allergensUz?: string;
+  storageInstructions?: string;
+  storageInstructionsRu?: string;
+  storageInstructionsUz?: string;
 }
 
 interface Product {
@@ -49,7 +55,17 @@ export const useProductManagement = () => {
     const parsedSale = parseFloat((data.salePrice || '').toString());
     const parsedStock = parseInt((data.stockQuantity || '').toString(), 10);
     // Preserve translations and units explicitly; keep nutrition as-is (server parses)
-    const allergensArray = (data.allergens || data.allergensInput || '')
+    const allergensArray = (data.allergens || '')
+      .toString()
+      .split(',')
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 0);
+    const allergensRuArray = (data.allergensRu || '')
+      .toString()
+      .split(',')
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 0);
+    const allergensUzArray = (data.allergensUz || '')
       .toString()
       .split(',')
       .map((s: string) => s.trim())
@@ -71,6 +87,11 @@ export const useProductManagement = () => {
       sale: !!data.sale,
       nutrition: data.nutrition || undefined,
       allergens: allergensArray,
+      allergensRu: allergensRuArray,
+      allergensUz: allergensUzArray,
+      storageInstructions: data.storageInstructions || '',
+      storageInstructionsRu: data.storageInstructionsRu || '',
+      storageInstructionsUz: data.storageInstructionsUz || '',
       price: Number.isFinite(parsedPrice) ? String(parsedPrice) : '0',
       salePrice: Number.isFinite(parsedSale) ? String(parsedSale) : '',
       stockQuantity: Number.isFinite(parsedStock) ? String(parsedStock) : '0',

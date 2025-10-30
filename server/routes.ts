@@ -475,7 +475,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name, nameRu, nameUz, 
         description, descriptionRu, descriptionUz, 
         price, salePrice, categoryId, stockQuantity, featured, sale, image, 
-        unit, unitRu, unitUz, nutrition, allergens
+        unit, unitRu, unitUz, nutrition,
+        // i18n new fields
+        allergens, allergensRu, allergensUz,
+        storageInstructions, storageInstructionsRu, storageInstructionsUz
       } = req.body;
       
       // Convert nutrition strings to numbers
@@ -484,7 +487,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fat: parseFloat(nutrition.fat) || 0,
         carbs: parseFloat(nutrition.carbs) || 0,
         protein: parseFloat(nutrition.protein) || 0,
-        storageInstructions: typeof nutrition.storageInstructions === 'string' ? nutrition.storageInstructions : undefined
       } : null;
       
       const product = await storage.createProduct({
@@ -505,7 +507,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         unitRu,
         unitUz,
         nutrition: nutritionData,
-        allergens: Array.isArray(allergens) ? allergens : (typeof allergens === 'string' ? allergens.split(',').map((s: string) => s.trim()).filter(Boolean) : null)
+        // i18n fields
+        allergens: Array.isArray(allergens) ? allergens : (typeof allergens === 'string' ? allergens.split(',').map((s: string) => s.trim()).filter(Boolean) : null),
+        allergensRu: Array.isArray(allergensRu) ? allergensRu : (typeof allergensRu === 'string' ? allergensRu.split(',').map((s: string) => s.trim()).filter(Boolean) : null),
+        allergensUz: Array.isArray(allergensUz) ? allergensUz : (typeof allergensUz === 'string' ? allergensUz.split(',').map((s: string) => s.trim()).filter(Boolean) : null),
+        storageInstructions: typeof storageInstructions === 'string' ? storageInstructions : (nutrition?.storageInstructions || null),
+        storageInstructionsRu: typeof storageInstructionsRu === 'string' ? storageInstructionsRu : null,
+        storageInstructionsUz: typeof storageInstructionsUz === 'string' ? storageInstructionsUz : null
       });
       
       res.status(201).json({ product });
@@ -522,7 +530,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name, nameRu, nameUz, 
         description, descriptionRu, descriptionUz, 
         price, salePrice, categoryId, stockQuantity, featured, sale, image, 
-        unit, unitRu, unitUz, nutrition, allergens
+        unit, unitRu, unitUz, nutrition,
+        allergens, allergensRu, allergensUz,
+        storageInstructions, storageInstructionsRu, storageInstructionsUz
       } = req.body;
       
       // Convert nutrition strings to numbers
@@ -531,7 +541,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fat: parseFloat(nutrition.fat) || 0,
         carbs: parseFloat(nutrition.carbs) || 0,
         protein: parseFloat(nutrition.protein) || 0,
-        storageInstructions: typeof nutrition.storageInstructions === 'string' ? nutrition.storageInstructions : undefined
       } : null;
       
       const parsedStock = Number.parseInt(stockQuantity);
@@ -553,7 +562,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         unitRu,
         unitUz,
         nutrition: nutritionData,
-        allergens: Array.isArray(allergens) ? allergens : (typeof allergens === 'string' ? allergens.split(',').map((s: string) => s.trim()).filter(Boolean) : null)
+        allergens: Array.isArray(allergens) ? allergens : (typeof allergens === 'string' ? allergens.split(',').map((s: string) => s.trim()).filter(Boolean) : null),
+        allergensRu: Array.isArray(allergensRu) ? allergensRu : (typeof allergensRu === 'string' ? allergensRu.split(',').map((s: string) => s.trim()).filter(Boolean) : null),
+        allergensUz: Array.isArray(allergensUz) ? allergensUz : (typeof allergensUz === 'string' ? allergensUz.split(',').map((s: string) => s.trim()).filter(Boolean) : null),
+        storageInstructions: typeof storageInstructions === 'string' ? storageInstructions : (nutrition?.storageInstructions || null),
+        storageInstructionsRu: typeof storageInstructionsRu === 'string' ? storageInstructionsRu : null,
+        storageInstructionsUz: typeof storageInstructionsUz === 'string' ? storageInstructionsUz : null
       });
       
       if (!product) {

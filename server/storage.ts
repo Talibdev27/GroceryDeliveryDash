@@ -79,13 +79,18 @@ export interface IStorage {
     sale: boolean;
     image: string;
     unit: string;
-    allergens?: string[] | null;
+    // i18n fields
+    allergens?: string[] | null; // English
+    allergensRu?: string[] | null;
+    allergensUz?: string[] | null;
+    storageInstructions?: string | null; // English
+    storageInstructionsRu?: string | null;
+    storageInstructionsUz?: string | null;
     nutrition?: {
       calories?: number;
       fat?: number;
       carbs?: number;
       protein?: number;
-      storageInstructions?: string;
     } | null;
   }): Promise<Product>;
   
@@ -390,14 +395,19 @@ export class DatabaseStorage implements IStorage {
     unit: string;
     unitRu?: string;
     unitUz?: string;
-    allergens?: string[] | null;
     nutrition?: {
       calories?: number;
       fat?: number;
       carbs?: number;
       protein?: number;
-      storageInstructions?: string;
     } | null;
+    // i18n new fields
+    allergens?: string[] | null;
+    allergensRu?: string[] | null;
+    allergensUz?: string[] | null;
+    storageInstructions?: string | null;
+    storageInstructionsRu?: string | null;
+    storageInstructionsUz?: string | null;
   }): Promise<Product> {
     const safeStock = Number.isFinite(productData.stockQuantity) ? productData.stockQuantity : 0;
     const result = await db.insert(products).values({
@@ -424,10 +434,15 @@ export class DatabaseStorage implements IStorage {
             fat: productData.nutrition.fat,
             carbs: productData.nutrition.carbs,
             protein: productData.nutrition.protein,
-            storageInstructions: productData.nutrition.storageInstructions,
           }
         : null,
-      allergens: productData.allergens || null
+      // i18n new fields
+      allergens: productData.allergens || null,
+      allergensRu: productData.allergensRu || null,
+      allergensUz: productData.allergensUz || null,
+      storageInstructions: productData.storageInstructions || null,
+      storageInstructionsRu: productData.storageInstructionsRu || null,
+      storageInstructionsUz: productData.storageInstructionsUz || null
     }).returning();
     
     return result[0];
@@ -450,14 +465,19 @@ export class DatabaseStorage implements IStorage {
     unit: string;
     unitRu?: string;
     unitUz?: string;
-    allergens?: string[] | null;
     nutrition?: {
       calories?: number;
       fat?: number;
       carbs?: number;
       protein?: number;
-      storageInstructions?: string;
     } | null;
+    // i18n new fields
+    allergens?: string[] | null;
+    allergensRu?: string[] | null;
+    allergensUz?: string[] | null;
+    storageInstructions?: string | null;
+    storageInstructionsRu?: string | null;
+    storageInstructionsUz?: string | null;
   }): Promise<Product | undefined> {
     // Read current stock to preserve when incoming value is invalid/undefined
     const current = await db.select({ stockQuantity: products.stockQuantity }).from(products).where(eq(products.id, id)).limit(1);
@@ -490,10 +510,15 @@ export class DatabaseStorage implements IStorage {
               fat: productData.nutrition.fat,
               carbs: productData.nutrition.carbs,
               protein: productData.nutrition.protein,
-              storageInstructions: productData.nutrition.storageInstructions,
             }
           : null,
+        // i18n new fields
         allergens: productData.allergens || null,
+        allergensRu: productData.allergensRu || null,
+        allergensUz: productData.allergensUz || null,
+        storageInstructions: productData.storageInstructions || null,
+        storageInstructionsRu: productData.storageInstructionsRu || null,
+        storageInstructionsUz: productData.storageInstructionsUz || null,
         updatedAt: new Date()
       })
       .where(eq(products.id, id))

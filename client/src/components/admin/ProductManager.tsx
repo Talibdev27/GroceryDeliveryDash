@@ -131,8 +131,14 @@ export default function ProductManager() {
       ...formData,
       nutrition: {
         ...formData.nutrition,
-        storageInstructions: formData.storageInstructions,
       },
+      // pass per-language fields
+      allergens: formData.allergens,
+      allergensRu: formData.allergensRu,
+      allergensUz: formData.allergensUz,
+      storageInstructions: formData.storageInstructions,
+      storageInstructionsRu: formData.storageInstructionsRu,
+      storageInstructionsUz: formData.storageInstructionsUz,
     } as any);
     if (result) {
       setIsCreateDialogOpen(false);
@@ -190,8 +196,13 @@ export default function ProductManager() {
       ...formData,
       nutrition: {
         ...formData.nutrition,
-        storageInstructions: formData.storageInstructions,
       },
+      allergens: formData.allergens,
+      allergensRu: formData.allergensRu,
+      allergensUz: formData.allergensUz,
+      storageInstructions: formData.storageInstructions,
+      storageInstructionsRu: formData.storageInstructionsRu,
+      storageInstructionsUz: formData.storageInstructionsUz,
     } as any);
     if (result) {
       setIsEditDialogOpen(false);
@@ -618,14 +629,19 @@ interface ProductFormProps {
 
 function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, actionLoading }: ProductFormProps) {
   return (
-    <div className="space-y-6">
-      <Tabs defaultValue="uz" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+    <div className="space-y-6 max-h-[80vh] overflow-y-auto">
+      {/* Sticky header with tabs for better UX */}
+      <div className="sticky top-0 z-10 bg-white border-b">
+        <Tabs defaultValue="uz" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="uz">O'zbek</TabsTrigger>
           <TabsTrigger value="en">English</TabsTrigger>
           <TabsTrigger value="ru">Русский</TabsTrigger>
-        </TabsList>
-        
+          </TabsList>
+        </Tabs>
+      </div>
+
+      <Tabs defaultValue="uz" className="w-full">
         <TabsContent value="uz" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -656,6 +672,27 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
               placeholder="Mahsulot tavsifini kiriting"
               rows={3}
             />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="allergensUz">Allergenlar (vergul bilan ajrating)</Label>
+              <Input
+                id="allergensUz"
+                value={formData.allergensUz || ""}
+                onChange={(e) => setFormData({ ...formData, allergensUz: e.target.value })}
+                placeholder="sut, yeryong‘oq, bug‘doy"
+              />
+            </div>
+            <div>
+              <Label htmlFor="storageInstructionsUz">Saqlash bo'yicha ko'rsatmalar</Label>
+              <Textarea
+                id="storageInstructionsUz"
+                rows={3}
+                value={formData.storageInstructionsUz || ""}
+                onChange={(e) => setFormData({ ...formData, storageInstructionsUz: e.target.value })}
+                placeholder="Sovutgichda saqlang. Ochilgandan keyin 3 kun ichida iste'mol qiling."
+              />
+            </div>
           </div>
         </TabsContent>
         
@@ -722,6 +759,27 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
               rows={3}
             />
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="allergens">Allergens (comma-separated)</Label>
+              <Input
+                id="allergens"
+                value={formData.allergens || ""}
+                onChange={(e) => setFormData({ ...formData, allergens: e.target.value })}
+                placeholder="milk, wheat, peanuts"
+              />
+            </div>
+            <div>
+              <Label htmlFor="storageInstructions">Storage Instructions</Label>
+              <Textarea
+                id="storageInstructions"
+                rows={3}
+                value={formData.storageInstructions || ""}
+                onChange={(e) => setFormData({ ...formData, storageInstructions: e.target.value })}
+                placeholder="Keep refrigerated. Consume within 3 days after opening."
+              />
+            </div>
+          </div>
         </TabsContent>
         
         <TabsContent value="ru" className="space-y-4">
@@ -786,6 +844,27 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
               placeholder="Введите описание продукта"
               rows={3}
             />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="allergensRu">Аллергены (через запятую)</Label>
+              <Input
+                id="allergensRu"
+                value={formData.allergensRu || ""}
+                onChange={(e) => setFormData({ ...formData, allergensRu: e.target.value })}
+                placeholder="молоко, пшеница, арахис"
+              />
+            </div>
+            <div>
+              <Label htmlFor="storageInstructionsRu">Условия хранения</Label>
+              <Textarea
+                id="storageInstructionsRu"
+                rows={3}
+                value={formData.storageInstructionsRu || ""}
+                onChange={(e) => setFormData({ ...formData, storageInstructionsRu: e.target.value })}
+                placeholder="Хранить в холодильнике. Употребить в течение 3 дней после открытия."
+              />
+            </div>
           </div>
         </TabsContent>
       </Tabs>
