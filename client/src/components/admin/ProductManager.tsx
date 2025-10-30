@@ -102,7 +102,9 @@ export default function ProductManager() {
       fat: "",
       carbs: "",
       protein: ""
-    }
+    },
+    allergens: "",
+    storageInstructions: ""
   });
 
   // Filter products based on search and filters
@@ -125,7 +127,13 @@ export default function ProductManager() {
   const saleProducts = products?.filter(p => p.sale).length || 0;
 
   const handleCreateProduct = async () => {
-    const result = await createProduct(formData);
+    const result = await createProduct({
+      ...formData,
+      nutrition: {
+        ...formData.nutrition,
+        storageInstructions: formData.storageInstructions,
+      },
+    } as any);
     if (result) {
       setIsCreateDialogOpen(false);
       resetForm();
@@ -168,7 +176,9 @@ export default function ProductManager() {
         fat: product.nutrition?.fat?.toString() || "",
         carbs: product.nutrition?.carbs?.toString() || "",
         protein: product.nutrition?.protein?.toString() || ""
-      }
+      },
+      allergens: Array.isArray((product as any).allergens) ? (product as any).allergens.join(", ") : "",
+      storageInstructions: (product as any).nutrition?.storageInstructions || ""
     });
     setIsEditDialogOpen(true);
   };
@@ -176,7 +186,13 @@ export default function ProductManager() {
   const handleUpdateProduct = async () => {
     if (!selectedProduct) return;
     
-    const result = await updateProduct(selectedProduct.id, formData);
+    const result = await updateProduct(selectedProduct.id, {
+      ...formData,
+      nutrition: {
+        ...formData.nutrition,
+        storageInstructions: formData.storageInstructions,
+      },
+    } as any);
     if (result) {
       setIsEditDialogOpen(false);
       resetForm();
@@ -798,6 +814,29 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
             value={formData.image}
             onChange={(e) => setFormData({ ...formData, image: e.target.value })}
             placeholder="https://example.com/image.jpg"
+          />
+        </div>
+      </div>
+
+      {/* Allergens and Storage Instructions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="allergens">Allergens (comma-separated)</Label>
+          <Input
+            id="allergens"
+            value={formData.allergens}
+            onChange={(e) => setFormData({ ...formData, allergens: e.target.value })}
+            placeholder="milk, wheat, peanuts"
+          />
+        </div>
+        <div>
+          <Label htmlFor="storageInstructions">Storage Instructions</Label>
+          <Textarea
+            id="storageInstructions"
+            rows={3}
+            value={formData.storageInstructions}
+            onChange={(e) => setFormData({ ...formData, storageInstructions: e.target.value })}
+            placeholder="Keep refrigerated. Consume within 3 days after opening."
           />
         </div>
       </div>

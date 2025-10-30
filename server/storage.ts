@@ -79,6 +79,14 @@ export interface IStorage {
     sale: boolean;
     image: string;
     unit: string;
+    allergens?: string[] | null;
+    nutrition?: {
+      calories?: number;
+      fat?: number;
+      carbs?: number;
+      protein?: number;
+      storageInstructions?: string;
+    } | null;
   }): Promise<Product>;
   
   // Order operations
@@ -382,12 +390,14 @@ export class DatabaseStorage implements IStorage {
     unit: string;
     unitRu?: string;
     unitUz?: string;
+    allergens?: string[] | null;
     nutrition?: {
-      calories: number;
-      fat: number;
-      carbs: number;
-      protein: number;
-    };
+      calories?: number;
+      fat?: number;
+      carbs?: number;
+      protein?: number;
+      storageInstructions?: string;
+    } | null;
   }): Promise<Product> {
     const safeStock = Number.isFinite(productData.stockQuantity) ? productData.stockQuantity : 0;
     const result = await db.insert(products).values({
@@ -409,6 +419,15 @@ export class DatabaseStorage implements IStorage {
       sale: productData.sale,
       image: productData.image,
       nutrition: productData.nutrition
+        ? {
+            calories: productData.nutrition.calories,
+            fat: productData.nutrition.fat,
+            carbs: productData.nutrition.carbs,
+            protein: productData.nutrition.protein,
+            storageInstructions: productData.nutrition.storageInstructions,
+          }
+        : null,
+      allergens: productData.allergens || null
     }).returning();
     
     return result[0];
@@ -431,12 +450,14 @@ export class DatabaseStorage implements IStorage {
     unit: string;
     unitRu?: string;
     unitUz?: string;
+    allergens?: string[] | null;
     nutrition?: {
-      calories: number;
-      fat: number;
-      carbs: number;
-      protein: number;
-    };
+      calories?: number;
+      fat?: number;
+      carbs?: number;
+      protein?: number;
+      storageInstructions?: string;
+    } | null;
   }): Promise<Product | undefined> {
     // Read current stock to preserve when incoming value is invalid/undefined
     const current = await db.select({ stockQuantity: products.stockQuantity }).from(products).where(eq(products.id, id)).limit(1);
@@ -463,7 +484,16 @@ export class DatabaseStorage implements IStorage {
         featured: productData.featured,
         sale: productData.sale,
         image: productData.image,
-        nutrition: productData.nutrition,
+        nutrition: productData.nutrition
+          ? {
+              calories: productData.nutrition.calories,
+              fat: productData.nutrition.fat,
+              carbs: productData.nutrition.carbs,
+              protein: productData.nutrition.protein,
+              storageInstructions: productData.nutrition.storageInstructions,
+            }
+          : null,
+        allergens: productData.allergens || null,
         updatedAt: new Date()
       })
       .where(eq(products.id, id))

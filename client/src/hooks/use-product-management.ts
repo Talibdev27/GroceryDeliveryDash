@@ -10,6 +10,16 @@ interface ProductFormData {
   featured: boolean;
   sale: boolean;
   image: string;
+  // Optional localized fields and extras are passed through via normalize
+  nameRu?: string;
+  nameUz?: string;
+  descriptionRu?: string;
+  descriptionUz?: string;
+  unit?: string;
+  unitRu?: string;
+  unitUz?: string;
+  nutrition?: any;
+  allergens?: string; // comma-separated in UI
 }
 
 interface Product {
@@ -39,6 +49,12 @@ export const useProductManagement = () => {
     const parsedSale = parseFloat((data.salePrice || '').toString());
     const parsedStock = parseInt((data.stockQuantity || '').toString(), 10);
     // Preserve translations and units explicitly; keep nutrition as-is (server parses)
+    const allergensArray = (data.allergens || data.allergensInput || '')
+      .toString()
+      .split(',')
+      .map((s: string) => s.trim())
+      .filter((s: string) => s.length > 0);
+
     return {
       // Translations
       name: data.name ?? '',
@@ -54,6 +70,7 @@ export const useProductManagement = () => {
       featured: !!data.featured,
       sale: !!data.sale,
       nutrition: data.nutrition || undefined,
+      allergens: allergensArray,
       price: Number.isFinite(parsedPrice) ? String(parsedPrice) : '0',
       salePrice: Number.isFinite(parsedSale) ? String(parsedSale) : '',
       stockQuantity: Number.isFinite(parsedStock) ? String(parsedStock) : '0',

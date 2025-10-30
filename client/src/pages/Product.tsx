@@ -379,13 +379,23 @@ export default function Product() {
                   <AccordionItem value="allergens">
                     <AccordionTrigger>{t("product.allergens")}</AccordionTrigger>
                     <AccordionContent>
-                      <p className="text-neutral-600">{t("product.allergensText")}</p>
+                      {Array.isArray((product as any).allergens) && (product as any).allergens.length > 0 ? (
+                        <ul className="list-disc pl-5 text-neutral-700">
+                          {(product as any).allergens.map((a: string, idx: number) => (
+                            <li key={idx}>{a}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-neutral-600">{t("product.allergensText")}</p>
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="storage">
                     <AccordionTrigger>{t("product.storage")}</AccordionTrigger>
                     <AccordionContent>
-                      <p className="text-neutral-600">{t("product.storageText")}</p>
+                      <p className="text-neutral-600">
+                        {(product.nutrition as any)?.storageInstructions || t("product.storageText")}
+                      </p>
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>

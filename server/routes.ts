@@ -475,7 +475,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name, nameRu, nameUz, 
         description, descriptionRu, descriptionUz, 
         price, salePrice, categoryId, stockQuantity, featured, sale, image, 
-        unit, unitRu, unitUz, nutrition
+        unit, unitRu, unitUz, nutrition, allergens
       } = req.body;
       
       // Convert nutrition strings to numbers
@@ -483,7 +483,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         calories: parseFloat(nutrition.calories) || 0,
         fat: parseFloat(nutrition.fat) || 0,
         carbs: parseFloat(nutrition.carbs) || 0,
-        protein: parseFloat(nutrition.protein) || 0
+        protein: parseFloat(nutrition.protein) || 0,
+        storageInstructions: typeof nutrition.storageInstructions === 'string' ? nutrition.storageInstructions : undefined
       } : null;
       
       const product = await storage.createProduct({
@@ -503,7 +504,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         unit: unit || "шт", // Default unit if not provided
         unitRu,
         unitUz,
-        nutrition: nutritionData
+        nutrition: nutritionData,
+        allergens: Array.isArray(allergens) ? allergens : (typeof allergens === 'string' ? allergens.split(',').map((s: string) => s.trim()).filter(Boolean) : null)
       });
       
       res.status(201).json({ product });
@@ -520,7 +522,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name, nameRu, nameUz, 
         description, descriptionRu, descriptionUz, 
         price, salePrice, categoryId, stockQuantity, featured, sale, image, 
-        unit, unitRu, unitUz, nutrition
+        unit, unitRu, unitUz, nutrition, allergens
       } = req.body;
       
       // Convert nutrition strings to numbers
@@ -528,7 +530,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         calories: parseFloat(nutrition.calories) || 0,
         fat: parseFloat(nutrition.fat) || 0,
         carbs: parseFloat(nutrition.carbs) || 0,
-        protein: parseFloat(nutrition.protein) || 0
+        protein: parseFloat(nutrition.protein) || 0,
+        storageInstructions: typeof nutrition.storageInstructions === 'string' ? nutrition.storageInstructions : undefined
       } : null;
       
       const parsedStock = Number.parseInt(stockQuantity);
@@ -549,7 +552,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         unit: unit || "шт", // Default unit if not provided
         unitRu,
         unitUz,
-        nutrition: nutritionData
+        nutrition: nutritionData,
+        allergens: Array.isArray(allergens) ? allergens : (typeof allergens === 'string' ? allergens.split(',').map((s: string) => s.trim()).filter(Boolean) : null)
       });
       
       if (!product) {
