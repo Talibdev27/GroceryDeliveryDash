@@ -36,6 +36,7 @@
   "header": {
     "brand": "Diyor Market",
     "downloadApp": "Скачать приложение",
+    "appComingSoon": "Мобильное приложение — скоро",
     "account": "Аккаунт",
     "orders": "Заказы",
     "searchPlaceholder": "Поиск продуктов..."
@@ -235,6 +236,14 @@
     "appStore": "Скачать в App Store",
     "appScreenshot": "Мобильное приложение FreshCart"
   },
+  "comingSoonDialog": {
+    "title": "Мобильное приложение скоро",
+    "description": "Мы разрабатываем нативные приложения. Пока что вы можете добавить Diyor Market на главный экран для опыта, как в приложении.",
+    "installWebApp": "Установить веб‑приложение",
+    "iosInstructions": "iOS: Нажмите Поделиться → На экран «Домой».",
+    "androidInstructions": "Android: Меню (⋮) → Добавить на главный экран.",
+    "close": "Закрыть"
+  },
   "checkout": {
     "title": "Оформление заказа",
     "deliveryAddress": "Адрес доставки",
@@ -298,7 +307,8 @@
     "backToHome": "Вернуться на главную",
     "emptyCart": "Ваша корзина пуста",
     "emptyCartMessage": "Вам необходимо добавить товары в корзину перед оформлением заказа.",
-    "startShopping": "Начать покупки"
+    "startShopping": "Начать покупки",
+    "guestNotice": "Вы оформляете заказ как гость. После покупки сможете создать аккаунт и сохранить данные."
   },
   "account": {
     "profile": "Профиль",

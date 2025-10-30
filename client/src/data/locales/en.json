@@ -36,6 +36,7 @@
   "header": {
     "brand": "Diyor Market",
     "downloadApp": "Download App",
+    "appComingSoon": "Mobile App — Coming Soon",
     "account": "Account",
     "orders": "Orders",
     "searchPlaceholder": "Search for groceries..."
@@ -235,6 +236,14 @@
     "appStore": "Download on the App Store",
     "appScreenshot": "FreshCart mobile app"
   },
+  "comingSoonDialog": {
+    "title": "Mobile App Coming Soon",
+    "description": "Our native apps are in development. In the meantime, you can add Diyor Market to your home screen for an app-like experience.",
+    "installWebApp": "Install the Web App",
+    "iosInstructions": "iOS: Tap Share → Add to Home Screen.",
+    "androidInstructions": "Android: Open menu (⋮) → Add to Home screen.",
+    "close": "Close"
+  },
   "checkout": {
     "title": "Checkout",
     "deliveryAddress": "Delivery Address",
@@ -299,7 +308,8 @@
     "backToHome": "Back to Home",
     "emptyCart": "Your Cart is Empty",
     "emptyCartMessage": "You need to add items to your cart before proceeding to checkout.",
-    "startShopping": "Start Shopping"
+    "startShopping": "Start Shopping",
+    "guestNotice": "You’re checking out as a guest. You can create an account after purchase to save your details."
   },
   "account": {
     "profile": "Profile",

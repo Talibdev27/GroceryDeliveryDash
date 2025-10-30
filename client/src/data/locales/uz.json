@@ -36,6 +36,7 @@
   "header": {
     "brand": "Diyor Market",
     "downloadApp": "Ilovani yuklab olish",
+    "appComingSoon": "Mobil ilova — tez kunda",
     "account": "Hisob",
     "orders": "Buyurtmalar",
     "searchPlaceholder": "Oziq-ovqat qidirilmoqda..."
@@ -235,6 +236,14 @@
     "appStore": "App Store-dan yuklab olish",
     "appScreenshot": "FreshCart mobil ilovasi"
   },
+  "comingSoonDialog": {
+    "title": "Mobil ilova tez kunda",
+    "description": "Native ilovalarimiz ustida ishlayapmiz. Hozircha Diyor Market’ni bosh ekranga qo‘shib, ilovaga o‘xshash tajribadan foydalanishingiz mumkin.",
+    "installWebApp": "Veb‑ilovani o‘rnatish",
+    "iosInstructions": "iOS: Ulashish → Bosh ekranga qo‘shish.",
+    "androidInstructions": "Android: Menyu (⋮) → Bosh ekranga qo‘shish.",
+    "close": "Yopish"
+  },
   "checkout": {
     "title": "To'lov",
     "deliveryAddress": "Yetkazib berish manzili",
@@ -298,7 +307,8 @@
     "backToHome": "Bosh sahifaga qaytish",
     "emptyCart": "Savatingiz bo'sh",
     "emptyCartMessage": "To'lovga o'tishdan oldin savatingizga narsalar qo'shishingiz kerak.",
-    "startShopping": "Xarid qilishni boshlash"
+    "startShopping": "Xarid qilishni boshlash",
+    "guestNotice": "Siz mehmon sifatida to‘lov qilmoqdasiz. Xariddan keyin ma’lumotlarni saqlash uchun akkaunt yaratishingiz mumkin."
   },
   "account": {
     "profile": "Profil",

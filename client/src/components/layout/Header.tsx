@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import CartButton from "@/components/ui/CartButton";
 import Logo from "@/components/ui/Logo";
 import { NotificationBell } from "@/components/ui/NotificationBell";
+import AppComingSoonDialog from "@/components/ui/AppComingSoonDialog";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ export default function Header() {
   const { user, logout } = useAuth();
   const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [appDialogOpen, setAppDialogOpen] = useState(false);
 
   const toggleMobileSearch = () => {
     setMobileSearchVisible(!mobileSearchVisible);
@@ -121,9 +123,14 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="hidden md:block">
-              <Link href="#" className="text-primary hover:underline">
-                {t("header.downloadApp")}
-              </Link>
+              <button
+                type="button"
+                className="text-primary hover:underline"
+                onClick={() => setAppDialogOpen(true)}
+                aria-label="App Coming Soon"
+              >
+                {t("header.appComingSoon")}
+              </button>
             </div>
           </div>
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
@@ -244,6 +251,7 @@ export default function Header() {
           </div>
         </div>
       </div>
+      <AppComingSoonDialog open={appDialogOpen} onOpenChange={setAppDialogOpen} />
     </header>
   );
 }
