@@ -187,8 +187,14 @@ export default function ProductManager() {
         carbs: product.nutrition?.carbs?.toString() || "",
         protein: product.nutrition?.protein?.toString() || ""
       },
+      // Per-language allergens
+      allergensUz: Array.isArray((product as any).allergensUz) ? (product as any).allergensUz.join(", ") : "",
+      allergensRu: Array.isArray((product as any).allergensRu) ? (product as any).allergensRu.join(", ") : "",
       allergens: Array.isArray((product as any).allergens) ? (product as any).allergens.join(", ") : "",
-      storageInstructions: (product as any).nutrition?.storageInstructions || ""
+      // Per-language storage instructions
+      storageInstructionsUz: (product as any).storageInstructionsUz || "",
+      storageInstructionsRu: (product as any).storageInstructionsRu || "",
+      storageInstructions: (product as any).storageInstructions || "",
     });
     setIsEditDialogOpen(true);
   };
