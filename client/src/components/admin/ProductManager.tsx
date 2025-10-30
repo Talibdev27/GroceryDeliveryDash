@@ -107,6 +107,10 @@ export default function ProductManager() {
     storageInstructions: ""
   });
 
+  // Single controlled Tabs for language sections
+  const [langTab, setLangTab] = useState<'uz' | 'en' | 'ru'>('uz');
+  const [scrollerEl, setScrollerEl] = useState<HTMLDivElement | null>(null);
+
   // Filter products based on search and filters
   const filteredProducts = products?.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -628,20 +632,20 @@ interface ProductFormProps {
 }
 
 function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, actionLoading }: ProductFormProps) {
+  const [langTab, setLangTab] = useState<'uz' | 'en' | 'ru'>('uz');
+  const [scrollerEl, setScrollerEl] = useState<HTMLDivElement | null>(null);
   return (
-    <div className="space-y-6 max-h-[80vh] overflow-y-auto">
-      {/* Sticky header with tabs for better UX */}
-      <div className="sticky top-0 z-10 bg-white border-b">
-        <Tabs defaultValue="uz" className="w-full">
+    <div ref={setScrollerEl} className="space-y-6 max-h-[80vh] overflow-y-auto">
+      <Tabs value={langTab} onValueChange={(v) => { setLangTab(v as any); scrollerEl?.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full">
+        {/* Sticky header with tabs for better UX */}
+        <div className="sticky top-0 z-10 bg-white border-b">
           <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="uz">O'zbek</TabsTrigger>
           <TabsTrigger value="en">English</TabsTrigger>
           <TabsTrigger value="ru">Русский</TabsTrigger>
           </TabsList>
-        </Tabs>
-      </div>
+        </div>
 
-      <Tabs defaultValue="uz" className="w-full">
         <TabsContent value="uz" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
