@@ -68,6 +68,14 @@ const validateBody = (schema: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Ensure DB has optional columns used by the current app version
+  if ((storage as any).ensureOptionalColumns) {
+    try {
+      await (storage as any).ensureOptionalColumns();
+    } catch (e) {
+      console.error("Optional columns ensure failed:", e);
+    }
+  }
   // Authentication routes
   app.post("/api/auth/register", validateBody(insertUserSchema), async (req: Request, res: Response) => {
     try {

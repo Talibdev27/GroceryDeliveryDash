@@ -111,6 +111,20 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  // Ensure optional columns exist in production DBs without running full migrations
+  async ensureOptionalColumns(): Promise<void> {
+    try {
+      // Products optional i18n columns
+      await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS allergens json`);
+      await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS allergens_ru json`);
+      await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS allergens_uz json`);
+      await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS storage_instructions text`);
+      await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS storage_instructions_ru text`);
+      await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS storage_instructions_uz text`);
+    } catch (e) {
+      console.error("ensureOptionalColumns error:", e);
+    }
+  }
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
