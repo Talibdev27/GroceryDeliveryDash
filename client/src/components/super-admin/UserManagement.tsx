@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Users, 
   UserPlus, 
@@ -29,11 +30,13 @@ interface User {
 }
 
 export default function UserManagement() {
+  const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -84,18 +87,47 @@ export default function UserManagement() {
   };
 
   const handleDeleteUser = async (userId: number) => {
-    if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
-      try {
-        const response = await fetch(`/api/super-admin/users/${userId}`, {
-          method: "DELETE",
-          credentials: "include"
+    if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+      return;
+    }
+
+    setDeletingUserId(userId);
+    try {
+      const response = await fetch(`/api/super-admin/users/${userId}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+
+      if (response.ok) {
+        // Optimistically remove from UI for better UX
+        setUsers(prevUsers => prevUsers.filter(u => u.id !== userId));
+        toast({
+          title: "Success",
+          description: "User deleted successfully",
         });
-        if (response.ok) {
-          fetchUsers(); // Refresh the list
-        }
-      } catch (error) {
-        console.error("Failed to delete user:", error);
+        // Refresh to get updated stats
+        await fetchUsers();
+      } else {
+        const errorData = await response.json().catch(() => ({ error: "Failed to delete user" }));
+        toast({
+          title: "Error",
+          description: errorData.error || "Failed to delete user",
+          variant: "destructive",
+        });
+        // Still refresh in case of partial success
+        await fetchUsers();
       }
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while deleting the user",
+        variant: "destructive",
+      });
+      // Refresh to ensure UI is in sync
+      await fetchUsers();
+    } finally {
+      setDeletingUserId(null);
     }
   };
 
@@ -329,9 +361,10 @@ export default function UserManagement() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteUser(user.id)}
+                          disabled={deletingUserId === user.id}
                           className="text-red-600 hover:text-red-700"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className={`h-4 w-4 ${deletingUserId === user.id ? 'animate-spin' : ''}`} />
                         </Button>
                       </div>
                     </td>
