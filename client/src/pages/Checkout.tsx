@@ -603,11 +603,11 @@ const CheckoutPage = () => {
                                           {field.value === "uzcard" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">UzCard</div>
+                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.uzcard")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-blue-600 rounded text-white text-xs font-bold flex items-center justify-center">UZ</div>
-                                      <span className="text-sm text-neutral-500">National</span>
+                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.uzcardLabel")}</span>
                                     </div>
                                   </label>
                                 </div>
@@ -622,11 +622,11 @@ const CheckoutPage = () => {
                                           {field.value === "humo" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">Humo</div>
+                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.humo")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-green-600 rounded text-white text-xs font-bold flex items-center justify-center">H</div>
-                                      <span className="text-sm text-neutral-500">Contactless</span>
+                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.humoLabel")}</span>
                                     </div>
                                   </label>
                                 </div>
@@ -641,11 +641,11 @@ const CheckoutPage = () => {
                                           {field.value === "click" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">Click</div>
+                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.click")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-purple-600 rounded text-white text-xs font-bold flex items-center justify-center">C</div>
-                                      <span className="text-sm text-neutral-500">Mobile</span>
+                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.mobileLabel")}</span>
                                     </div>
                                   </label>
                                 </div>
@@ -660,11 +660,11 @@ const CheckoutPage = () => {
                                           {field.value === "payme" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">Payme</div>
+                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.payme")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-orange-600 rounded text-white text-xs font-bold flex items-center justify-center">P</div>
-                                      <span className="text-sm text-neutral-500">Mobile</span>
+                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.mobileLabel")}</span>
                                     </div>
                                   </label>
                                 </div>
@@ -679,7 +679,7 @@ const CheckoutPage = () => {
                                           {field.value === "international" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">International Cards</div>
+                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.international")}</div>
                                     </div>
                                     <div className="flex space-x-2 rtl:space-x-reverse">
                                       <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" className="h-6 w-auto" />
@@ -698,11 +698,11 @@ const CheckoutPage = () => {
                                           {field.value === "cash" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">Cash on Delivery</div>
+                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.cash")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-emerald-600 rounded text-white text-xs font-bold flex items-center justify-center">💵</div>
-                                      <span className="text-sm text-neutral-500">Pay when delivered</span>
+                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.cashDescription")}</span>
                                     </div>
                                   </label>
                                 </div>

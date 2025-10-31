@@ -308,7 +308,30 @@
     "emptyCart": "Savatingiz bo'sh",
     "emptyCartMessage": "To'lovga o'tishdan oldin savatingizga narsalar qo'shishingiz kerak.",
     "startShopping": "Xarid qilishni boshlash",
-    "guestNotice": "Siz mehmon sifatida to‘lov qilmoqdasiz. Xariddan keyin ma’lumotlarni saqlash uchun akkaunt yaratishingiz mumkin."
+    "guestNotice": "Siz mehmon sifatida to'lov qilmoqdasiz. Xariddan keyin ma'lumotlarni saqlash uchun akkaunt yaratishingiz mumkin.",
+    "paymentMethods": {
+      "uzcard": "UzCard",
+      "uzcardLabel": "Milliy",
+      "humo": "Humo",
+      "humoLabel": "Kontaktsiz",
+      "click": "Click",
+      "payme": "Payme",
+      "mobileLabel": "Mobil",
+      "international": "Xalqaro kartalar",
+      "cash": "Yetkazib berishda naqd pul",
+      "cashDescription": "Yetkazib berilganda to'lash"
+    }
+  },
+  "map": {
+    "selectLocationOnMap": "Xaritadan manzilni tanlang",
+    "loadingMap": "Xarita yuklanmoqda...",
+    "instruction1": "Belgini joylashtirish uchun xaritada istalgan joyni bosing",
+    "instruction2": "Qizil belgini aniq manzilingizga sudrab boring",
+    "instruction3": "Joriy manzilingizni olish uchun quyidagi tugmadan foydalaning",
+    "useCurrentLocation": "Joriy manzilimdan foydalanish",
+    "selectedAddress": "Tanlangan manzil",
+    "confirmLocation": "Ushbu manzilni tasdiqlash",
+    "locationConfirmed": "Manzil tasdiqlandi"
   },
   "account": {
     "profile": "Profil",

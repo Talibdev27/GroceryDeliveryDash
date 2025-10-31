@@ -309,7 +309,30 @@
     "emptyCart": "Your Cart is Empty",
     "emptyCartMessage": "You need to add items to your cart before proceeding to checkout.",
     "startShopping": "Start Shopping",
-    "guestNotice": "You’re checking out as a guest. You can create an account after purchase to save your details."
+    "guestNotice": "You're checking out as a guest. You can create an account after purchase to save your details.",
+    "paymentMethods": {
+      "uzcard": "UzCard",
+      "uzcardLabel": "National",
+      "humo": "Humo",
+      "humoLabel": "Contactless",
+      "click": "Click",
+      "payme": "Payme",
+      "mobileLabel": "Mobile",
+      "international": "International Cards",
+      "cash": "Cash on Delivery",
+      "cashDescription": "Pay when delivered"
+    }
+  },
+  "map": {
+    "selectLocationOnMap": "Select Location on Map",
+    "loadingMap": "Loading map...",
+    "instruction1": "Click anywhere on the map to place the marker",
+    "instruction2": "Drag the red marker to your exact location",
+    "instruction3": "Use the button below to get your current location",
+    "useCurrentLocation": "Use My Current Location",
+    "selectedAddress": "Selected Address",
+    "confirmLocation": "Confirm This Location",
+    "locationConfirmed": "Location confirmed"
   },
   "account": {
     "profile": "Profile",

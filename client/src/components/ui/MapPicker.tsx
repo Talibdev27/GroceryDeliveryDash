@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Navigation, Check } from 'lucide-react';
@@ -23,6 +24,7 @@ export default function MapPicker({
   initialAddress,
   className = ""
 }: MapPickerProps) {
+  const { t } = useTranslation();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
@@ -152,7 +154,7 @@ export default function MapPicker({
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <MapPin className="h-5 w-5" />
-          <span>Select Location on Map</span>
+          <span>{t("map.selectLocationOnMap")}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -168,7 +170,7 @@ export default function MapPicker({
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                <p className="text-sm text-gray-600">Loading map...</p>
+                <p className="text-sm text-gray-600">{t("map.loadingMap")}</p>
               </div>
             </div>
           )}
@@ -176,9 +178,9 @@ export default function MapPicker({
 
         {/* Instructions */}
         <div className="text-sm text-gray-600">
-          <p>• Click anywhere on the map to place the marker</p>
-          <p>• Drag the red marker to your exact location</p>
-          <p>• Use the button below to get your current location</p>
+          <p>• {t("map.instruction1")}</p>
+          <p>• {t("map.instruction2")}</p>
+          <p>• {t("map.instruction3")}</p>
         </div>
 
         {/* Current location button */}
@@ -190,7 +192,7 @@ export default function MapPicker({
           className="w-full"
         >
           <Navigation className="h-4 w-4 mr-2" />
-          Use My Current Location
+          {t("map.useCurrentLocation")}
         </Button>
 
         {/* Selected address display */}
@@ -199,7 +201,7 @@ export default function MapPicker({
             <div className="flex items-start space-x-2">
               <MapPin className="h-4 w-4 text-gray-500 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Selected Address:</p>
+                <p className="text-sm font-medium text-gray-900">{t("map.selectedAddress")}:</p>
                 <p className="text-sm text-gray-600">{selectedAddress}</p>
               </div>
             </div>
@@ -214,7 +216,7 @@ export default function MapPicker({
             className="w-full"
           >
             <Check className="h-4 w-4 mr-2" />
-            Confirm This Location
+            {t("map.confirmLocation")}
           </Button>
         )}
 
@@ -223,7 +225,7 @@ export default function MapPicker({
           <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
             <div className="flex items-center space-x-2">
               <Check className="h-4 w-4 text-green-600" />
-              <p className="text-sm text-green-800">Location confirmed!</p>
+              <p className="text-sm text-green-800">{t("map.locationConfirmed")}!</p>
             </div>
           </div>
         )}
