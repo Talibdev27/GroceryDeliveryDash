@@ -22,7 +22,9 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle,
-  XCircle
+  XCircle,
+  Image as ImageIcon,
+  X
 } from "lucide-react";
 import { useAdminProducts, useCategories } from "@/hooks/use-api";
 import { useProductManagement } from "@/hooks/use-product-management";
@@ -640,6 +642,17 @@ interface ProductFormProps {
 function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, actionLoading }: ProductFormProps) {
   const [langTab, setLangTab] = useState<'uz' | 'en' | 'ru'>('uz');
   const [scrollerEl, setScrollerEl] = useState<HTMLDivElement | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(formData.image || null);
+  const [uploading, setUploading] = useState(false);
+  const [useManualUrl, setUseManualUrl] = useState(false);
+  const { toast } = useToast();
+
+  // Sync image preview when formData.image changes (e.g., when editing a product)
+  useEffect(() => {
+    if (formData.image) {
+      setImagePreview(formData.image);
+    }
+  }, [formData.image]);
   return (
     <div ref={setScrollerEl} className="space-y-6 max-h-[80vh] overflow-y-auto">
       <Tabs value={langTab} onValueChange={(v) => { setLangTab(v as any); scrollerEl?.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full">
@@ -917,15 +930,156 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
             </SelectContent>
           </Select>
         </div>
-        <div>
-          <Label htmlFor="image">Image URL</Label>
-          <Input
-            id="image"
-            value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            placeholder="https://example.com/image.jpg"
-          />
+      </div>
+
+      {/* Image Upload Section */}
+      <div className="space-y-2">
+        <Label>Product Image</Label>
+        <div className="flex items-center gap-2 mb-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setUseManualUrl(!useManualUrl)}
+          >
+            {useManualUrl ? "Use Upload" : "Use Manual URL"}
+          </Button>
         </div>
+
+        {useManualUrl ? (
+          <div>
+            <Input
+              id="image"
+              value={formData.image}
+              onChange={(e) => {
+                setFormData({ ...formData, image: e.target.value });
+                setImagePreview(e.target.value);
+              }}
+              placeholder="https://example.com/image.jpg"
+            />
+            {imagePreview && (
+              <div className="mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-32 h-32 object-cover rounded border"
+                  onError={() => setImagePreview(null)}
+                />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="file-upload"
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50"
+              >
+                <ImageIcon className="h-4 w-4" />
+                <span>Choose Image</span>
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    // Validate file size (10MB max)
+                    if (file.size > 10 * 1024 * 1024) {
+                      toast({
+                        title: "File too large",
+                        description: "Image must be smaller than 10MB",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setImagePreview(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+
+                    // Upload to Cloudinary
+                    setUploading(true);
+                    const formData = new FormData();
+                    formData.append("image", file);
+
+                    try {
+                      const response = await fetch("/api/admin/upload-image", {
+                        method: "POST",
+                        credentials: "include",
+                        body: formData,
+                      });
+
+                      if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || "Upload failed");
+                      }
+
+                      const result = await response.json();
+                      setFormData((prev) => ({ ...prev, image: result.url }));
+                      setImagePreview(result.url);
+                      toast({
+                        title: "Success",
+                        description: "Image uploaded successfully",
+                      });
+                    } catch (error) {
+                      console.error("Upload error:", error);
+                      toast({
+                        title: "Upload failed",
+                        description: error instanceof Error ? error.message : "Failed to upload image",
+                        variant: "destructive",
+                      });
+                      setImagePreview(null);
+                    } finally {
+                      setUploading(false);
+                    }
+                  }}
+                  disabled={uploading}
+                />
+              </label>
+              {uploading && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+                  <span>Uploading...</span>
+                </div>
+              )}
+            </div>
+
+            {imagePreview && (
+              <div className="relative inline-block">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-40 h-40 object-cover rounded border"
+                  onError={() => setImagePreview(null)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-1 right-1 h-6 w-6 p-0 bg-red-500 hover:bg-red-600 text-white"
+                  onClick={() => {
+                    setImagePreview(null);
+                    setFormData((prev) => ({ ...prev, image: "" }));
+                  }}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+
+            {formData.image && !imagePreview && (
+              <div className="text-sm text-gray-500">
+                Current image: {formData.image.substring(0, 50)}...
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Removed global Allergens/Storage - per-language fields live in tabs above */}

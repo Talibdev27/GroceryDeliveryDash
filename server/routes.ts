@@ -1,9 +1,11 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
+import multer from "multer";
 import { storage, verifyPassword, db } from "./storage";
 import { insertUserSchema, insertAddressSchema, insertPromotionSchema, products as productsTable } from "@shared/schema";
 import { ZodError } from "zod";
+import { uploadImage, isCloudinaryConfigured } from "./cloudinary";
 
 // Extend the session interface to include our custom properties
 declare module "express-session" {
@@ -602,6 +604,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Delete product error:", error);
       res.status(500).json({ error: "Failed to delete product" });
+    }
+  });
+
+  // Image upload endpoint
+  app.post("/api/admin/upload-image", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (req: Request, res: Response) => {
+    try {
+      // Check if Cloudinary is configured
+      if (!isCloudinaryConfigured()) {
+        return res.status(500).json({ 
+          error: "Cloudinary is not configured. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET environment variables." 
+        });
+      }
+
+      // Get multer instance from app settings
+      const upload = app.get("upload") as multer.Multer;
+      if (!upload) {
+        return res.status(500).json({ error: "Upload middleware not configured" });
+      }
+
+      // Handle single file upload
+      upload.single("image")(req, res, async (err: any) => {
+        if (err) {
+          console.error("Upload error:", err);
+          return res.status(400).json({ error: err.message || "File upload failed" });
+        }
+
+        if (!req.file) {
+          return res.status(400).json({ error: "No file uploaded" });
+        }
+
+        try {
+          const result = await uploadImage(
+            req.file.buffer,
+            req.file.originalname,
+            "products"
+          );
+
+          res.json({ 
+            url: result.url,
+            publicId: result.publicId,
+            width: result.width,
+            height: result.height,
+            format: result.format
+          });
+        } catch (uploadError) {
+          console.error("Cloudinary upload error:", uploadError);
+          res.status(500).json({ 
+            error: uploadError instanceof Error ? uploadError.message : "Failed to upload image to Cloudinary" 
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Upload endpoint error:", error);
+      res.status(500).json({ error: "Failed to process image upload" });
     }
   });
 
