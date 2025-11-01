@@ -110,7 +110,7 @@ export const AuthForm: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">FreshCart</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">Diyor Market</CardTitle>
             <CardDescription className="text-center">
               Sign in to your account or create a new one
             </CardDescription>

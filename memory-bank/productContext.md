@@ -1,4 +1,4 @@
-# Product Context: FreshCart Grocery Delivery
+# Product Context: Diyor Market Grocery Delivery
 
 ## Why This Project Exists
 
@@ -10,7 +10,7 @@
 - **Mobile-First Need**: Modern consumers expect seamless mobile shopping experiences
 
 ### Solution Vision
-FreshCart addresses these pain points by providing:
+Diyor Market addresses these pain points by providing:
 - **Ultra-Fast Delivery**: 30-minute delivery promise for urgent grocery needs
 - **Freshness Guarantee**: Direct sourcing from local farms and suppliers
 - **Inclusive Experience**: Full multi-language support with RTL language handling

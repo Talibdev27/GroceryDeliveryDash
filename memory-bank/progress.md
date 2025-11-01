@@ -1,4 +1,4 @@
-# Progress: FreshCart Development Status
+# Progress: Diyor Market Development Status
 
 ## What Works (Completed Features)
 

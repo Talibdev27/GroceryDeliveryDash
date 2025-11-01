@@ -30,7 +30,7 @@ export function truncateText(text: string, maxLength: number): string {
 }
 
 export function getImagePlaceholder(width: number = 400, height: number = 300): string {
-  return `https://placehold.co/${width}x${height}/16a34a/FFFFFF?text=FreshCart`;
+  return `https://placehold.co/${width}x${height}/16a34a/FFFFFF?text=Diyor Market`;
 }
 
 export function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {

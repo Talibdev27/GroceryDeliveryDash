@@ -214,7 +214,7 @@
     "proceedToCheckout": "To'lovga o'tish"
   },
   "whyChooseUs": {
-    "title": "Nima uchun FreshCart tanlash kerak",
+    "title": "Nima uchun Diyor Market tanlash kerak",
     "delivery": {
       "title": "30 daqiqada etkazib berish",
       "description": "Oziq-ovqatlarni 30 daqiqa yoki undan kamroq vaqt ichida, to'g'ridan to'g'ri eshigigizga etkazib berish."
@@ -234,7 +234,7 @@
     "description": "Mobil ilovamiz orqali eksklyuziv takliflar va yaxshiroq xarid qilish tajribasiga ega bo'ling. Yetkazib berishlarni real vaqtda kuzating va bir marta bosish bilan qayta buyurtma bering. Kuting!",
     "googlePlay": "Google Play-dan yuklab olish",
     "appStore": "App Store-dan yuklab olish",
-    "appScreenshot": "FreshCart mobil ilovasi"
+    "appScreenshot": "Diyor Market mobil ilovasi"
   },
   "comingSoonDialog": {
     "title": "Mobil ilova tez kunda",

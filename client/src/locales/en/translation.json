@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "FreshCart - Grocery Delivery in 30 Minutes or Less",
+    "title": "Diyor Market - Grocery Delivery in 30 Minutes or Less",
     "description": "Order fresh groceries from local farms and stores delivered to your doorstep in 30 minutes or less."
   },
   "languages": {
@@ -78,7 +78,7 @@
     "inStock": "In Stock"
   },
   "features": {
-    "whyChoose": "Why Choose FreshCart",
+    "whyChoose": "Why Choose Diyor Market",
     "delivery": {
       "title": "30-Minute Delivery",
       "description": "Get your groceries delivered in 30 minutes or less, right to your doorstep."
@@ -114,9 +114,9 @@
     "paymentMethods": "Payment Methods",
     "contact": "Contact Us",
     "phone": "+1 (123) 456-7890",
-    "email": "help@freshcart.com",
+    "email": "help@diormarket.com",
     "address": "123 Fresh Street, Green City, State 12345",
-    "copyright": "© 2023 FreshCart. All rights reserved.",
+    "copyright": "© 2023 Diyor Market. All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "accessibility": "Accessibility"

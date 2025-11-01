@@ -214,7 +214,7 @@
     "proceedToCheckout": "Proceed to Checkout"
   },
   "whyChooseUs": {
-    "title": "Why Choose FreshCart",
+    "title": "Why Choose Diyor Market",
     "delivery": {
       "title": "30-Minute Delivery",
       "description": "Get your groceries delivered in 30 minutes or less, right to your doorstep."
@@ -234,7 +234,7 @@
     "description": "Get exclusive deals and a better shopping experience with our mobile app. Track your deliveries in real-time and reorder with one tap. Stay tuned!",
     "googlePlay": "Get it on Google Play",
     "appStore": "Download on the App Store",
-    "appScreenshot": "FreshCart mobile app"
+    "appScreenshot": "Diyor Market mobile app"
   },
   "comingSoonDialog": {
     "title": "Mobile App Coming Soon",

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "FreshCart - Entrega de Comestibles en 30 Minutos o Menos",
+    "title": "Diyor Market - Entrega de Comestibles en 30 Minutos o Menos",
     "description": "Ordene comestibles frescos de granjas y tiendas locales entregados a su puerta en 30 minutos o menos."
   },
   "languages": {
@@ -78,7 +78,7 @@
     "inStock": "En Stock"
   },
   "features": {
-    "whyChoose": "Por Qué Elegir FreshCart",
+    "whyChoose": "Por Qué Elegir Diyor Market",
     "delivery": {
       "title": "Entrega en 30 Minutos",
       "description": "Recibe tus comestibles en 30 minutos o menos, directamente a tu puerta."
@@ -114,9 +114,9 @@
     "paymentMethods": "Métodos de Pago",
     "contact": "Contáctanos",
     "phone": "+1 (123) 456-7890",
-    "email": "ayuda@freshcart.com",
+    "email": "ayuda@diormarket.com",
     "address": "123 Calle Fresca, Ciudad Verde, Estado 12345",
-    "copyright": "© 2023 FreshCart. Todos los derechos reservados.",
+    "copyright": "© 2023 Diyor Market. Todos los derechos reservados.",
     "privacyPolicy": "Política de Privacidad",
     "termsOfService": "Términos de Servicio",
     "accessibility": "Accesibilidad"

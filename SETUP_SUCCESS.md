@@ -1,4 +1,4 @@
-# 🎉 FreshCart Database & Authentication Setup - SUCCESS!
+# 🎉 Diyor Market Database & Authentication Setup - SUCCESS!
 
 ## ✅ What's Been Accomplished
 
@@ -148,4 +148,4 @@ The authentication system and database integration are now **production-ready**!
 - **Session Management**: Secure user sessions
 - **Data Persistence**: Reliable data storage
 
-**Congratulations!** 🎉 FreshCart now has a fully functional backend with real database integration and user authentication!
+**Congratulations!** 🎉 Diyor Market now has a fully functional backend with real database integration and user authentication!

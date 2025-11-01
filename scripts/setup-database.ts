@@ -5,7 +5,7 @@ import { seedDatabase } from "./seed-data";
 
 async function setupDatabase() {
   try {
-    console.log("🚀 Setting up FreshCart database...");
+    console.log("🚀 Setting up Diyor Market database...");
     
     // Test database connection
     console.log("📡 Testing database connection...");

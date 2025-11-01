@@ -1,7 +1,7 @@
 # Project Brief: Grocery Delivery Dashboard
 
 ## Project Overview
-**FreshCart** is a modern grocery delivery web application that provides fast, convenient grocery shopping with 30-minute delivery promises. The application serves as a comprehensive e-commerce platform for fresh groceries, featuring a responsive design, multi-language support, and real-time cart management.
+**Diyor Market** is a modern grocery delivery web application that provides fast, convenient grocery shopping with 30-minute delivery promises. The application serves as a comprehensive e-commerce platform for fresh groceries, featuring a responsive design, multi-language support, and real-time cart management.
 
 ## Core Requirements
 

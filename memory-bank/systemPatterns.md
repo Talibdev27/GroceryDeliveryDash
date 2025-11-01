@@ -1,4 +1,4 @@
-# System Patterns: FreshCart Architecture
+# System Patterns: Diyor Market Architecture
 
 ## System Architecture Overview
 

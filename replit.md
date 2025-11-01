@@ -1,8 +1,8 @@
-# FreshCart - Grocery Delivery Platform
+# Diyor Market - Grocery Delivery Platform
 
 ## Overview
 
-FreshCart is a modern, multi-language grocery delivery platform that promises 30-minute delivery of fresh products from local farms and stores. The application is built as a full-stack web application with React frontend and Express.js backend, featuring real-time shopping cart management, user authentication, and comprehensive admin/super-admin dashboards.
+Diyor Market is a modern, multi-language grocery delivery platform that promises 30-minute delivery of fresh products from local farms and stores. The application is built as a full-stack web application with React frontend and Express.js backend, featuring real-time shopping cart management, user authentication, and comprehensive admin/super-admin dashboards.
 
 **Core Purpose**: Enable customers to quickly order fresh groceries with ultra-fast delivery while providing robust management tools for administrators and delivery riders.
 

@@ -1,7 +1,7 @@
-# Database Setup Guide for FreshCart
+# Database Setup Guide for Diyor Market
 
 ## Overview
-This guide will help you set up the database and authentication system for FreshCart. The application now uses PostgreSQL with Drizzle ORM for real data persistence.
+This guide will help you set up the database and authentication system for Diyor Market. The application now uses PostgreSQL with Drizzle ORM for real data persistence.
 
 ## Prerequisites
 - Node.js 18+ installed
@@ -25,10 +25,10 @@ Neon is a serverless PostgreSQL platform that's perfect for development and prod
 If you prefer to run PostgreSQL locally:
 
 1. **Install PostgreSQL**: Follow the installation guide for your OS
-2. **Create database**: Create a database named `freshcart`
+2. **Create database**: Create a database named `diyormarket`
 3. **Set environment variable**: Add to your `.env` file:
    ```
-   DATABASE_URL="postgresql://username:password@localhost:5432/freshcart"
+   DATABASE_URL="postgresql://username:password@localhost:5432/diyormarket"
    ```
 
 ## Setup Steps

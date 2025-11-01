@@ -1,4 +1,4 @@
-# Technical Context: FreshCart Technology Stack
+# Technical Context: Diyor Market Technology Stack
 
 ## Technology Stack Overview
 
