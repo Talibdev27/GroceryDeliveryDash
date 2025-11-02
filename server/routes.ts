@@ -608,58 +608,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Image upload endpoint
-  app.post("/api/admin/upload-image", authenticateUser, requireRole(["super_admin", "admin", "product_manager"]), async (req: Request, res: Response) => {
-    try {
+  // Get multer instance from app settings
+  const upload = app.get("upload") as multer.Multer;
+  if (!upload) {
+    console.error("ERROR: Upload middleware not configured in app settings");
+  }
+
+  // Multer error handler middleware
+  const handleMulterError = (err: any, req: Request, res: Response, next: any) => {
+    if (err instanceof multer.MulterError) {
+      console.error("Multer error:", err.code, err.message);
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({ error: "File too large. Maximum size is 10MB." });
+      }
+      return res.status(400).json({ error: `Upload error: ${err.message}` });
+    }
+    if (err) {
+      console.error("Upload middleware error:", err);
+      return res.status(400).json({ error: err.message || "File upload failed" });
+    }
+    next();
+  };
+
+  app.post(
+    "/api/admin/upload-image",
+    authenticateUser,
+    requireRole(["super_admin", "admin", "product_manager"]),
+    (req: Request, res: Response, next: any) => {
       // Check if Cloudinary is configured
       if (!isCloudinaryConfigured()) {
+        console.error("Cloudinary configuration missing. Required env vars: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET");
         return res.status(500).json({ 
           error: "Cloudinary is not configured. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET environment variables." 
         });
       }
-
-      // Get multer instance from app settings
-      const upload = app.get("upload") as multer.Multer;
-      if (!upload) {
-        return res.status(500).json({ error: "Upload middleware not configured" });
-      }
-
-      // Handle single file upload
-      upload.single("image")(req, res, async (err: any) => {
-        if (err) {
-          console.error("Upload error:", err);
-          return res.status(400).json({ error: err.message || "File upload failed" });
-        }
-
+      next();
+    },
+    upload ? upload.single("image") : ((req: Request, res: Response, next: any) => {
+      res.status(500).json({ error: "Upload middleware not configured" });
+    }),
+    handleMulterError,
+    async (req: Request, res: Response) => {
+      try {
         if (!req.file) {
-          return res.status(400).json({ error: "No file uploaded" });
+          return res.status(400).json({ error: "No file uploaded. Please select an image file." });
         }
 
-        try {
-          const result = await uploadImage(
-            req.file.buffer,
-            req.file.originalname,
-            "products"
-          );
+        console.log(`Uploading file: ${req.file.originalname}, size: ${req.file.size} bytes, type: ${req.file.mimetype}`);
 
-          res.json({ 
-            url: result.url,
-            publicId: result.publicId,
-            width: result.width,
-            height: result.height,
-            format: result.format
-          });
-        } catch (uploadError) {
-          console.error("Cloudinary upload error:", uploadError);
-          res.status(500).json({ 
-            error: uploadError instanceof Error ? uploadError.message : "Failed to upload image to Cloudinary" 
-          });
-        }
-      });
-    } catch (error) {
-      console.error("Upload endpoint error:", error);
-      res.status(500).json({ error: "Failed to process image upload" });
+        const result = await uploadImage(
+          req.file.buffer,
+          req.file.originalname,
+          "products"
+        );
+
+        console.log(`Upload successful: ${result.url}`);
+
+        res.json({ 
+          url: result.url,
+          publicId: result.publicId,
+          width: result.width,
+          height: result.height,
+          format: result.format
+        });
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError);
+        const errorMessage = uploadError instanceof Error ? uploadError.message : "Failed to upload image to Cloudinary";
+        console.error("Error details:", {
+          message: errorMessage,
+          stack: uploadError instanceof Error ? uploadError.stack : undefined
+        });
+        res.status(500).json({ 
+          error: errorMessage
+        });
+      }
     }
-  });
+  );
 
   // Rider Management routes
   app.get("/api/admin/riders", authenticateUser, requireRole(["admin", "super_admin"]), async (req: Request, res: Response) => {
