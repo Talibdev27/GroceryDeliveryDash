@@ -26,7 +26,7 @@ import {
   Image as ImageIcon,
   X
 } from "lucide-react";
-import { useAdminProducts, useCategories } from "@/hooks/use-api";
+import { useAdminProducts, useCategories, authApi } from "@/hooks/use-api";
 import { useProductManagement } from "@/hooks/use-product-management";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice, getCurrencySymbol, DEFAULT_CURRENCY } from "@/lib/currency";
@@ -647,6 +647,52 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
   const [useManualUrl, setUseManualUrl] = useState(false);
   const { toast } = useToast();
 
+  // Check if user session is valid before upload
+  const checkSession = async (): Promise<boolean> => {
+    try {
+      await authApi.getCurrentUser();
+      return true;
+    } catch (error) {
+      console.error("Session check failed:", error);
+      return false;
+    }
+  };
+
+  // Handle upload errors with specific messages
+  const handleUploadError = (error: any, response: Response | null = null): string => {
+    // If we have a response, check status code
+    if (response) {
+      if (response.status === 401) {
+        // Check error message for more details
+        const errorMessage = error?.message?.toLowerCase() || "";
+        if (errorMessage.includes("expired") || errorMessage.includes("session")) {
+          return "Session expired. Please refresh the page and try again.";
+        }
+        if (errorMessage.includes("permission") || errorMessage.includes("forbidden")) {
+          return "You don't have permission to upload images. Please contact an administrator.";
+        }
+        return "Your session has expired. Please refresh the page and log in again.";
+      }
+      if (response.status === 403) {
+        return "You don't have permission to upload images. Please contact an administrator.";
+      }
+      if (response.status === 413) {
+        return "File too large. Maximum size is 10MB.";
+      }
+    }
+    
+    // Generic error handling
+    if (error instanceof Error) {
+      const msg = error.message.toLowerCase();
+      if (msg.includes("unauthorized") || msg.includes("401")) {
+        return "Your session has expired. Please refresh the page and log in again.";
+      }
+      return error.message;
+    }
+    
+    return "Failed to upload image. Please try again.";
+  };
+
   // Sync image preview when formData.image changes (e.g., when editing a product)
   useEffect(() => {
     if (formData.image) {
@@ -996,6 +1042,18 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
                       return;
                     }
 
+                    // Check session before upload
+                    const sessionValid = await checkSession();
+                    if (!sessionValid) {
+                      toast({
+                        title: "Session expired",
+                        description: "Your session has expired. Please refresh the page and log in again.",
+                        variant: "destructive",
+                      });
+                      setImagePreview(null);
+                      return;
+                    }
+
                     // Show preview
                     const reader = new FileReader();
                     reader.onloadend = () => {
@@ -1008,16 +1066,39 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
                     const formData = new FormData();
                     formData.append("image", file);
 
+                    let response: Response | null = null;
+                    let retryAttempted = false;
+
                     try {
-                      const response = await fetch("/api/admin/upload-image", {
+                      response = await fetch("/api/admin/upload-image", {
                         method: "POST",
                         credentials: "include",
                         body: formData,
                       });
 
+                      // If 401, try to refresh session once before failing
+                      if (response.status === 401 && !retryAttempted) {
+                        console.log("Received 401, checking session...");
+                        const sessionRefreshed = await checkSession();
+                        if (sessionRefreshed) {
+                          // Retry upload once - session might have been refreshed
+                          retryAttempted = true;
+                          response = await fetch("/api/admin/upload-image", {
+                            method: "POST",
+                            credentials: "include",
+                            body: formData,
+                          });
+                        }
+                      }
+
                       if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || "Upload failed");
+                        let errorData;
+                        try {
+                          errorData = await response.json();
+                        } catch {
+                          errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+                        }
+                        throw { message: errorData.error || "Upload failed", response };
                       }
 
                       const result = await response.json();
@@ -1027,11 +1108,12 @@ function ProductForm({ formData, setFormData, categories, onSubmit, onCancel, ac
                         title: "Success",
                         description: "Image uploaded successfully",
                       });
-                    } catch (error) {
+                    } catch (error: any) {
                       console.error("Upload error:", error);
+                      const errorMessage = handleUploadError(error, error.response || response);
                       toast({
                         title: "Upload failed",
-                        description: error instanceof Error ? error.message : "Failed to upload image",
+                        description: errorMessage,
                         variant: "destructive",
                       });
                       setImagePreview(null);

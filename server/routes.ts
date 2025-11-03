@@ -20,7 +20,12 @@ const authenticateUser = (req: Request, res: Response, next: any) => {
   if (req.session?.userId) {
     next();
   } else {
-    res.status(401).json({ error: "Unauthorized" });
+    // Check if session exists but is expired
+    if (req.session) {
+      res.status(401).json({ error: "Session expired" });
+    } else {
+      res.status(401).json({ error: "Unauthorized" });
+    }
   }
 };
 
@@ -30,16 +35,20 @@ const requireRole = (roles: string[]) => {
     try {
       // Check if user is authenticated first
       if (!req.session?.userId) {
+        // Check if session exists but is expired
+        if (req.session) {
+          return res.status(401).json({ error: "Session expired" });
+        }
         return res.status(401).json({ error: "Unauthorized" });
       }
       
       const user = await storage.getUser(req.session.userId);
       if (!user) {
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(401).json({ error: "User not found. Please log in again." });
       }
       
       if (!roles.includes(user.role)) {
-        return res.status(403).json({ error: "Forbidden: Insufficient permissions" });
+        return res.status(403).json({ error: "Insufficient permissions" });
       }
       
       next();
