@@ -1,18 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { MapPin, Truck, Leaf, Shield } from "lucide-react";
-import { Link } from "wouter";
+import { Truck, Leaf, Shield } from "lucide-react";
+import DeliveryZoneBanner from "@/components/ui/DeliveryZoneBanner";
 
 export default function HeroSection() {
   const { t } = useTranslation();
-  const [address, setAddress] = useState("");
-
-  const handleStartShopping = () => {
-    // In a real app, validate the address and store it
-    localStorage.setItem("deliveryAddress", address);
-  };
 
   return (
     <section className="relative bg-primary text-white overflow-hidden">
@@ -32,29 +23,9 @@ export default function HeroSection() {
             {t("hero.subtitle")}
           </p>
           
-          {/* Address Input */}
-          <div className="bg-white rounded-lg p-2 shadow-lg md:flex items-center max-w-xl">
-            <div className="flex-grow p-2">
-              <label htmlFor="delivery-address" className="block text-sm font-medium text-neutral-700 mb-1">
-                <MapPin className="h-4 w-4 text-primary inline me-1" /> {t("hero.deliveryAddress")}
-              </label>
-              <Input 
-                type="text" 
-                id="delivery-address" 
-                placeholder={t("hero.enterAddress")}
-                className="w-full text-neutral-800 focus:outline-none border-none shadow-none"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-            </div>
-            <Button
-              className="w-full md:w-auto mt-2 md:mt-0 bg-accent hover:bg-accent/90 text-white font-medium"
-              onClick={handleStartShopping}
-            >
-              <Link href="/products">
-                {t("hero.startShopping")}
-              </Link>
-            </Button>
+          {/* Delivery Zone Banner */}
+          <div className="mb-4 max-w-xl">
+            <DeliveryZoneBanner variant="warning" dismissible={true} />
           </div>
           
           {/* Delivery features */}

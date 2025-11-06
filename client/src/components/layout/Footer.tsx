@@ -103,9 +103,22 @@ export default function Footer() {
             <ul className="space-y-2">
               <li className="flex items-start space-x-2 rtl:space-x-reverse">
                 <MapPin className="h-5 w-5 mt-1 text-neutral-400 flex-shrink-0" />
-                <span className="text-neutral-400">
-                  {t("footer.address")}
-                </span>
+                <div className="flex flex-col">
+                  <a 
+                    href="https://www.google.com/maps/place/Diyor/@41.3680822,69.2937804,17z" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-neutral-400 hover:text-white transition-colors"
+                  >
+                    {t("footer.address")}
+                  </a>
+                  <Link 
+                    href="/location" 
+                    className="text-neutral-400 hover:text-white text-sm mt-1 transition-colors"
+                  >
+                    {t("footer.visitUs")}
+                  </Link>
+                </div>
               </li>
               <li className="flex items-center space-x-2 rtl:space-x-reverse">
                 <Phone className="h-5 w-5 text-neutral-400 flex-shrink-0" />

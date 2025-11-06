@@ -432,13 +432,37 @@
     "addresses": "Addresses",
     "paymentMethods": "Payment Methods",
     "contactUs": "Contact Us",
-    "address": "123 Fresh Street, Green City, State 12345",
+    "address": "Yunusabad, 13th Quarter, 2A, Tashkent, 100194, Uzbekistan",
     "phone": "+1 (123) 456-7890",
     "email": "help@diyormarket.com",
+    "viewOnMap": "View on Map",
+    "visitUs": "Visit Us",
     "allRightsReserved": "All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "accessibility": "Accessibility"
+  },
+  "location": {
+    "title": "Visit Diyor Market",
+    "subtitle": "Find us at our physical location",
+    "address": "Yunusabad, 13th Quarter, 2A, Tashkent, 100194, Uzbekistan",
+    "mapTitle": "Our Location",
+    "getDirections": "Get Directions",
+    "openingHours": "Opening Hours",
+    "contactInfo": "Contact Information"
+  },
+  "deliveryZone": {
+    "banner": "🚚 Currently delivering only to Yunusabad district",
+    "title": "Delivery Area",
+    "currentZone": "We currently deliver to Yunusabad district only",
+    "expandingSoon": "We're working to expand our delivery area soon!",
+    "outOfZone": "Sorry, we don't deliver to this area yet",
+    "outOfZoneMessage": "We currently only deliver within Yunusabad district. We're working to expand our delivery area soon!",
+    "viewMap": "View Delivery Zone Map",
+    "selectValidAddress": "Please select an address within Yunusabad district",
+    "checkAddress": "Check if your address is in our delivery zone",
+    "inZone": "✓ Address is within delivery zone",
+    "outsideZone": "✗ Address is outside delivery zone"
   },
   "auth": {
     "login": "Login",

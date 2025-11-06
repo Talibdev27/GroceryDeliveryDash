@@ -12,6 +12,7 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import SuperAdminDashboard from "@/pages/SuperAdminDashboard";
 import RiderDashboard from "@/pages/RiderDashboard";
 import LoginTest from "@/pages/LoginTest";
+import Location from "@/pages/Location";
 import NotFound from "@/pages/not-found";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -33,6 +34,7 @@ function Router() {
       <Route path="/orders" component={Orders} />
       <Route path="/account/:section?" component={Account} />
       <Route path="/auth" component={Auth} />
+      <Route path="/location" component={Location} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/super-admin" component={SuperAdminDashboard} />
       <Route path="/rider" component={RiderDashboard} />

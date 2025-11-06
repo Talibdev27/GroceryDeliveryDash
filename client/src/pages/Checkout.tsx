@@ -36,9 +36,11 @@ import { useCart } from "@/hooks/use-cart";
 import { useAuth } from "@/context/AuthContext";
 import { userApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
+import { validateDeliveryAddress } from "@/lib/delivery-zone";
 import { Address } from "@/types";
 import AddressManager from "@/components/account/AddressManager";
 import LocationSelector from "@/components/ui/LocationSelector";
+import DeliveryZoneBanner from "@/components/ui/DeliveryZoneBanner";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -84,6 +86,7 @@ const CheckoutPage = () => {
   const [paymentStep, setPaymentStep] = useState<"address" | "delivery" | "payment" | "confirmation">("address");
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [deliveryZoneStatus, setDeliveryZoneStatus] = useState<{ isValid: boolean; message: string } | null>(null);
 
   // Debug current step
   console.log("🛒 CHECKOUT: Current step:", paymentStep);
@@ -136,6 +139,18 @@ const CheckoutPage = () => {
   const onSubmitActual = async (data: FormValues) => {
     console.log("🚀 CHECKOUT: Form submitted!");
     console.log("🚀 CHECKOUT: Form data:", data);
+    
+    // Validate delivery zone before proceeding
+    const zoneValidation = validateDeliveryAddress(data.coordinates, data.address);
+    if (!zoneValidation.isValid) {
+      setPaymentStep("address");
+      setDeliveryZoneStatus(zoneValidation);
+      form.setError("coordinates", {
+        type: "manual",
+        message: t("deliveryZone.outOfZoneMessage")
+      });
+      return;
+    }
     
     try {
       // Save address if requested and create order
@@ -311,6 +326,9 @@ const CheckoutPage = () => {
                 
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit, onError)} className="p-6 space-y-6">
+                    {/* Delivery Zone Banner */}
+                    <DeliveryZoneBanner variant="info" className="mb-4" />
+                    
                     {/* Address Information */}
                     <div className={paymentStep !== "address" ? "hidden" : ""}>
                       <h2 className="text-lg font-medium mb-4 flex items-center">
@@ -413,16 +431,56 @@ const CheckoutPage = () => {
                                   value={field.value}
                                   onLocationSelect={(location) => {
                                     field.onChange(location.address);
-                                    form.setValue("coordinates", {
+                                    const coords = {
                                       lat: location.coordinates[0],
                                       lng: location.coordinates[1]
-                                    });
+                                    };
+                                    form.setValue("coordinates", coords);
+                                    
+                                    // Real-time validation
+                                    const validation = validateDeliveryAddress(coords, location.address);
+                                    setDeliveryZoneStatus(validation);
+                                    if (!validation.isValid) {
+                                      form.setError("coordinates", {
+                                        type: "manual",
+                                        message: t("deliveryZone.outOfZoneMessage")
+                                      });
+                                    } else {
+                                      form.clearErrors("coordinates");
+                                    }
                                   }}
                                   placeholder={t("checkout.addressPlaceholder")}
                                   className="w-full"
                                 />
                               </FormControl>
                               <FormMessage />
+                              {/* Delivery Zone Status Indicator */}
+                              {deliveryZoneStatus && (
+                                <div className={`mt-2 p-3 rounded-lg flex items-start space-x-2 rtl:space-x-reverse ${
+                                  deliveryZoneStatus.isValid 
+                                    ? "bg-green-50 border border-green-200 text-green-800" 
+                                    : "bg-red-50 border border-red-200 text-red-800"
+                                }`}>
+                                  {deliveryZoneStatus.isValid ? (
+                                    <Check className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                                  ) : (
+                                    <MapPin className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                                  )}
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">
+                                      {deliveryZoneStatus.isValid 
+                                        ? t("deliveryZone.inZone")
+                                        : t("deliveryZone.outOfZone")
+                                      }
+                                    </p>
+                                    {!deliveryZoneStatus.isValid && (
+                                      <p className="text-sm mt-1">
+                                        {t("deliveryZone.outOfZoneMessage")}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
                             </FormItem>
                           )}
                         />

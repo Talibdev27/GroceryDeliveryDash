@@ -431,13 +431,37 @@
     "addresses": "Manzillar",
     "paymentMethods": "To'lov usullari",
     "contactUs": "Biz bilan bog'laning",
-    "address": "123 Yangi ko'cha, Yashil shahar, Viloyat 12345",
+    "address": "Yunusobod, 13-kvartal, 2A, Toshkent, 100194, O'zbekiston",
     "phone": "+1 (123) 456-7890",
     "email": "yordam@diyormarket.com",
+    "viewOnMap": "Xaritada ko'rish",
+    "visitUs": "Bizni ziyorat qiling",
     "allRightsReserved": "Barcha huquqlar himoyalangan.",
     "privacyPolicy": "Maxfiylik siyosati",
     "termsOfService": "Xizmat ko'rsatish shartlari",
     "accessibility": "Qulaylilik"
+  },
+  "location": {
+    "title": "Diyor Marketni ziyorat qiling",
+    "subtitle": "Bizni jismoniy manzilimizda toping",
+    "address": "Yunusobod, 13-kvartal, 2A, Toshkent, 100194, O'zbekiston",
+    "mapTitle": "Bizning manzilimiz",
+    "getDirections": "Yo'nalish olish",
+    "openingHours": "Ish vaqti",
+    "contactInfo": "Aloqa ma'lumotlari"
+  },
+  "deliveryZone": {
+    "banner": "🚚 Hozirda faqat Yunusobod tumaniga yetkazib beramiz",
+    "title": "Yetkazib berish zonasi",
+    "currentZone": "Hozirda biz faqat Yunusobod tumaniga yetkazib beramiz",
+    "expandingSoon": "Tez orada yetkazib berish zonasini kengaytirish ustida ishlayapmiz!",
+    "outOfZone": "Kechirasiz, biz hali bu hududga yetkazib bermaymiz",
+    "outOfZoneMessage": "Hozirda biz faqat Yunusobod tumani ichida yetkazib beramiz. Tez orada yetkazib berish zonasini kengaytirish ustida ishlayapmiz!",
+    "viewMap": "Yetkazib berish zonasining xaritasini ko'rish",
+    "selectValidAddress": "Iltimos, Yunusobod tumanidagi manzilni tanlang",
+    "checkAddress": "Manzilingiz yetkazib berish zonasimizda ekanligini tekshiring",
+    "inZone": "✓ Manzil yetkazib berish zonasida",
+    "outsideZone": "✗ Manzil yetkazib berish zonasidan tashqarida"
   },
   "auth": {
     "login": "Kirish",
