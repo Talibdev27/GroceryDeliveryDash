@@ -82,7 +82,7 @@ const CheckoutPage = () => {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const { cartItems, subtotal, deliveryFee, total, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [paymentStep, setPaymentStep] = useState<"address" | "delivery" | "payment" | "confirmation">("address");
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
@@ -91,7 +91,30 @@ const CheckoutPage = () => {
   // Debug current step
   console.log("🛒 CHECKOUT: Current step:", paymentStep);
 
-  // Allow guest checkout: no redirect
+  // Require authentication for checkout
+  useEffect(() => {
+    if (!authLoading && !user) {
+      console.log("🛒 CHECKOUT: User not authenticated, redirecting to login");
+      setLocation("/auth?returnUrl=/checkout");
+    }
+  }, [user, authLoading, setLocation]);
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">{t("checkout.loading") || "Loading..."}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render checkout if user is not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
 
 
 

@@ -1,12 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useCart } from "@/hooks/use-cart";
+import { useAuth } from "@/context/AuthContext";
 import { formatPrice } from "@/lib/currency";
 import { Plus, Minus, Trash2, X } from "lucide-react";
 
 export default function ShoppingCart() {
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const {
     isCartOpen,
     closeCart,
@@ -22,6 +25,19 @@ export default function ShoppingCart() {
   } = useCart();
 
   console.log("ShoppingCart: isCartOpen =", isCartOpen, "cartItems.length =", cartItems.length);
+
+  const handleCheckout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) {
+      // Redirect to auth page with return URL
+      setLocation("/auth?returnUrl=/checkout");
+      closeCart();
+    } else {
+      // User is authenticated, proceed to checkout
+      setLocation("/checkout");
+      closeCart();
+    }
+  };
 
   if (!isCartOpen) return null;
 
@@ -166,9 +182,12 @@ export default function ShoppingCart() {
                 </div>
               </div>
               
-              <Link href="/checkout" onClick={closeCart} className="block w-full bg-accent text-white font-medium py-3 rounded-lg text-center hover:bg-accent/90 transition-colors">
+              <Button
+                onClick={handleCheckout}
+                className="w-full bg-accent text-white font-medium py-3 rounded-lg hover:bg-accent/90 transition-colors"
+              >
                 {t("cart.proceedToCheckout")}
-              </Link>
+              </Button>
             </div>
           )}
         </div>

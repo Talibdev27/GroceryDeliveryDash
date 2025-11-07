@@ -295,6 +295,7 @@
     "deliveryFee": "Delivery Fee",
     "tip": "Tip",
     "total": "Total",
+    "loading": "Loading...",
     "promoCodePlaceholder": "Enter promo code",
     "promoCodeHint": "Enter a valid promo code to get discounts",
     "back": "Back",
@@ -497,7 +498,8 @@
     "registerSuccess": "Registration successful! Redirecting...",
     "registerError": "Registration failed. Username or email may already exist.",
     "registerFailed": "Registration failed. Please try again.",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "checkoutMessage": "Please log in or create an account to complete your order."
   },
   "orders": {
     "title": "Your Orders",

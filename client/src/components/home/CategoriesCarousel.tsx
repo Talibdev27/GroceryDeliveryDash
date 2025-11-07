@@ -67,7 +67,7 @@ export default function CategoriesCarousel() {
                 categories.map((category) => (
                   <Link 
                     key={category.id}
-                    href={`/products?category=${category.name}`}
+                    href={`/products?categoryId=${category.id}`}
                     className="flex flex-col items-center group"
                   >
                     <div 

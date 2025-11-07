@@ -20,7 +20,7 @@ import { User, Mail, Lock, UserPlus, LogIn, Phone, Eye, EyeOff } from "lucide-re
 export default function Auth() {
   const { t } = useTranslation();
   const { login, register, user } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -28,12 +28,21 @@ export default function Auth() {
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showRegisterConfirm, setShowRegisterConfirm] = useState(false);
 
+  // Get returnUrl from query parameters
+  const getReturnUrl = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("returnUrl") || "/products";
+  };
+
+  const returnUrl = getReturnUrl();
+  const isFromCheckout = returnUrl === "/checkout";
+
   // Redirect if user is already logged in
   useEffect(() => {
     if (user) {
-      setLocation("/products");
+      setLocation(returnUrl);
     }
-  }, [user, setLocation]);
+  }, [user, returnUrl, setLocation]);
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -63,9 +72,9 @@ export default function Auth() {
       const success = await login(loginData.username, loginData.password);
       if (success) {
         setSuccess(t("auth.loginSuccess"));
-        // Redirect to products page after successful login
+        // Redirect to returnUrl or products page after successful login
         setTimeout(() => {
-          setLocation("/products");
+          setLocation(returnUrl);
         }, 1500);
       } else {
         setError(t("auth.loginError"));
@@ -102,9 +111,9 @@ export default function Auth() {
 
       if (success) {
         setSuccess(t("auth.registerSuccess"));
-        // Redirect to products page after successful registration
+        // Redirect to returnUrl or products page after successful registration
         setTimeout(() => {
-          setLocation("/products");
+          setLocation(returnUrl);
         }, 1500);
       } else {
         setError(t("auth.registerError"));
@@ -146,6 +155,13 @@ export default function Auth() {
                 <CardDescription className="text-center">
                   {t("auth.welcomeDescription")}
                 </CardDescription>
+                {isFromCheckout && (
+                  <Alert className="mt-4">
+                    <AlertDescription>
+                      {t("auth.checkoutMessage") || "Please log in or create an account to complete your order."}
+                    </AlertDescription>
+                  </Alert>
+                )}
               </CardHeader>
               <CardContent>
                 <Tabs defaultValue="login" className="w-full">

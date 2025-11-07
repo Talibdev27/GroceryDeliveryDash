@@ -294,6 +294,7 @@
     "deliveryFee": "Yetkazib berish haqi",
     "tip": "Chaychaqalar",
     "total": "Jami",
+    "loading": "Yuklanmoqda...",
     "promoCodePlaceholder": "Promo-kodni kiriting",
     "promoCodeHint": "Chegirmalar olish uchun haqiqiy promo-kodni kiriting",
     "back": "Orqaga",
@@ -496,7 +497,8 @@
     "registerSuccess": "Ro'yxatdan o'tish muvaffaqiyatli! Yo'naltirilmoqda...",
     "registerError": "Ro'yxatdan o'tish muvaffaqiyatsiz. Foydalanuvchi nomi yoki elektron pochta allaqachon mavjud bo'lishi mumkin.",
     "registerFailed": "Ro'yxatdan o'tish muvaffaqiyatsiz. Qaytadan urinib ko'ring.",
-    "passwordMismatch": "Parollar mos kelmaydi"
+    "passwordMismatch": "Parollar mos kelmaydi",
+    "checkoutMessage": "Buyurtmani yakunlash uchun iltimos, tizimga kiring yoki akkaunt yarating."
   },
   "orders": {
     "title": "Sizning buyurtmalaringiz",

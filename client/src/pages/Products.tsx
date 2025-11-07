@@ -38,7 +38,7 @@ export default function Products() {
   
   // State for filters
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState("popularity");
   const [mobileFiltersVisible, setMobileFiltersVisible] = useState(false);
   
@@ -72,10 +72,13 @@ export default function Products() {
   // Parse query params
   useEffect(() => {
     const params = new URLSearchParams(location.split("?")[1]);
-    const category = params.get("category");
+    const categoryId = params.get("categoryId");
     
-    if (category) {
-      setSelectedCategory(category);
+    if (categoryId) {
+      const id = parseInt(categoryId, 10);
+      if (!isNaN(id)) {
+        setSelectedCategory(id);
+      }
     }
   }, [location]);
   
@@ -87,11 +90,8 @@ export default function Products() {
     }
     
     // Filter by category (using categoryId)
-    if (selectedCategory) {
-      const category = categories.find(cat => cat.name === selectedCategory);
-      if (category && product.categoryId !== category.id) {
-        return false;
-      }
+    if (selectedCategory && product.categoryId !== selectedCategory) {
+      return false;
     }
     
     // Filter by price range
@@ -143,7 +143,12 @@ export default function Products() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <h1 className="text-2xl md:text-3xl font-heading font-bold mb-4 md:mb-0">
-            {selectedCategory || t("products.allProducts")}
+            {selectedCategory 
+              ? (() => {
+                  const category = categories.find(cat => cat.id === selectedCategory);
+                  return category ? getCategoryName(category) : t("products.allProducts");
+                })()
+              : t("products.allProducts")}
           </h1>
           
           <div className="w-full md:w-auto flex items-center space-x-2 rtl:space-x-reverse">
@@ -206,11 +211,11 @@ export default function Products() {
                         <div key={category.id} className="flex items-center space-x-2">
                           <Checkbox 
                             id={`category-${category.id}`} 
-                            checked={selectedCategory === category.name}
+                            checked={selectedCategory === category.id}
                             onCheckedChange={(checked) => {
                               if (checked) {
-                                setSelectedCategory(category.name);
-                              } else if (selectedCategory === category.name) {
+                                setSelectedCategory(category.id);
+                              } else if (selectedCategory === category.id) {
                                 setSelectedCategory(null);
                               }
                             }}
