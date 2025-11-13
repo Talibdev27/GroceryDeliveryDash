@@ -40,24 +40,90 @@ export default function LocationSelector({
   const [zoneValidation, setZoneValidation] = useState<{ isValid: boolean; message: string } | null>(null);
 
   // Handle address selection from autocomplete
-  const handleAddressSelect = (suggestion: {
+  const handleAddressSelect = async (suggestion: {
     title: string;
     subtitle: string;
     coordinates: [number, number];
     address: string;
   }) => {
+    // Ensure coordinates are in [lat, lng] format for validation
+    // suggestion.coordinates should already be [lat, lng] from getAddressSuggestions conversion
+    const [lat, lng] = suggestion.coordinates;
+    
+    console.log('📍 LocationSelector: Address selected from search:', {
+      address: suggestion.address,
+      subtitle: suggestion.subtitle,
+      rawCoordinates: suggestion.coordinates,
+      extractedLat: lat,
+      extractedLng: lng,
+      coordinateArray: `[${lat}, ${lng}]`,
+      coordinateObject: `{lat: ${lat}, lng: ${lng}}`
+    });
+
+    // Extract district from subtitle (e.g., "Yunusobod dahasi, Yunusobod tumani, Toshkent")
+    let district: string | undefined;
+    if (suggestion.subtitle) {
+      // Check if subtitle contains district information
+      const subtitleLower = suggestion.subtitle.toLowerCase();
+      if (subtitleLower.includes('yunusobod') || subtitleLower.includes('yunusabad')) {
+        // Extract district name from subtitle
+        const parts = suggestion.subtitle.split(',').map(p => p.trim());
+        // Usually format: "Yunusobod dahasi, Yunusobod tumani, Toshkent"
+        // District is usually in the second part (tumani)
+        const districtPart = parts.find(p => 
+          p.toLowerCase().includes('tumani') || 
+          p.toLowerCase().includes('yunusobod') ||
+          p.toLowerCase().includes('yunusabad')
+        );
+        if (districtPart) {
+          // Extract just the district name
+          if (districtPart.toLowerCase().includes('yunusobod')) {
+            district = 'Yunusobod';
+          } else if (districtPart.toLowerCase().includes('yunusabad')) {
+            district = 'Yunusabad';
+          } else {
+            district = districtPart;
+          }
+        } else {
+          // Fallback: check if any part contains district keywords
+          if (subtitleLower.includes('yunusobod')) {
+            district = 'Yunusobod';
+          } else if (subtitleLower.includes('yunusabad')) {
+            district = 'Yunusabad';
+          }
+        }
+      }
+    }
+
+    console.log('📍 LocationSelector: Extracted district:', district);
+
     const locationData: LocationData = {
       address: suggestion.address,
       city: '', // Will be extracted from geocoding
-      state: '',
+      state: district || '', // Store district in state field
       country: 'Uzbekistan',
-      coordinates: suggestion.coordinates
+      coordinates: suggestion.coordinates // [lat, lng] format
     };
 
-    // Validate delivery zone
-    const validation = validateDeliveryAddress(suggestion.coordinates, suggestion.address);
+    // Validate delivery zone - pass district for district-first validation
+    const validation = validateDeliveryAddress(
+      { lat, lng }, 
+      suggestion.address, 
+      suggestion.subtitle,
+      district
+    );
+    console.log('📍 LocationSelector: Validation result:', {
+      isValid: validation.isValid,
+      message: validation.message,
+      coordinatesUsed: { lat, lng },
+      address: suggestion.address,
+      subtitle: suggestion.subtitle,
+      district
+    });
     setZoneValidation(validation);
 
+    // Update search value to match selected address (same as map selection)
+    setSearchValue(suggestion.address);
     setSelectedLocation(locationData);
     onLocationSelect(locationData);
   };
@@ -90,8 +156,16 @@ export default function LocationSelector({
   // Handle search input change
   const handleSearchChange = (newValue: string) => {
     setSearchValue(newValue);
-    if (newValue !== selectedLocation?.address) {
+    // Only clear selected location if user manually types (not when selecting from autocomplete)
+    // When selecting from autocomplete, onChange is called before onSelect, so we need to check
+    // if the new value matches a potential selection by checking if it's different from current selection
+    if (newValue !== selectedLocation?.address && !selectedLocation) {
+      // Only clear if there's no selected location (user is typing, not selecting)
+      setZoneValidation(null);
+    } else if (newValue !== selectedLocation?.address) {
+      // User manually changed the address after selection
       setSelectedLocation(null);
+      setZoneValidation(null);
     }
   };
 

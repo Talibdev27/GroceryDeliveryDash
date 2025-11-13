@@ -162,6 +162,7 @@ export const reverseGeocode = async (lat: number, lng: number): Promise<{
   city: string;
   state: string;
   country: string;
+  district?: string;
 } | null> => {
   try {
     const apiKey = import.meta.env.VITE_YANDEX_MAPS_API_KEY;
@@ -180,11 +181,29 @@ export const reverseGeocode = async (lat: number, lng: number): Promise<{
       const state = addressComponents.find((c: any) => c.kind === 'area')?.name || '';
       const country = addressComponents.find((c: any) => c.kind === 'country')?.name || 'Uzbekistan';
       
+      // Extract district from address components or geocoder metadata
+      const districtComponent = addressComponents.find((c: any) => 
+        c.kind === 'district' || 
+        (c.kind === 'locality' && (c.name?.toLowerCase().includes('yunusabad') || c.name?.toLowerCase().includes('yunusobod')))
+      );
+      let district: string | undefined;
+      if (districtComponent) {
+        district = districtComponent.name;
+      } else {
+        // Try to extract from geocoder metadata
+        district = extractDistrict({
+          metaDataProperty: geoObject.metaDataProperty,
+          description: geoObject.metaDataProperty?.GeocoderMetaData?.text,
+          name: geoObject.name
+        });
+      }
+      
       return {
         formattedAddress,
         city,
         state,
-        country
+        country,
+        district
       };
     }
     
@@ -194,6 +213,165 @@ export const reverseGeocode = async (lat: number, lng: number): Promise<{
     return null;
   }
 };
+
+/**
+ * Validate and normalize coordinates
+ * Yandex Maps returns coordinates in [latitude, longitude] format
+ */
+export function validateCoordinates(coords: any): [number, number] | null {
+  console.log('[validateCoordinates] Input:', coords, 'Type:', typeof coords);
+
+  // Handle undefined or null
+  if (!coords) {
+    console.error('[validateCoordinates] Coordinates are undefined or null');
+    return null;
+  }
+
+  // Handle array
+  if (Array.isArray(coords)) {
+    if (coords.length !== 2) {
+      console.error('[validateCoordinates] Array length is not 2:', coords.length);
+      return null;
+    }
+
+    const [first, second] = coords;
+    
+    // Check if values are numbers
+    if (typeof first !== 'number' || typeof second !== 'number') {
+      console.error('[validateCoordinates] Values are not numbers:', { first, second });
+      return null;
+    }
+
+    // Check for NaN
+    if (isNaN(first) || isNaN(second)) {
+      console.error('[validateCoordinates] Values contain NaN');
+      return null;
+    }
+
+    // Tashkent coordinate ranges
+    const TASHKENT_LAT_MIN = 41.0;
+    const TASHKENT_LAT_MAX = 41.6;
+    const TASHKENT_LNG_MIN = 69.0;
+    const TASHKENT_LNG_MAX = 69.6;
+
+    console.log('[validateCoordinates] Values:', { first, second });
+
+    // Method 1: Check if first value is latitude (standard format)
+    if (first >= TASHKENT_LAT_MIN && first <= TASHKENT_LAT_MAX && 
+        second >= TASHKENT_LNG_MIN && second <= TASHKENT_LNG_MAX) {
+      console.log('[validateCoordinates] ✓ Format: [lat, lng]');
+      return [first, second];
+    }
+
+    // Method 2: Check if coordinates are swapped
+    if (second >= TASHKENT_LAT_MIN && second <= TASHKENT_LAT_MAX && 
+        first >= TASHKENT_LNG_MIN && first <= TASHKENT_LNG_MAX) {
+      console.log('[validateCoordinates] ✓ Format: [lng, lat] - Swapping');
+      return [second, first];
+    }
+
+    // Method 3: Accept if close to Tashkent (fuzzy match)
+    const MARGIN = 0.3;
+    if (first >= (TASHKENT_LAT_MIN - MARGIN) && first <= (TASHKENT_LAT_MAX + MARGIN) && 
+        second >= (TASHKENT_LNG_MIN - MARGIN) && second <= (TASHKENT_LNG_MAX + MARGIN)) {
+      console.warn('[validateCoordinates] ⚠ Fuzzy match accepted');
+      return [first, second];
+    }
+
+    console.error('[validateCoordinates] ✗ Coordinates outside Tashkent range:', { first, second });
+    return null;
+  }
+
+  console.error('[validateCoordinates] Invalid coordinate format:', coords);
+  return null;
+}
+
+/**
+ * Extract district from address components or description
+ * ENHANCED to catch more district variations
+ */
+export function extractDistrict(properties: any): string | undefined {
+  console.log('[extractDistrict] Properties:', properties);
+
+  // Method 1: Get from address components (most reliable)
+  const components = properties?.metaDataProperty?.GeocoderMetaData?.Address?.Components;
+  
+  if (components && Array.isArray(components)) {
+    // Try different component kinds
+    const districtComponent = components.find((c: any) => 
+      c.kind === 'district' || 
+      c.kind === 'locality' || 
+      c.kind === 'area' ||
+      c.kind === 'province'
+    );
+
+    if (districtComponent) {
+      console.log('[extractDistrict] ✓ Found district in components:', districtComponent.name);
+      return districtComponent.name;
+    }
+
+    // Sometimes district is in locality
+    const localityComponent = components.find((c: any) => c.kind === 'locality');
+    if (localityComponent && localityComponent.name.toLowerCase().includes('yunusabad')) {
+      console.log('[extractDistrict] ✓ Found Yunusabad in locality');
+      return 'Yunusabad';
+    }
+  }
+
+  // Method 2: Check description
+  const description = properties?.description || '';
+  console.log('[extractDistrict] Description:', description);
+
+  const districtPatterns = [
+    { pattern: /yunusabad|юнусабад|yunusobod|юнусобод/i, district: 'Yunusabad' },
+    { pattern: /chilanzar|чиланзар/i, district: 'Chilanzar' },
+    { pattern: /mirzo[- ]ulug'bek|мирзо[- ]улуғбек/i, district: 'Mirzo Ulugbek' },
+    { pattern: /olmazor|олмазор/i, district: 'Olmazor' },
+    { pattern: /shayxontohur|шайхонтоҳур/i, district: 'Shayxontohur' },
+    { pattern: /bektemir|бектемир/i, district: 'Bektemir' },
+    { pattern: /yashnobod|яшнобод/i, district: 'Yashnobod' },
+    { pattern: /mirobod|миробод/i, district: 'Mirobod' },
+    { pattern: /uchtepa|учтепа/i, district: 'Uchtepa' },
+    { pattern: /sergeli|сергели/i, district: 'Sergeli' },
+    { pattern: /yakkasaroy|яккасарой/i, district: 'Yakkasaroy' }
+  ];
+
+  for (const { pattern, district } of districtPatterns) {
+    if (pattern.test(description)) {
+      console.log(`[extractDistrict] ✓ Found ${district} in description`);
+      return district;
+    }
+  }
+
+  // Method 3: Check full address
+  const fullAddress = properties?.metaDataProperty?.GeocoderMetaData?.Address?.formatted || '';
+  console.log('[extractDistrict] Full address:', fullAddress);
+
+  for (const { pattern, district } of districtPatterns) {
+    if (pattern.test(fullAddress)) {
+      console.log(`[extractDistrict] ✓ Found ${district} in full address`);
+      return district;
+    }
+  }
+
+  // Method 4: Check name
+  const name = properties?.name || '';
+  for (const { pattern, district } of districtPatterns) {
+    if (pattern.test(name)) {
+      console.log(`[extractDistrict] ✓ Found ${district} in name`);
+      return district;
+    }
+  }
+
+  // Method 5: Check for mavze pattern (specific to Yunusabad)
+  if (/\d+-mavze/i.test(fullAddress) || /\d+-mavze/i.test(description) || /\d+-mavze/i.test(name)) {
+    console.log('[extractDistrict] ✓ Found mavze pattern - assuming Yunusabad');
+    return 'Yunusabad';
+  }
+
+  console.log('[extractDistrict] ✗ No district found');
+  return undefined;
+}
 
 /**
  * Get address suggestions using Yandex Suggest API
@@ -230,11 +408,135 @@ export const getAddressSuggestions = async (query: string): Promise<Array<{
     console.log('✅ Yandex Suggest API response:', data);
     
     if (data.results) {
-      const suggestions = data.results.map((result: any) => ({
-        title: result.title?.text || '',
-        subtitle: result.subtitle?.text || '',
-        coordinates: result.geometry?.coordinates ? [result.geometry.coordinates[1], result.geometry.coordinates[0]] : [0, 0],
-        address: result.title?.text || ''
+      const suggestions = await Promise.all(data.results.map(async (result: any) => {
+        // Log full result structure to understand API response format
+        console.log('🔍 Full result object:', {
+          result,
+          geometry: result.geometry,
+          geometryKeys: result.geometry ? Object.keys(result.geometry) : [],
+          title: result.title?.text,
+          subtitle: result.subtitle?.text
+        });
+        
+        // Try multiple paths for coordinates
+        let rawCoords = result.geometry?.coordinates;
+        
+        // Try alternative paths if coordinates not found
+        if (!rawCoords) {
+          rawCoords = result.geometry?.point?.coordinates;
+        }
+        if (!rawCoords) {
+          rawCoords = result.geometry?.bbox ? [result.geometry.bbox[0], result.geometry.bbox[1]] : null;
+        }
+        if (!rawCoords && result.geometry) {
+          // Try to find any array in geometry
+          for (const key in result.geometry) {
+            if (Array.isArray(result.geometry[key]) && result.geometry[key].length >= 2) {
+              rawCoords = result.geometry[key];
+              console.log(`📍 Found coordinates in geometry.${key}:`, rawCoords);
+              break;
+            }
+          }
+        }
+        
+        console.log('🔍 Extracted coordinates:', {
+          raw: rawCoords,
+          first: rawCoords?.[0],
+          second: rawCoords?.[1],
+          address: result.title?.text
+        });
+        
+        // If coordinates still not found, use geocoding as fallback
+        if (!rawCoords || rawCoords.length < 2) {
+          console.warn('⚠️ Coordinates not found in suggest response, attempting geocoding...');
+          const addressText = result.title?.text || '';
+          
+          if (addressText) {
+            try {
+              const geocoded = await geocodeAddress(addressText);
+              if (geocoded && geocoded.coordinates) {
+                console.log('✅ Got coordinates from geocoding:', geocoded.coordinates);
+                rawCoords = geocoded.coordinates;
+              } else {
+                console.warn('⚠️ Geocoding failed for:', addressText);
+              }
+            } catch (error) {
+              console.error('❌ Geocoding error:', error);
+            }
+          }
+        }
+        
+        // If still no coordinates, return with [0, 0] (will use text validation)
+        if (!rawCoords || rawCoords.length < 2) {
+          console.warn('⚠️ No coordinates available, will use text-based validation');
+          return {
+            title: result.title?.text || '',
+            subtitle: result.subtitle?.text || '',
+            coordinates: [0, 0] as [number, number], // Invalid coordinates - will trigger text validation
+            address: result.title?.text || ''
+          };
+        }
+        
+        // Tashkent coordinates: lat ~41.3-41.4, lng ~69.2-69.3
+        // Check if coordinates are already in [lat, lng] format or need swapping
+        const first = rawCoords[0];
+        const second = rawCoords[1];
+        
+        // Expanded ranges for Tashkent area to catch edge cases
+        // Latitude range: 41.0-42.0 (broader range for Tashkent region)
+        // Longitude range: 69.0-70.0 (broader range for Tashkent region)
+        let coordinates: [number, number];
+        
+        // Check if first value looks like latitude (41-42) and second looks like longitude (69-70)
+        const firstIsLat = first >= 41.0 && first <= 42.0;
+        const secondIsLng = second >= 69.0 && second <= 70.0;
+        const firstIsLng = first >= 69.0 && first <= 70.0;
+        const secondIsLat = second >= 41.0 && second <= 42.0;
+        
+        if (firstIsLat && secondIsLng) {
+          // Already in [lat, lng] format
+          coordinates = [first, second];
+          console.log('✅ Coordinates already in [lat, lng] format:', coordinates);
+        } else if (firstIsLng && secondIsLat) {
+          // In [lng, lat] format, need to swap
+          coordinates = [second, first];
+          console.log('🔄 Swapped coordinates from [lng, lat] to [lat, lng]:', coordinates);
+        } else {
+          // Unknown format - try to determine by checking which value is closer to known Tashkent center
+          // Tashkent center: ~41.31, 69.24
+          const tashkentCenterLat = 41.31;
+          const tashkentCenterLng = 69.24;
+          
+          const distFirstToLat = Math.abs(first - tashkentCenterLat);
+          const distFirstToLng = Math.abs(first - tashkentCenterLng);
+          const distSecondToLat = Math.abs(second - tashkentCenterLat);
+          const distSecondToLng = Math.abs(second - tashkentCenterLng);
+          
+          // If first is closer to lat center and second is closer to lng center, use as-is
+          // Otherwise swap
+          if (distFirstToLat < distFirstToLng && distSecondToLng < distSecondToLat) {
+            coordinates = [first, second];
+            console.log('✅ Determined [lat, lng] format by distance to Tashkent center:', coordinates);
+          } else {
+            coordinates = [second, first];
+            console.log('🔄 Swapped coordinates based on distance to Tashkent center:', coordinates);
+          }
+        }
+        
+        console.log('📍 Final coordinates:', {
+          original: rawCoords,
+          converted: coordinates,
+          lat: coordinates[0],
+          lng: coordinates[1],
+          address: result.title?.text
+        });
+        
+        return {
+          title: result.title?.text || '',
+          subtitle: result.subtitle?.text || '',
+          coordinates,
+          address: result.title?.text || ''
+        };
       }));
       console.log('📍 Processed suggestions:', suggestions.length);
       return suggestions;

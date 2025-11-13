@@ -88,6 +88,23 @@ const CheckoutPage = () => {
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [deliveryZoneStatus, setDeliveryZoneStatus] = useState<{ isValid: boolean; message: string } | null>(null);
 
+  // Initialize form BEFORE any conditional returns (Rules of Hooks)
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fullName: user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      address: "",
+      coordinates: undefined,
+      deliveryTime: "asap",
+      paymentMethod: "uzcard",
+      saveAddress: false,
+      contactFree: false,
+      notes: "",
+    },
+  });
+
   // Debug current step
   console.log("🛒 CHECKOUT: Current step:", paymentStep);
 
@@ -98,6 +115,17 @@ const CheckoutPage = () => {
       setLocation("/auth?returnUrl=/checkout");
     }
   }, [user, authLoading, setLocation]);
+
+  const fillFormWithAddress = (address: Address) => {
+    form.setValue("fullName", address.fullName);
+    form.setValue("address", address.address);
+    if (address.latitude && address.longitude) {
+      form.setValue("coordinates", {
+        lat: parseFloat(address.latitude.toString()),
+        lng: parseFloat(address.longitude.toString())
+      });
+    }
+  };
 
   // Show loading state while checking authentication
   if (authLoading) {
@@ -115,35 +143,6 @@ const CheckoutPage = () => {
   if (!user) {
     return null;
   }
-
-
-
-  const fillFormWithAddress = (address: Address) => {
-    form.setValue("fullName", address.fullName);
-    form.setValue("address", address.address);
-    if (address.latitude && address.longitude) {
-      form.setValue("coordinates", {
-        lat: parseFloat(address.latitude.toString()),
-        lng: parseFloat(address.longitude.toString())
-      });
-    }
-  };
-  
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      fullName: user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "",
-      email: user?.email || "",
-      phone: user?.phone || "",
-      address: "",
-      coordinates: undefined,
-      deliveryTime: "asap",
-      paymentMethod: "uzcard",
-      saveAddress: false,
-      contactFree: false,
-      notes: "",
-    },
-  });
 
   // Auto-advance removed - user must manually progress through steps
   
@@ -164,7 +163,20 @@ const CheckoutPage = () => {
     console.log("🚀 CHECKOUT: Form data:", data);
     
     // Validate delivery zone before proceeding
-    const zoneValidation = validateDeliveryAddress(data.coordinates, data.address);
+    // Extract district from address if available (format: "address, district, city")
+    const addressParts = data.address?.split(',').map((p: string) => p.trim()) || [];
+    const district = addressParts.find((p: string) => 
+      p.toLowerCase().includes('yunusobod') || 
+      p.toLowerCase().includes('yunusabad') ||
+      p.toLowerCase().includes('tumani')
+    );
+    
+    const zoneValidation = validateDeliveryAddress(
+      data.coordinates, 
+      data.address,
+      undefined, // subtitle not available in form data
+      district
+    );
     if (!zoneValidation.isValid) {
       setPaymentStep("address");
       setDeliveryZoneStatus(zoneValidation);
@@ -460,8 +472,14 @@ const CheckoutPage = () => {
                                     };
                                     form.setValue("coordinates", coords);
                                     
-                                    // Real-time validation
-                                    const validation = validateDeliveryAddress(coords, location.address);
+                                    // Real-time validation - extract district from location
+                                    const district = location.state || location.city; // District might be in state or city
+                                    const validation = validateDeliveryAddress(
+                                      coords, 
+                                      location.address,
+                                      undefined, // subtitle not available from MapPicker
+                                      district
+                                    );
                                     setDeliveryZoneStatus(validation);
                                     if (!validation.isValid) {
                                       form.setError("coordinates", {

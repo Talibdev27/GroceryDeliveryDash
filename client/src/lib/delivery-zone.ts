@@ -1,12 +1,10 @@
 /**
  * Delivery Zone Validation Utility
- * Validates if addresses are within Yunusabad district delivery zone
+ * District-first validation system for Yunusabad district
  */
 
-// Yunusabad district exact boundary polygon
+// Yunusabad district exact boundary polygon (kept for polygon validation)
 // Coordinates: [latitude, longitude]
-// Source: GeoJSON data from https://github.com/akbartus/GeoJSON-Uzbekistan
-// Based on OpenStreetMap data for Yunusobod district in Tashkent
 const YUNUSABAD_POLYGON: [number, number][] = [
   [41.3950889, 69.2279846],
   [41.3947836, 69.228167],
@@ -490,27 +488,128 @@ const YUNUSABAD_POLYGON: [number, number][] = [
   [41.3950889, 69.2279846] // Closed polygon (matches first point)
 ];
 
+// Delivery zone configuration - district-first approach
+export interface DeliveryZone {
+  name: string;
+  districts: string[]; // List of district names we deliver to
+  polygon?: [number, number][]; // Optional polygon for extra validation
+}
+
+export const DELIVERY_ZONES: DeliveryZone[] = [
+  {
+    name: 'Yunusabad',
+    districts: [
+      'Yunusabad',
+      'Юнусабад',
+      'Yunusobod',
+      'Юнусобод',
+      'yunusabad district',
+      'yunusobod tumani',
+      'yunusobod dahasi',
+      'yunusabad tumani'
+    ],
+    polygon: YUNUSABAD_POLYGON
+  }
+  // Add more zones as you expand delivery
+];
+
+export interface ValidationResult {
+  isValid: boolean;
+  reason?: string;
+  distanceFromCenter?: number;
+  method: 'district' | 'polygon' | 'distance' | 'text' | 'manual_override';
+  matchedZone?: string;
+}
+
 /**
- * Ray casting algorithm to check if a point is inside a polygon
- * @param point - [latitude, longitude]
- * @param polygon - Array of [latitude, longitude] coordinates
- * @returns true if point is inside polygon
+ * Check if district name matches any delivery zone
+ */
+function isDistrictInDeliveryZone(district: string | undefined): { matched: boolean; zone?: DeliveryZone } {
+  if (!district) {
+    return { matched: false };
+  }
+
+  const normalizedDistrict = district.toLowerCase().trim();
+  
+  for (const zone of DELIVERY_ZONES) {
+    const matched = zone.districts.some(d => 
+      normalizedDistrict.includes(d.toLowerCase()) ||
+      d.toLowerCase().includes(normalizedDistrict)
+    );
+    
+    if (matched) {
+      console.log(`[District Match] ✓ "${district}" matches zone: ${zone.name}`);
+      return { matched: true, zone };
+    }
+  }
+  
+  console.log(`[District Match] ✗ "${district}" not in delivery zones`);
+  return { matched: false };
+}
+
+/**
+ * Check if address text contains delivery zone keywords
+ */
+function isAddressTextInDeliveryZone(address: string, subtitle?: string): { matched: boolean; zone?: DeliveryZone } {
+  const combinedText = [address, subtitle].filter(Boolean).join(' ').toLowerCase();
+  
+  for (const zone of DELIVERY_ZONES) {
+    const matched = zone.districts.some(d => 
+      combinedText.includes(d.toLowerCase())
+    );
+    
+    if (matched) {
+      console.log(`[Text Match] ✓ Address contains zone keyword: ${zone.name}`);
+      return { matched: true, zone };
+    }
+  }
+  
+  // Additional patterns for Yunusabad
+  const yunusabadPatterns = [
+    /\d+-mavze/i, // 13-mavze, 14-mavze, etc.
+    /yunusabad/i,
+    /юнусабад/i,
+    /yunusobod/i,
+    /юнусобод/i,
+    /yunusobod\s+tumani/i,
+    /yunusobod\s+dahasi/i
+  ];
+  
+  for (const pattern of yunusabadPatterns) {
+    if (pattern.test(combinedText)) {
+      console.log(`[Text Match] ✓ Address matches pattern: ${pattern}`);
+      return { matched: true, zone: DELIVERY_ZONES[0] }; // Return Yunusabad zone
+    }
+  }
+  
+  console.log(`[Text Match] ✗ Address not recognized`);
+  return { matched: false };
+}
+
+/**
+ * Point-in-polygon check (fallback/extra validation)
  */
 function isPointInPolygon(point: [number, number], polygon: [number, number][]): boolean {
   const [lat, lng] = point;
+  
+  if (!polygon || polygon.length < 3) {
+    return false;
+  }
+  
   let inside = false;
 
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const [latI, lngI] = polygon[i];
     const [latJ, lngJ] = polygon[j];
 
-    // Check if point is on the same side of the edge
-    const intersect = 
-      ((lngI > lng) !== (lngJ > lng)) && 
-      (lat < (latJ - latI) * (lng - lngI) / (lngJ - lngI) + latI);
-
-    if (intersect) {
-      inside = !inside;
+    const edgeCrossesHorizontalLine = (lngI > lng) !== (lngJ > lng);
+    
+    if (edgeCrossesHorizontalLine) {
+      const intersectionLat = latI + (latJ - latI) * (lng - lngI) / (lngJ - lngI);
+      
+      if (lat <= intersectionLat) {
+        inside = !inside;
+      }
     }
   }
 
@@ -518,85 +617,166 @@ function isPointInPolygon(point: [number, number], polygon: [number, number][]):
 }
 
 /**
- * Check if coordinates are within the delivery zone
- * @param lat - Latitude
- * @param lng - Longitude
- * @returns true if coordinates are in delivery zone
+ * Calculate distance between two points (Haversine formula)
  */
-export function isInDeliveryZone(lat: number, lng: number): boolean {
-  if (!lat || !lng) return false;
-  return isPointInPolygon([lat, lng], YUNUSABAD_POLYGON);
+function calculateDistance(point1: [number, number], point2: [number, number]): number {
+  const [lat1, lng1] = point1;
+  const [lat2, lng2] = point2;
+  const R = 6371; // Earth radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 
 /**
- * Validate address text contains Yunusabad/Yunusobod keywords
- * @param addressText - Address string to check
- * @returns true if address likely refers to Yunusabad district
+ * Get polygon center
  */
-function validateAddressText(addressText: string): boolean {
-  if (!addressText) return false;
-  
-  const normalized = addressText.toLowerCase();
-  const keywords = [
-    'yunusabad',
-    'yunusobod',
-    'юнусабад',
-    'юнусобод',
-    'yunusobod tumani',
-    'yunusabad district'
-  ];
-  
-  return keywords.some(keyword => normalized.includes(keyword));
+function getPolygonCenter(polygon: [number, number][]): [number, number] {
+  let latSum = 0;
+  let lngSum = 0;
+  polygon.forEach(([lat, lng]) => {
+    latSum += lat;
+    lngSum += lng;
+  });
+  return [latSum / polygon.length, lngSum / polygon.length];
 }
 
 /**
- * Validate delivery address with both coordinate and text checks
- * @param coordinates - Optional [latitude, longitude]
- * @param addressText - Optional address text
- * @returns Validation result with isValid flag and message
+ * MAIN VALIDATION FUNCTION - District-first approach
+ * Multi-tier validation with district name matching as highest priority
  */
 export function validateDeliveryAddress(
   coordinates?: { lat: number; lng: number } | [number, number] | null,
-  addressText?: string
+  addressText?: string,
+  subtitleText?: string,
+  district?: string
 ): { isValid: boolean; message: string } {
-  // If we have coordinates, use them (most reliable)
+  console.log('=== DELIVERY VALIDATION START ===');
+  console.log('[validateDeliveryAddress] Coordinates:', coordinates);
+  console.log('[validateDeliveryAddress] Address:', addressText);
+  console.log('[validateDeliveryAddress] Subtitle:', subtitleText);
+  console.log('[validateDeliveryAddress] District:', district);
+
+  // Extract coordinates if provided
+  let lat: number | undefined;
+  let lng: number | undefined;
+  
   if (coordinates) {
-    const [lat, lng] = Array.isArray(coordinates) 
-      ? coordinates 
-      : [coordinates.lat, coordinates.lng];
-    
-    if (lat && lng) {
-      const inZone = isInDeliveryZone(lat, lng);
-      return {
-        isValid: inZone,
-        message: inZone 
-          ? "Address is within delivery zone"
-          : "Address is outside our delivery zone. We currently only deliver to Yunusabad district."
-      };
+    if (Array.isArray(coordinates)) {
+      [lat, lng] = coordinates;
+    } else {
+      lat = coordinates.lat;
+      lng = coordinates.lng;
     }
   }
 
-  // Fallback to text validation if no coordinates
-  if (addressText) {
-    const textValid = validateAddressText(addressText);
+  // METHOD 1: District name matching (HIGHEST PRIORITY)
+  // If district is explicitly identified as a delivery zone, accept immediately
+  const districtMatch = isDistrictInDeliveryZone(district);
+  if (districtMatch.matched && districtMatch.zone) {
+    console.log('[validateDeliveryAddress] ✓✓✓ VALID: District match');
     return {
-      isValid: textValid,
-      message: textValid
-        ? "Address appears to be in delivery zone"
-        : "Address may be outside our delivery zone. Please ensure you're in Yunusabad district."
+      isValid: true,
+      message: `Address is in ${districtMatch.zone.name} district (delivery available)`
     };
   }
 
-  // No validation possible
+  // METHOD 2: Address text matching
+  // Check if address contains delivery zone keywords
+  const textMatch = isAddressTextInDeliveryZone(addressText || '', subtitleText);
+  if (textMatch.matched && textMatch.zone) {
+    console.log('[validateDeliveryAddress] ✓✓ VALID: Text match');
+    return {
+      isValid: true,
+      message: `Address recognized as ${textMatch.zone.name} (delivery available)`
+    };
+  }
+
+  // METHOD 3: Point-in-polygon check (if coordinates available)
+  if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+    // Validate coordinate ranges (Tashkent area)
+    if (lat >= 41 && lat <= 42 && lng >= 69 && lng <= 70) {
+      for (const zone of DELIVERY_ZONES) {
+        if (zone.polygon) {
+          try {
+            const inPolygon = isPointInPolygon([lat, lng], zone.polygon);
+            if (inPolygon) {
+              console.log('[validateDeliveryAddress] ✓ VALID: Point in polygon');
+              return {
+                isValid: true,
+                message: `Coordinates within ${zone.name} delivery area`
+              };
+            }
+          } catch (error) {
+            console.error('[validateDeliveryAddress] Polygon check error:', error);
+          }
+        }
+      }
+
+      // METHOD 4: Distance-based validation (VERY LENIENT FALLBACK)
+      for (const zone of DELIVERY_ZONES) {
+        if (zone.polygon) {
+          try {
+            const center = getPolygonCenter(zone.polygon);
+            const distance = calculateDistance([lat, lng], center);
+            const MAX_DISTANCE_KM = 12; // 12km radius - VERY LENIENT
+            
+            console.log(`[validateDeliveryAddress] Distance from ${zone.name} center: ${distance.toFixed(2)} km`);
+            if (distance <= MAX_DISTANCE_KM) {
+              console.log('[validateDeliveryAddress] ✓ VALID: Within distance threshold');
+              return {
+                isValid: true,
+                message: `Within ${MAX_DISTANCE_KM}km of ${zone.name}`
+              };
+            }
+          } catch (error) {
+            console.error('[validateDeliveryAddress] Distance check error:', error);
+          }
+        }
+      }
+    }
+  }
+
+  // All validation methods failed
+  console.log('[validateDeliveryAddress] ✗✗✗ INVALID: Outside all delivery zones');
+  
+  const availableZones = DELIVERY_ZONES.map(z => z.name).join(', ');
+  
   return {
     isValid: false,
-    message: "Please provide address or location to verify delivery zone"
+    message: `Sorry, we don't deliver to this area yet. We currently only deliver within ${availableZones} district. We're working to expand our delivery area soon!`
   };
 }
 
 /**
+ * Get user-friendly error message
+ */
+export function getValidationErrorMessage(result: { isValid: boolean; message: string }): string {
+  if (result.isValid) return '';
+  return result.message || 'This address is outside our delivery zone';
+}
+
+/**
+ * Check if coordinates are within the delivery zone (legacy function for compatibility)
+ */
+export function isInDeliveryZone(lat: number, lng: number): boolean {
+  if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+    return false;
+  }
+  
+  if (lat < 41 || lat > 42 || lng < 69 || lng > 70) {
+    return false;
+  }
+  
+  return isPointInPolygon([lat, lng], YUNUSABAD_POLYGON);
+}
+
+/**
  * Get delivery zone polygon coordinates
- * @returns Array of [latitude, longitude] coordinates
  */
 export function getDeliveryZonePolygon(): [number, number][] {
   return YUNUSABAD_POLYGON;
@@ -604,10 +784,8 @@ export function getDeliveryZonePolygon(): [number, number][] {
 
 /**
  * Get delivery zone center point (for map centering)
- * @returns [latitude, longitude] of zone center
  */
 export function getDeliveryZoneCenter(): [number, number] {
-  // Calculate center of polygon
   const lats = YUNUSABAD_POLYGON.map(p => p[0]);
   const lngs = YUNUSABAD_POLYGON.map(p => p[1]);
   
@@ -617,3 +795,24 @@ export function getDeliveryZoneCenter(): [number, number] {
   return [centerLat, centerLng];
 }
 
+/**
+ * Add a new delivery zone (for future expansion)
+ */
+export function addDeliveryZone(zone: DeliveryZone): void {
+  DELIVERY_ZONES.push(zone);
+  console.log(`[Delivery Zones] Added new zone: ${zone.name}`);
+}
+
+/**
+ * Check if we deliver to a specific district
+ */
+export function isDeliveryAvailable(district: string): boolean {
+  return isDistrictInDeliveryZone(district).matched;
+}
+
+/**
+ * Get all delivery zone names
+ */
+export function getDeliveryZoneNames(): string[] {
+  return DELIVERY_ZONES.map(z => z.name);
+}
