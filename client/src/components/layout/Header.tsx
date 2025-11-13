@@ -25,12 +25,16 @@ import {
   LogOut,
 } from "lucide-react";
 
-export default function Header() {
+interface HeaderProps {
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: (open: boolean) => void;
+}
+
+export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProps) {
   const { t } = useTranslation();
   const { currentLanguage, setLanguage } = useLanguage();
   const { user, logout } = useAuth();
   const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [appDialogOpen, setAppDialogOpen] = useState(false);
 
   const toggleMobileSearch = () => {
@@ -39,9 +43,6 @@ export default function Header() {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
-    document.getElementById("mobileMenuOverlay")?.classList.toggle("hidden");
-    document.getElementById("mobileMenu")?.classList.toggle("-translate-x-full");
-    document.getElementById("mobileMenu")?.classList.toggle("rtl:translate-x-full");
   };
 
   const getLanguageFlag = (lang: string) => {
@@ -198,7 +199,13 @@ export default function Header() {
               <NotificationBell />
             )}
             
-            <Button variant="ghost" className="md:hidden text-neutral-700 hover:text-primary p-2" aria-label="Menu" onClick={toggleMobileMenu}>
+            <Button 
+              variant="ghost" 
+              className="md:hidden text-neutral-700 hover:text-primary p-2" 
+              aria-label="Menu" 
+              onClick={toggleMobileMenu}
+              data-event="click:toggleMobileMenu"
+            >
               <Menu className="h-5 w-5" />
             </Button>
             

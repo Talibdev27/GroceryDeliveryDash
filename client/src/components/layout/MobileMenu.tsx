@@ -5,8 +5,14 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/ui/Logo";
 import { useLanguage } from "@/hooks/use-language";
 import { X, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export default function MobileMenu() {
+interface MobileMenuProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const { t } = useTranslation();
   const { currentLanguage, setLanguage } = useLanguage();
   
@@ -14,24 +20,27 @@ export default function MobileMenu() {
     // Close menu when clicking outside
     const closeOnOutsideClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (!target.closest("#mobileMenu") && !target.closest('[data-event="click:toggleMobileMenu"]')) {
-        document.getElementById("mobileMenuOverlay")?.classList.add("hidden");
-        document.getElementById("mobileMenu")?.classList.add("-translate-x-full");
-        document.getElementById("mobileMenu")?.classList.add("rtl:translate-x-full");
+      if (isOpen && !target.closest("#mobileMenu") && !target.closest('[aria-label="Menu"]')) {
+        onClose();
       }
     };
     
-    document.addEventListener("click", closeOnOutsideClick);
+    if (isOpen) {
+      document.addEventListener("click", closeOnOutsideClick);
+      // Prevent body scroll when menu is open
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
     
     return () => {
       document.removeEventListener("click", closeOnOutsideClick);
+      document.body.style.overflow = "";
     };
-  }, []);
+  }, [isOpen, onClose]);
   
   const closeMobileMenu = () => {
-    document.getElementById("mobileMenuOverlay")?.classList.add("hidden");
-    document.getElementById("mobileMenu")?.classList.add("-translate-x-full");
-    document.getElementById("mobileMenu")?.classList.add("rtl:translate-x-full");
+    onClose();
   };
 
   const getLanguageFlag = (lang: string) => {
@@ -48,8 +57,22 @@ export default function MobileMenu() {
   };
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" id="mobileMenuOverlay">
-      <div className="fixed top-0 left-0 rtl:left-auto rtl:right-0 h-full w-4/5 max-w-xs bg-white shadow-lg transform transition-transform duration-300 -translate-x-full rtl:translate-x-full" id="mobileMenu">
+    <div 
+      className={cn(
+        "fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300",
+        isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      )} 
+      id="mobileMenuOverlay" 
+      onClick={onClose}
+    >
+      <div 
+        className={cn(
+          "fixed top-0 left-0 rtl:left-auto rtl:right-0 h-full w-4/5 max-w-xs bg-white shadow-lg transform transition-transform duration-300",
+          isOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"
+        )} 
+        id="mobileMenu"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex flex-col h-full">
           <div className="p-4 border-b border-neutral-200 flex justify-between items-center">
             <div className="flex items-center space-x-2 rtl:space-x-reverse">

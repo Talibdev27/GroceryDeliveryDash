@@ -22,7 +22,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { useTheme } from "@/hooks/use-theme";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function Router() {
   return (
@@ -48,6 +48,7 @@ function App() {
   const { currentLanguage } = useLanguage();
   const { theme } = useTheme();
   const [location] = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Scroll to top on route change
   useEffect(() => {
@@ -68,8 +69,8 @@ function App() {
         <TooltipProvider>
           <div className="flex flex-col min-h-screen bg-neutral-100 text-neutral-700 font-sans">
             <Toaster />
-            <Header />
-            <MobileMenu />
+            <Header mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+            <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
             <ShoppingCart />
             <main className="flex-grow">
               <Router />
