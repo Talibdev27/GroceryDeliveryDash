@@ -28,7 +28,7 @@ import { Search, RefreshCw, SlidersHorizontal, ChevronRight } from "lucide-react
 
 export default function Products() {
   const { t } = useTranslation();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { addToCart } = useCart();
   const { currentLanguage } = useLanguage();
   
@@ -71,7 +71,7 @@ export default function Products() {
   
   // Parse query params
   useEffect(() => {
-    const params = new URLSearchParams(location.split("?")[1]);
+    const params = new URLSearchParams(location.split("?")[1] || "");
     const categoryId = params.get("categoryId");
     
     if (categoryId) {
@@ -79,6 +79,9 @@ export default function Products() {
       if (!isNaN(id)) {
         setSelectedCategory(id);
       }
+    } else {
+      // Clear category if not in URL
+      setSelectedCategory(null);
     }
   }, [location]);
   
@@ -196,6 +199,11 @@ export default function Products() {
                   setSearchQuery("");
                   setPriceRange([0, 50]);
                   setSelectedCategory(null);
+                  // Update URL to remove categoryId param, preserve other params
+                  const params = new URLSearchParams(location.split("?")[1] || "");
+                  params.delete("categoryId");
+                  const newQuery = params.toString();
+                  setLocation(newQuery ? `/products?${newQuery}` : "/products");
                 }}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   {t("products.resetFilters")}
@@ -213,11 +221,22 @@ export default function Products() {
                             id={`category-${category.id}`} 
                             checked={selectedCategory === category.id}
                             onCheckedChange={(checked) => {
+                              // Get current query params to preserve other params
+                              const params = new URLSearchParams(location.split("?")[1] || "");
+                              
                               if (checked) {
                                 setSelectedCategory(category.id);
+                                // Update URL with categoryId
+                                params.set("categoryId", category.id.toString());
                               } else if (selectedCategory === category.id) {
                                 setSelectedCategory(null);
+                                // Remove categoryId from URL
+                                params.delete("categoryId");
                               }
+                              
+                              // Update URL with new params
+                              const newQuery = params.toString();
+                              setLocation(newQuery ? `/products?${newQuery}` : "/products");
                             }}
                           />
                           <label 

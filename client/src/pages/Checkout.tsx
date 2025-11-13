@@ -477,33 +477,7 @@ const CheckoutPage = () => {
                                 />
                               </FormControl>
                               <FormMessage />
-                              {/* Delivery Zone Status Indicator */}
-                              {deliveryZoneStatus && (
-                                <div className={`mt-2 p-3 rounded-lg flex items-start space-x-2 rtl:space-x-reverse ${
-                                  deliveryZoneStatus.isValid 
-                                    ? "bg-green-50 border border-green-200 text-green-800" 
-                                    : "bg-red-50 border border-red-200 text-red-800"
-                                }`}>
-                                  {deliveryZoneStatus.isValid ? (
-                                    <Check className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                                  ) : (
-                                    <MapPin className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                                  )}
-                                  <div className="flex-1">
-                                    <p className="text-sm font-medium">
-                                      {deliveryZoneStatus.isValid 
-                                        ? t("deliveryZone.inZone")
-                                        : t("deliveryZone.outOfZone")
-                                      }
-                                    </p>
-                                    {!deliveryZoneStatus.isValid && (
-                                      <p className="text-sm mt-1">
-                                        {t("deliveryZone.outOfZoneMessage")}
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
+                              {/* Delivery zone status is shown by LocationSelector component, no need to duplicate here */}
                             </FormItem>
                           )}
                         />
@@ -946,13 +920,20 @@ const CheckoutPage = () => {
                       
                       <div className="mt-8">
                         <Button 
-                          type="submit" 
+                          type="button" 
                           className="w-full"
                           onClick={async (e) => {
                             e.preventDefault();
                             console.log("🛒 CHECKOUT: Place Order button clicked!");
                             console.log("🛒 CHECKOUT: Form values:", form.getValues());
                             console.log("🛒 CHECKOUT: Form errors:", form.formState.errors);
+                            
+                            // Ensure we're on payment step
+                            if (paymentStep !== "payment") {
+                              console.log("🛒 CHECKOUT: Not on payment step, navigating to payment step");
+                              setPaymentStep("payment");
+                              return;
+                            }
                             
                             // Trigger validation on all fields
                             const isValid = await form.trigger();
@@ -961,7 +942,7 @@ const CheckoutPage = () => {
                             if (!isValid) {
                               // Check which step has errors and navigate to it
                               const errors = form.formState.errors;
-                              if (errors.fullName || errors.email || errors.phone || errors.address) {
+                              if (errors.fullName || errors.email || errors.phone || errors.address || errors.coordinates) {
                                 console.log("🛒 CHECKOUT: Address errors found, navigating to address step");
                                 setPaymentStep("address");
                                 return;
@@ -974,8 +955,8 @@ const CheckoutPage = () => {
                               return;
                             }
                             
-                            // If valid, submit the form directly (we're on payment step)
-                            onSubmitActual(form.getValues());
+                            // If valid, submit the form using handleSubmit to ensure proper validation
+                            form.handleSubmit(onSubmitActual, onError)();
                           }}
                         >
                           {t("checkout.placeOrder")}
