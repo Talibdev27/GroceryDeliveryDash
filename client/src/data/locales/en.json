@@ -123,6 +123,11 @@
     },
     "noResults": "No products found",
     "tryAdjustingFilters": "Try adjusting your filters or search term",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing {{start}} - {{end}} of {{total}} products"
+    },
     "apples": {
       "name": "Organic Apples",
       "unit": "1 lb bag"

@@ -372,7 +372,7 @@ export default function Products() {
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                       disabled={currentPage === 1}
                     >
-                      Previous
+                      {t("products.pagination.previous")}
                     </Button>
                     
                     <div className="flex items-center gap-1">
@@ -407,14 +407,18 @@ export default function Products() {
                       onClick={() => setCurrentPage(p => Math.min(pagination.totalPages, p + 1))}
                       disabled={currentPage === pagination.totalPages}
                     >
-                      Next
+                      {t("products.pagination.next")}
                     </Button>
                   </div>
                 )}
                 
                 {/* Results count */}
                 <div className="mt-4 text-center text-sm text-neutral-500">
-                  Showing {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, pagination.total)} of {pagination.total} products
+                  {t("products.pagination.showing", {
+                    start: ((currentPage - 1) * itemsPerPage) + 1,
+                    end: Math.min(currentPage * itemsPerPage, pagination.total),
+                    total: pagination.total
+                  })}
                 </div>
               </>
             ) : (

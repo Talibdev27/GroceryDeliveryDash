@@ -123,6 +123,11 @@
     },
     "noResults": "Mahsulotlar topilmadi",
     "tryAdjustingFilters": "Filtrlarni yoki qidiruv so'zini o'zgartirishga harakat qiling",
+    "pagination": {
+      "previous": "Oldingi",
+      "next": "Keyingi",
+      "showing": "{{total}} ta mahsulotdan {{start}} - {{end}} ko'rsatilmoqda"
+    },
     "apples": {
       "name": "Organik olmalar",
       "unit": "1 lb qop"
