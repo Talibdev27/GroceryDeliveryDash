@@ -39,6 +39,7 @@ export default function Products() {
   const [mobileFiltersVisible, setMobileFiltersVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 1000]);
   const itemsPerPage = 24;
   
   // Debounce search query
@@ -77,9 +78,6 @@ export default function Products() {
       default: return category.name;
     }
   };
-  
-  // Price range state (will be calculated from first page or use default)
-  const [priceRange, setPriceRange] = useState([0, 1000]);
   
   // Update price range when categories load (use a reasonable default)
   useEffect(() => {
