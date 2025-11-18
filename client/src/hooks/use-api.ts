@@ -74,6 +74,48 @@ export const useProducts = () => {
   return useApi<{ products: any[] }>('/products');
 };
 
+// Paginated products hook
+export const useProductsPaginated = (params: {
+  page?: number;
+  limit?: number;
+  category?: number;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: string;
+}) => {
+  const queryParams = new URLSearchParams();
+  
+  if (params.page !== undefined) queryParams.append('page', params.page.toString());
+  if (params.limit !== undefined) queryParams.append('limit', params.limit.toString());
+  if (params.category !== undefined) queryParams.append('category', params.category.toString());
+  if (params.search) queryParams.append('search', params.search);
+  if (params.minPrice !== undefined) queryParams.append('minPrice', params.minPrice.toString());
+  if (params.maxPrice !== undefined) queryParams.append('maxPrice', params.maxPrice.toString());
+  if (params.sort) queryParams.append('sort', params.sort);
+
+  const queryString = queryParams.toString();
+  const endpoint = `/products${queryString ? `?${queryString}` : ''}`;
+  
+  return useApi<{ 
+    products: any[]; 
+    pagination: { 
+      page: number; 
+      limit: number; 
+      total: number; 
+      totalPages: number 
+    } 
+  }>(endpoint, [
+    params.page,
+    params.limit,
+    params.category,
+    params.search,
+    params.minPrice,
+    params.maxPrice,
+    params.sort
+  ]);
+};
+
 // Admin: fetch all products (including out-of-stock)
 export const useAdminProducts = () => {
   return useApi<{ products: any[] }>('/admin/products');

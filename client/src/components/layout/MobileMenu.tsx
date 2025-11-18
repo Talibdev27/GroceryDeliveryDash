@@ -26,7 +26,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     };
     
     if (isOpen) {
-      document.addEventListener("click", closeOnOutsideClick);
+    document.addEventListener("click", closeOnOutsideClick);
       // Prevent body scroll when menu is open
       document.body.style.overflow = "hidden";
     } else {

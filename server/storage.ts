@@ -31,7 +31,7 @@ import {
   type UserRole,
   type Permission
 } from "@shared/schema";
-import { eq, and, sql, desc } from "drizzle-orm";
+import { eq, and, sql, desc, like, gte, lte } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 // Load environment variables
@@ -65,6 +65,15 @@ export interface IStorage {
   
   // Product operations
   getProducts(): Promise<Product[]>;
+  getProductsPaginated(params: {
+    page?: number;
+    limit?: number;
+    categoryId?: number;
+    search?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sort?: string;
+  }): Promise<{ products: Product[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>;
   getProduct(id: number): Promise<Product | undefined>;
   getProductsByCategory(categoryId: number): Promise<Product[]>;
   getFeaturedProducts(): Promise<Product[]>;
@@ -215,6 +224,102 @@ export class DatabaseStorage implements IStorage {
   // Product operations
   async getProducts(): Promise<Product[]> {
     return await db.select().from(products).where(eq(products.inStock, true));
+  }
+
+  async getProductsPaginated(params: {
+    page?: number;
+    limit?: number;
+    categoryId?: number;
+    search?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sort?: string;
+  }): Promise<{ products: Product[]; pagination: { page: number; limit: number; total: number; totalPages: number } }> {
+    const page = params.page || 1;
+    const limit = params.limit || 24;
+    const offset = (page - 1) * limit;
+
+    // Build where conditions
+    const conditions = [eq(products.inStock, true)];
+
+    if (params.categoryId) {
+      conditions.push(eq(products.categoryId, params.categoryId));
+    }
+
+    if (params.search) {
+      const searchLower = `%${params.search.toLowerCase()}%`;
+      conditions.push(
+        sql`LOWER(${products.name}) LIKE ${searchLower}`
+      );
+    }
+
+    if (params.minPrice !== undefined) {
+      conditions.push(sql`CAST(${products.price} AS DECIMAL) >= ${params.minPrice}`);
+    }
+
+    if (params.maxPrice !== undefined) {
+      conditions.push(sql`CAST(${products.price} AS DECIMAL) <= ${params.maxPrice}`);
+    }
+
+    const whereClause = conditions.length > 1 ? and(...conditions) : conditions[0];
+
+    // Get total count for pagination
+    const countResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(products)
+      .where(whereClause);
+    const total = Number(countResult[0]?.count || 0);
+
+    // Build query with sorting
+    let orderByClause: any = products.id;
+
+    // Apply sorting
+    if (params.sort) {
+      switch (params.sort) {
+        case 'price-asc':
+          orderByClause = sql`CAST(${products.price} AS DECIMAL) ASC`;
+          break;
+        case 'price-desc':
+          orderByClause = sql`CAST(${products.price} AS DECIMAL) DESC`;
+          break;
+        case 'name-asc':
+          orderByClause = products.name;
+          break;
+        case 'name-desc':
+          orderByClause = desc(products.name);
+          break;
+        case 'newest':
+          orderByClause = desc(products.createdAt);
+          break;
+        case 'oldest':
+          orderByClause = products.createdAt;
+          break;
+        default:
+          // Default: popularity (by id for now, can be enhanced with view count later)
+          orderByClause = products.id;
+      }
+    }
+
+    // Apply pagination and sorting
+    const productsResult = await db
+      .select()
+      .from(products)
+      .where(whereClause)
+      .orderBy(orderByClause)
+      .limit(limit)
+      .offset(offset);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      products: productsResult,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages
+      }
+    };
   }
 
   async getProduct(id: number): Promise<Product | undefined> {

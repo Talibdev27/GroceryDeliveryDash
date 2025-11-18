@@ -532,10 +532,10 @@ export const getAddressSuggestions = async (query: string): Promise<Array<{
         });
         
         return {
-          title: result.title?.text || '',
-          subtitle: result.subtitle?.text || '',
+        title: result.title?.text || '',
+        subtitle: result.subtitle?.text || '',
           coordinates,
-          address: result.title?.text || ''
+        address: result.title?.text || ''
         };
       }));
       console.log('📍 Processed suggestions:', suggestions.length);

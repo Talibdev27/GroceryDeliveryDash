@@ -366,8 +366,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Product routes
   app.get("/api/products", async (req: Request, res: Response) => {
     try {
-      const products = await storage.getProducts();
-      res.json({ products });
+      // Check if pagination parameters are provided
+      const page = req.query.page ? parseInt(req.query.page as string) : undefined;
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+      const categoryId = req.query.category ? parseInt(req.query.category as string) : undefined;
+      const search = req.query.search as string | undefined;
+      const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice as string) : undefined;
+      const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice as string) : undefined;
+      const sort = req.query.sort as string | undefined;
+
+      // If pagination params exist, use paginated endpoint
+      if (page !== undefined || limit !== undefined || categoryId !== undefined || search || minPrice !== undefined || maxPrice !== undefined || sort) {
+        const result = await storage.getProductsPaginated({
+          page,
+          limit,
+          categoryId,
+          search,
+          minPrice,
+          maxPrice,
+          sort
+        });
+        res.json(result);
+      } else {
+        // Backward compatibility: return all products if no pagination params
+        const products = await storage.getProducts();
+        res.json({ products });
+      }
     } catch (error) {
       console.error("Get products error:", error);
       res.status(500).json({ error: "Failed to get products" });

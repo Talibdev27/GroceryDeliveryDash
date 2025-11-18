@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ProductCard from "@/components/ui/ProductCard";
 import { useCart } from "@/hooks/use-cart";
-import { useProducts, useCategories } from "@/hooks/use-api";
+import { useProductsPaginated, useCategories } from "@/hooks/use-api";
 import { useLanguage } from "@/hooks/use-language";
 import { formatPrice, getCurrencySymbol } from "@/lib/currency";
 import { Search, RefreshCw, SlidersHorizontal, ChevronRight } from "lucide-react";
@@ -32,19 +32,40 @@ export default function Products() {
   const { addToCart } = useCart();
   const { currentLanguage } = useLanguage();
   
-  // API data
-  const { data: productsData, loading: productsLoading, error: productsError } = useProducts();
-  const { data: categoriesData, loading: categoriesLoading } = useCategories();
-  
   // State for filters
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState("popularity");
   const [mobileFiltersVisible, setMobileFiltersVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const itemsPerPage = 24;
+  
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); // Reset to first page on search
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+  
+  // API data with pagination
+  const { data: productsData, loading: productsLoading, error: productsError } = useProductsPaginated({
+    page: currentPage,
+    limit: itemsPerPage,
+    category: selectedCategory || undefined,
+    search: debouncedSearch || undefined,
+    minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
+    maxPrice: priceRange[1] < 1000 ? priceRange[1] : undefined,
+    sort: sortOption !== "popularity" ? sortOption : undefined
+  });
+  const { data: categoriesData, loading: categoriesLoading } = useCategories();
   
   // Get products and categories from API
   const products = productsData?.products || [];
   const categories = categoriesData?.categories || [];
+  const pagination = productsData?.pagination || { page: 1, limit: itemsPerPage, total: 0, totalPages: 1 };
 
   // Helper function to get category name based on current language
   const getCategoryName = (category: any) => {
@@ -57,22 +78,20 @@ export default function Products() {
     }
   };
   
-  // Calculate price range from actual products
-  const maxPrice = Math.max(...products.map(p => parseFloat(p.price)), 50);
-  const [priceRange, setPriceRange] = useState([0, maxPrice]);
+  // Price range state (will be calculated from first page or use default)
+  const [priceRange, setPriceRange] = useState([0, 1000]);
   
-  // Update price range when products load
+  // Update price range when categories load (use a reasonable default)
   useEffect(() => {
-    if (products.length > 0) {
-      const newMaxPrice = Math.max(...products.map(p => parseFloat(p.price)), 50);
-      setPriceRange([0, newMaxPrice]);
-    }
-  }, [products]);
+    // Set a reasonable default max price
+    setPriceRange([0, 1000]);
+  }, []);
   
   // Parse query params
   useEffect(() => {
     const params = new URLSearchParams(location.split("?")[1] || "");
     const categoryId = params.get("categoryId");
+    const page = params.get("page");
     
     if (categoryId) {
       const id = parseInt(categoryId, 10);
@@ -83,44 +102,33 @@ export default function Products() {
       // Clear category if not in URL
       setSelectedCategory(null);
     }
+    
+    if (page) {
+      const pageNum = parseInt(page, 10);
+      if (!isNaN(pageNum) && pageNum > 0) {
+        setCurrentPage(pageNum);
+      }
+    }
   }, [location]);
   
-  // Filter products
-  const filteredProducts = products.filter(product => {
-    // Filter by search query
-    if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
-    }
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategory) params.set("categoryId", selectedCategory.toString());
+    if (currentPage > 1) params.set("page", currentPage.toString());
+    if (debouncedSearch) params.set("search", debouncedSearch);
+    if (priceRange[0] > 0) params.set("minPrice", priceRange[0].toString());
+    if (priceRange[1] < 1000) params.set("maxPrice", priceRange[1].toString());
+    if (sortOption !== "popularity") params.set("sort", sortOption);
     
-    // Filter by category (using categoryId)
-    if (selectedCategory && product.categoryId !== selectedCategory) {
-      return false;
+    const newUrl = `/products${params.toString() ? `?${params.toString()}` : ''}`;
+    if (location !== newUrl) {
+      setLocation(newUrl, { replace: true });
     }
-    
-    // Filter by price range
-    const productPrice = parseFloat(product.price);
-    if (productPrice < priceRange[0] || productPrice > priceRange[1]) {
-      return false;
-    }
-    
-    return true;
-  });
+  }, [selectedCategory, currentPage, debouncedSearch, priceRange, sortOption]);
   
-  // Sort products
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortOption) {
-      case "price-asc":
-        return parseFloat(a.price) - parseFloat(b.price);
-      case "price-desc":
-        return parseFloat(b.price) - parseFloat(a.price);
-      case "name-asc":
-        return a.name.localeCompare(b.name);
-      case "name-desc":
-        return b.name.localeCompare(a.name);
-      default:
-        return 0;
-    }
-  });
+  // Products are already filtered and sorted by the server
+  const sortedProducts = products;
   
   const toggleMobileFilters = () => {
     setMobileFiltersVisible(!mobileFiltersVisible);
@@ -175,7 +183,10 @@ export default function Products() {
               <SlidersHorizontal className="h-4 w-4" />
             </Button>
             
-            <Select value={sortOption} onValueChange={setSortOption}>
+            <Select value={sortOption} onValueChange={(value) => {
+              setSortOption(value);
+              setCurrentPage(1); // Reset to first page when sort changes
+            }}>
               <SelectTrigger className="w-[180px] hidden md:flex">
                 <SelectValue placeholder={t("products.sortBy")} />
               </SelectTrigger>
@@ -257,9 +268,12 @@ export default function Products() {
                     <div className="space-y-4">
                       <Slider
                         value={priceRange}
-                        max={maxPrice}
+                        max={1000}
                         step={0.5}
-                        onValueChange={(value) => setPriceRange([value[0], value[1]])}
+                        onValueChange={(value) => {
+                          setPriceRange([value[0], value[1]]);
+                          setCurrentPage(1); // Reset to first page when price changes
+                        }}
                       />
                       <div className="flex items-center justify-between">
                         <span>{formatPrice(priceRange[0].toString())}</span>
@@ -340,15 +354,71 @@ export default function Products() {
                 ))}
               </div>
             ) : sortedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                {sortedProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={() => addToCart(product)}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {sortedProducts.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={() => addToCart(product)}
+                    />
+                  ))}
+                </div>
+                
+                {/* Pagination Controls */}
+                {pagination.totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                        let pageNum: number;
+                        if (pagination.totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= pagination.totalPages - 2) {
+                          pageNum = pagination.totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={currentPage === pageNum ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setCurrentPage(pageNum)}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.min(pagination.totalPages, p + 1))}
+                      disabled={currentPage === pagination.totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+                
+                {/* Results count */}
+                <div className="mt-4 text-center text-sm text-neutral-500">
+                  Showing {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, pagination.total)} of {pagination.total} products
+                </div>
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center h-64 bg-white p-6 rounded-lg border border-neutral-200">
                 <Search className="h-12 w-12 text-neutral-300 mb-4" />

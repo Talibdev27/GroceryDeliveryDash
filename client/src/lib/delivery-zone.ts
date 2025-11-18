@@ -606,9 +606,9 @@ function isPointInPolygon(point: [number, number], polygon: [number, number][]):
     
     if (edgeCrossesHorizontalLine) {
       const intersectionLat = latI + (latJ - latI) * (lng - lngI) / (lngJ - lngI);
-      
+
       if (lat <= intersectionLat) {
-        inside = !inside;
+      inside = !inside;
       }
     }
   }
@@ -679,7 +679,7 @@ export function validateDeliveryAddress(
   const districtMatch = isDistrictInDeliveryZone(district);
   if (districtMatch.matched && districtMatch.zone) {
     console.log('[validateDeliveryAddress] ✓✓✓ VALID: District match');
-    return {
+      return {
       isValid: true,
       message: `Address is in ${districtMatch.zone.name} district (delivery available)`
     };

@@ -14,7 +14,6 @@ export default function ShoppingCart() {
     isCartOpen,
     closeCart,
     cartItems,
-    recommended,
     removeFromCart,
     incrementQuantity,
     decrementQuantity,
@@ -111,42 +110,6 @@ export default function ShoppingCart() {
                     </div>
                   </div>
                 ))}
-                
-                {/* Recommended items */}
-                <div className="mt-6">
-                  <h3 className="font-medium text-neutral-800 mb-3">{t("cart.youMightAlsoLike")}</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {recommended.map((item) => (
-                      <div key={item.id} className="bg-neutral-50 rounded-lg p-3 transition-all hover:shadow-md">
-                        <img src={item.image} alt={item.name} className="w-full h-24 object-cover rounded-md mb-2" />
-                        <h4 className="font-medium text-sm">{item.name}</h4>
-                        <p className="text-sm text-neutral-500">{item.unit}</p>
-                        <div className="flex justify-between items-center mt-2">
-                          <div className="font-medium">
-                            {item.sale && item.salePrice ? (
-                              <div className="flex flex-col">
-                                <span>{formatPrice(item.salePrice)}</span>
-                                <span className="text-xs text-neutral-400 line-through">
-                                  {formatPrice(item.price)}
-                                </span>
-                              </div>
-                            ) : (
-                              <span>{formatPrice(item.price)}</span>
-                            )}
-                          </div>
-                          <Button
-                            size="icon"
-                            className="h-7 w-7 rounded-full bg-primary text-white hover:bg-primary/90"
-                            onClick={() => addToCart(item)}
-                            disabled={!item.inStock}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </>
             ) : (
               <div className="flex flex-col items-center justify-center h-64">
