@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Helmet } from "react-helmet-async";
@@ -68,7 +68,7 @@ export default function Products() {
   const categories = categoriesData?.categories || [];
   const pagination = productsData?.pagination || { page: 1, limit: itemsPerPage, total: 0, totalPages: 1 };
 
-  // Helper function to get category name based on current language
+  // Resolve category name by current language for matching/display
   const getCategoryName = (category: any) => {
     switch (currentLanguage) {
       case 'ru': return category.nameRu || category.name;
@@ -78,20 +78,45 @@ export default function Products() {
       default: return category.name;
     }
   };
-  
+
+  // Fast lookup for category names (normalized, case-insensitive)
+  const normalizedCategoryMap = useMemo(() => {
+    const map = new Map<string, number>();
+    categories.forEach((cat) => {
+      const name = getCategoryName(cat);
+      if (name) {
+        map.set(name.toLowerCase().trim(), cat.id);
+      }
+    });
+    return map;
+  }, [categories, currentLanguage]);
+
   // Update price range when categories load (use a reasonable default)
   useEffect(() => {
     // Set a reasonable default max price
     setPriceRange([0, 1000]);
   }, []);
   
-  // Parse query params
+  // Parse query params (categoryId numeric or category name)
   useEffect(() => {
-    const params = new URLSearchParams(location.split("?")[1] || "");
+    const queryFromLocation = location.includes("?") ? location.split("?")[1] : "";
+    const search = queryFromLocation || window.location.search.replace(/^\?/, "");
+    const params = new URLSearchParams(search);
     const categoryId = params.get("categoryId");
+    const categoryName = params.get("category");
     const page = params.get("page");
     
-    if (categoryId) {
+    if (categoryName && normalizedCategoryMap.size > 0) {
+      const matchedId = normalizedCategoryMap.get(categoryName.toLowerCase().trim());
+      if (matchedId) {
+        setSelectedCategory(matchedId);
+      } else if (categoryId) {
+        const id = parseInt(categoryId, 10);
+        if (!isNaN(id)) setSelectedCategory(id);
+      } else {
+        setSelectedCategory(null);
+      }
+    } else if (categoryId) {
       const id = parseInt(categoryId, 10);
       if (!isNaN(id)) {
         setSelectedCategory(id);
@@ -107,12 +132,20 @@ export default function Products() {
         setCurrentPage(pageNum);
       }
     }
-  }, [location]);
+  }, [location, normalizedCategoryMap]);
   
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams();
-    if (selectedCategory) params.set("categoryId", selectedCategory.toString());
+    if (selectedCategory) {
+      const categoryObj = categories.find(cat => cat.id === selectedCategory);
+      const categoryName = categoryObj ? getCategoryName(categoryObj) : null;
+      if (categoryName) {
+        params.set("category", categoryName);
+      } else {
+        params.set("categoryId", selectedCategory.toString());
+      }
+    }
     if (currentPage > 1) params.set("page", currentPage.toString());
     if (debouncedSearch) params.set("search", debouncedSearch);
     if (priceRange[0] > 0) params.set("minPrice", priceRange[0].toString());
@@ -123,7 +156,7 @@ export default function Products() {
     if (location !== newUrl) {
       setLocation(newUrl, { replace: true });
     }
-  }, [selectedCategory, currentPage, debouncedSearch, priceRange, sortOption]);
+  }, [selectedCategory, currentPage, debouncedSearch, priceRange, sortOption, categories, currentLanguage]);
   
   // Products are already filtered and sorted by the server
   const sortedProducts = products;
