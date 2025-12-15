@@ -66,11 +66,38 @@ const newCategories = [
     nameUz: "Yog'lar va o'simlik yog'lari",
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
     slug: 'oils-fats'
+  },
+  {
+    name: 'Canned Goods',
+    nameEs: 'Conservas',
+    nameAr: 'معلبات',
+    nameRu: 'Консервы',
+    nameUz: 'Kanservantlar',
+    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'kanservantlar'
+  },
+  {
+    name: 'Spices',
+    nameEs: 'Especias',
+    nameAr: 'بهارات',
+    nameRu: 'Специи',
+    nameUz: 'Ziravorlar',
+    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'ziravorlar'
+  },
+  {
+    name: 'Sauces',
+    nameEs: 'Salsas',
+    nameAr: 'صلصات',
+    nameRu: 'Соусы',
+    nameUz: 'Souslar',
+    image: 'https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'souslar'
   }
 ];
 
 async function addNewCategories() {
-  console.log("🛍️ Adding 7 new product categories to database...");
+  console.log(`🛍️ Adding ${newCategories.length} product categories to database...`);
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   
   try {

@@ -2,7 +2,8 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import HeroSection from "@/components/home/HeroSection";
 import CategoriesCarousel from "@/components/home/CategoriesCarousel";
-import PromotionalBanner from "@/components/home/PromotionalBanner";
+// Temporarily disabled promotional banner (Fresh Vegetables / Meal Kits)
+// import PromotionalBanner from "@/components/home/PromotionalBanner";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import DeliveryFeatures from "@/components/home/DeliveryFeatures";
 import AppPromotion from "@/components/home/AppPromotion";
@@ -22,7 +23,7 @@ export default function Home() {
       
       <HeroSection />
       <CategoriesCarousel />
-      <PromotionalBanner />
+      {/* <PromotionalBanner /> */}
       <FeaturedProducts />
       <DeliveryFeatures />
       <AppPromotion />

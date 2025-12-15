@@ -150,5 +150,35 @@ export const categories: Category[] = [
     nameUz: "Yog'lar va o'simlik yog'lari",
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
     slug: 'oils-fats'
+  },
+  {
+    id: 16,
+    name: 'Canned Goods',
+    nameEs: 'Conservas',
+    nameAr: 'معلبات',
+    nameRu: 'Консервы',
+    nameUz: 'Kanservantlar',
+    image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'kanservantlar'
+  },
+  {
+    id: 17,
+    name: 'Spices',
+    nameEs: 'Especias',
+    nameAr: 'بهارات',
+    nameRu: 'Специи',
+    nameUz: 'Ziravorlar',
+    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'ziravorlar'
+  },
+  {
+    id: 18,
+    name: 'Sauces',
+    nameEs: 'Salsas',
+    nameAr: 'صلصات',
+    nameRu: 'Соусы',
+    nameUz: 'Souslar',
+    image: 'https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200',
+    slug: 'souslar'
   }
 ];
