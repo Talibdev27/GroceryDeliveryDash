@@ -39,7 +39,7 @@ export default function AdminNotifications() {
 
   // Initialize Socket.io connection
   useEffect(() => {
-    if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
+    if (!user || (user.role !== 'admin' && user.role !== 'super_admin' && user.role !== 'rider')) {
       return;
     }
 
@@ -60,9 +60,9 @@ export default function AdminNotifications() {
     newSocket.on('connect', () => {
       console.log('🔌 Connected to notification server:', newSocket.id);
       setIsConnected(true);
-      // Join admin room
+      // Join admin room (for admins, super_admins, and riders)
       newSocket.emit('join-admin-room', user.id);
-      console.log(`👤 Admin ${user.id} joined admin room`);
+      console.log(`👤 ${user.role} ${user.id} joined admin room`);
     });
 
     // Listen for new orders
@@ -188,7 +188,7 @@ export default function AdminNotifications() {
     window.location.href = `/admin/orders?orderId=${notification.orderId}`;
   };
 
-  if (!user || (user.role !== 'admin' && user.role !== 'super_admin')) {
+  if (!user || (user.role !== 'admin' && user.role !== 'super_admin' && user.role !== 'rider')) {
     return null;
   }
 

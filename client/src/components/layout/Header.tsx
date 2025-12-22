@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import CartButton from "@/components/ui/CartButton";
 import Logo from "@/components/ui/Logo";
-import { NotificationBell } from "@/components/ui/NotificationBell";
+import AdminNotifications from "@/components/admin/AdminNotifications";
 import AppComingSoonDialog from "@/components/ui/AppComingSoonDialog";
 import { useLanguage } from "@/hooks/use-language";
 import { useTheme } from "@/hooks/use-theme";
@@ -207,9 +207,9 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
             
             <CartButton />
             
-            {/* Notification Bell for Admins and Riders */}
+            {/* Notification Bell for Admins, Super Admins, and Riders */}
             {(user?.role === "admin" || user?.role === "super_admin" || user?.role === "rider") && (
-              <NotificationBell />
+              <AdminNotifications />
             )}
             
             <Button 

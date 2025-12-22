@@ -30,7 +30,6 @@ import OrderManagement from "@/components/admin/OrderManagement";
 import Analytics from "@/components/admin/Analytics";
 import AdminSettings from "@/components/admin/Settings";
 import RiderManagement from "@/components/admin/RiderManagement";
-import AdminNotifications from "@/components/admin/AdminNotifications";
 
 type AdminSection = "overview" | "products" | "users" | "orders" | "riders" | "analytics" | "settings";
 
@@ -335,9 +334,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               )}
-              
-              {/* Admin Notifications */}
-              <AdminNotifications />
             </div>
           </div>
         </div>
