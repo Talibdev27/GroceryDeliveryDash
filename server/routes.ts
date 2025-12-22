@@ -1108,22 +1108,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           console.log("📢 Attempting to send admin notifications...");
           const io = app.get("io");
-          const connectedUsers = app.get("connectedUsers");
           
           if (!io) {
             console.warn("⚠️ Socket.io not initialized, skipping notifications");
             return;
           }
           
-          if (!connectedUsers) {
-            console.warn("⚠️ Connected users map not initialized, skipping notifications");
-            return;
-          }
-          
           // Get user info for notification
           const user = await storage.getUser(req.session.userId!);
           
-          // Notify all admins and super_admins
+          // Get order items count
+          const orderItems = await storage.getOrderItems(order.id);
+          
+          // Prepare comprehensive notification data
+          const notificationData = {
+            id: `order-${order.id}-${Date.now()}`, // Unique ID for this notification
+            type: "new-order",
+            orderId: order.id,
+            orderNumber: order.id,
+            customerName: user?.firstName || user?.username || "Customer",
+            customerEmail: user?.email,
+            total: order.total,
+            itemCount: orderItems?.length || 0,
+            timestamp: new Date().toISOString(),
+            message: `New order #${order.id} from ${user?.firstName || user?.username || "Customer"}`,
+            priority: "high",
+            read: false
+          };
+          
+          console.log("🔔 Notification data prepared:", {
+            orderId: notificationData.orderId,
+            customerName: notificationData.customerName,
+            total: notificationData.total,
+            itemCount: notificationData.itemCount
+          });
+          
+          // Notify all admins and super_admins using rooms
           const admins = await storage.getUsersByRole(["admin", "super_admin"]);
           
           if (!admins || admins.length === 0) {
@@ -1131,30 +1151,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return;
           }
           
-          let notifiedCount = 0;
+          console.log(`📢 Found ${admins.length} admin(s) to notify:`, admins.map(a => ({ id: a.id, email: a.email, role: a.role })));
+          
+          // Emit to general admin room (all admins receive this)
+          console.log("📡 Emitting to 'admins' room...");
+          io.to("admins").emit("new-order", notificationData);
+          console.log("✅ Emitted to 'admins' room");
+          
+          // Also emit to individual admin rooms (for redundancy)
+          let individualEmits = 0;
           for (const admin of admins) {
             try {
-              const socketId = connectedUsers.get(admin.id);
-              if (socketId) {
-                io.to(socketId).emit("new-order", {
-                  orderId: order.id,
-                  orderNumber: order.id,
-                  customerName: user?.firstName || user?.username || "Customer",
-                  total: order.total,
-                  createdAt: order.createdAt
-                });
-                notifiedCount++;
-              }
+              console.log(`📡 Emitting to user-${admin.id} room...`);
+              io.to(`user-${admin.id}`).emit("new-order", notificationData);
+              individualEmits++;
+              console.log(`✅ Emitted to user-${admin.id} room`);
             } catch (adminError) {
               console.warn(`⚠️ Failed to notify admin ${admin.id}:`, adminError);
             }
           }
           
-          if (notifiedCount > 0) {
-            console.log(`✅ Notified ${notifiedCount} admin(s) about new order`);
-          } else {
-            console.log("ℹ️ No admins were connected to receive notifications");
-          }
+          console.log(`✅ Notified ${admins.length} admin(s) about order #${order.id} (${individualEmits} individual emits)`);
         } catch (notificationError) {
           // Log but don't fail the order - notifications are non-critical
           console.warn("⚠️ Failed to send admin notifications (order still created successfully):", notificationError);
@@ -1560,21 +1577,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize Socket.io
   const io = new SocketIOServer(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL || "http://localhost:5000",
-      credentials: true
+      origin: process.env.CLIENT_URL || process.env.VITE_CLIENT_URL || "http://localhost:5173",
+      credentials: true,
+      methods: ["GET", "POST"]
     }
   });
+  
+  console.log("🔔 Socket.io initialized with CORS:", process.env.CLIENT_URL || process.env.VITE_CLIENT_URL || "http://localhost:5173");
   
   // Store connected users (userId -> socketId mapping)
   const connectedUsers = new Map();
   
   io.on("connection", (socket) => {
-    console.log("Client connected:", socket.id);
+    console.log("🔌 Client connected:", socket.id);
     
-    // Register user with their socket
-    socket.on("register", (userId) => {
+    // Admin joins admin room
+    socket.on("join-admin-room", (userId: number) => {
+      socket.join(`user-${userId}`);
+      socket.join("admins"); // General admin room
       connectedUsers.set(userId, socket.id);
-      console.log(`User ${userId} registered with socket ${socket.id}`);
+      console.log(`👤 Admin user-${userId} joined admin rooms`);
+    });
+    
+    // User joins their personal room (for future use)
+    socket.on("join-user-room", (userId: number) => {
+      socket.join(`user-${userId}`);
+      connectedUsers.set(userId, socket.id);
+      console.log(`👤 User ${userId} joined their room`);
+    });
+    
+    // Legacy register event (keep for backward compatibility)
+    socket.on("register", (userId: number) => {
+      socket.join(`user-${userId}`);
+      connectedUsers.set(userId, socket.id);
+      console.log(`👤 User ${userId} registered with socket ${socket.id}`);
     });
     
     socket.on("disconnect", () => {
@@ -1585,7 +1621,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           break;
         }
       }
-      console.log("Client disconnected:", socket.id);
+      console.log("🔌 Client disconnected:", socket.id);
     });
   });
   

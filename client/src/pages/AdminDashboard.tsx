@@ -30,6 +30,7 @@ import OrderManagement from "@/components/admin/OrderManagement";
 import Analytics from "@/components/admin/Analytics";
 import AdminSettings from "@/components/admin/Settings";
 import RiderManagement from "@/components/admin/RiderManagement";
+import AdminNotifications from "@/components/admin/AdminNotifications";
 
 type AdminSection = "overview" | "products" | "users" | "orders" | "riders" | "analytics" | "settings";
 
@@ -312,27 +313,32 @@ export default function AdminDashboard() {
               </h1>
             </div>
 
-            {/* Quick stats for overview */}
-            {activeSection === "overview" && (
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="text-center">
-                  <p className="text-lg font-bold text-gray-900">{totalProducts}</p>
-                  <p className="text-[10px] text-gray-500">Products</p>
+            <div className="flex items-center gap-4">
+              {/* Quick stats for overview */}
+              {activeSection === "overview" && (
+                <div className="hidden md:flex items-center space-x-4">
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-gray-900">{totalProducts}</p>
+                    <p className="text-[10px] text-gray-500">Products</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-green-600">{inStockProducts}</p>
+                    <p className="text-[10px] text-gray-500">In Stock</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-red-600">{outOfStockProducts}</p>
+                    <p className="text-[10px] text-gray-500">Out of Stock</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-bold text-blue-600">{totalCategories}</p>
+                    <p className="text-[10px] text-gray-500">Categories</p>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <p className="text-lg font-bold text-green-600">{inStockProducts}</p>
-                  <p className="text-[10px] text-gray-500">In Stock</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-bold text-red-600">{outOfStockProducts}</p>
-                  <p className="text-[10px] text-gray-500">Out of Stock</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-bold text-blue-600">{totalCategories}</p>
-                  <p className="text-[10px] text-gray-500">Categories</p>
-                </div>
-              </div>
-            )}
+              )}
+              
+              {/* Admin Notifications */}
+              <AdminNotifications />
+            </div>
           </div>
         </div>
 
