@@ -243,10 +243,11 @@ export const insertOrderSchema = createInsertSchema(orders).pick({
   tax: true,
   deliveryFee: true,
   discount: true,
-  estimatedDelivery: true,
   addressId: true,
   paymentMethod: true,
   paymentStatus: true,
+}).extend({
+  estimatedDelivery: z.date().nullable().optional(),
 });
 
 export const insertOrderItemSchema = createInsertSchema(orderItems).pick({

@@ -37,10 +37,11 @@ import { useAuth } from "@/context/AuthContext";
 import { userApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
 import { validateDeliveryAddress } from "@/lib/delivery-zone";
-import { Address } from "@/types";
+import { Address, Order } from "@/types";
 import AddressManager from "@/components/account/AddressManager";
 import LocationSelector from "@/components/ui/LocationSelector";
 import DeliveryZoneBanner from "@/components/ui/DeliveryZoneBanner";
+import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -49,7 +50,9 @@ import {
   Home,
   MapPin, 
   Timer, 
-  Truck 
+  Truck,
+  Loader2,
+  Package
 } from "lucide-react";
 
 const formSchema = z.object({
@@ -83,9 +86,13 @@ const CheckoutPage = () => {
   const [, setLocation] = useLocation();
   const { cartItems, subtotal, deliveryFee, total, clearCart } = useCart();
   const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [paymentStep, setPaymentStep] = useState<"address" | "delivery" | "payment" | "confirmation">("address");
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [orderData, setOrderData] = useState<Order | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [deliveryZoneStatus, setDeliveryZoneStatus] = useState<{ isValid: boolean; message: string } | null>(null);
 
   // Initialize form BEFORE any conditional returns (Rules of Hooks)
@@ -108,6 +115,15 @@ const CheckoutPage = () => {
   // Debug current step
   console.log("🛒 CHECKOUT: Current step:", paymentStep);
 
+  // Debug user data for form
+  console.log('🔍 User data for form:', {
+    user,
+    email: user?.email,
+    phone: user?.phone,
+    fullName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
+    authLoading
+  });
+
   // Require authentication for checkout
   useEffect(() => {
     if (!authLoading && !user) {
@@ -116,7 +132,29 @@ const CheckoutPage = () => {
     }
   }, [user, authLoading, setLocation]);
 
+  // Re-populate form fields when user data loads
+  useEffect(() => {
+    if (user && !authLoading) {
+      const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+      const currentFullName = form.getValues('fullName');
+      const currentEmail = form.getValues('email');
+      const currentPhone = form.getValues('phone');
+      
+      // Only set if field is empty or matches user data (to handle initial load)
+      if (fullName && (!currentFullName || currentFullName === `${user.firstName || ""} ${user.lastName || ""}`.trim())) {
+        form.setValue('fullName', fullName);
+      }
+      if (user.email && (!currentEmail || currentEmail === user.email)) {
+        form.setValue('email', user.email);
+      }
+      if (user.phone && (!currentPhone || currentPhone === user.phone)) {
+        form.setValue('phone', user.phone);
+      }
+    }
+  }, [user, authLoading, form]);
+
   const fillFormWithAddress = (address: Address) => {
+    setSelectedAddress(address);
     form.setValue("fullName", address.fullName);
     form.setValue("address", address.address);
     if (address.latitude && address.longitude) {
@@ -163,19 +201,88 @@ const CheckoutPage = () => {
     console.log("🚀 CHECKOUT: Form data:", data);
     
     // Validate delivery zone before proceeding
-    // Extract district from address if available (format: "address, district, city")
-    const addressParts = data.address?.split(',').map((p: string) => p.trim()) || [];
-    const district = addressParts.find((p: string) => 
-      p.toLowerCase().includes('yunusobod') || 
-      p.toLowerCase().includes('yunusabad') ||
-      p.toLowerCase().includes('tumani')
+    // Extract district from multiple sources: selected address state, address text, or coordinates
+    const addressText = (data.address || '').toLowerCase();
+    
+    // Comprehensive keyword list for Yunusabad district
+    const yunusabadKeywords = [
+      'yunusabad', 'yunusobod', 'юнусабад', 'юнусобод',
+      'yunusobod tumani', 'yunusobod dahasi', 'yunusabad district',
+      'yunusabad tumani', 'yunusabad dahasi',
+      'yunus abad', 'yunus obod', // With spaces
+      'mavze', // Neighborhood indicator (13-mavze, etc.)
+    ];
+    
+    // Priority 1: Use district from selected address (most reliable)
+    // Check both state and city fields for district keywords (case-insensitive)
+    let district: string | undefined;
+    if (selectedAddress) {
+      const stateLower = (selectedAddress.state || '').toLowerCase();
+      const cityLower = (selectedAddress.city || '').toLowerCase();
+      
+      // Check if state or city contains district keywords
+      const stateHasKeyword = yunusabadKeywords.some(keyword => 
+        stateLower.includes(keyword.toLowerCase())
+      );
+      const cityHasKeyword = yunusabadKeywords.some(keyword => 
+        cityLower.includes(keyword.toLowerCase())
+      );
+      
+      if (stateHasKeyword) {
+        district = selectedAddress.state;
+      } else if (cityHasKeyword) {
+        district = selectedAddress.city;
+      } else if (selectedAddress.state) {
+        district = selectedAddress.state; // Use state even if no keyword match
+      } else if (selectedAddress.city) {
+        district = selectedAddress.city; // Use city even if no keyword match
+      }
+    }
+    
+    // Priority 2: Check if address text contains Yunusabad keywords
+    const hasYunusabadKeyword = yunusabadKeywords.some(keyword => 
+      addressText.includes(keyword.toLowerCase())
     );
+    
+    // Priority 3: Extract district from address parts if available
+    if (!district && data.address) {
+      const addressParts = data.address.split(',').map((p: string) => p.trim());
+      
+      // Find part that contains district keywords
+      const districtPart = addressParts.find((p: string) => {
+        const partLower = p.toLowerCase();
+        return yunusabadKeywords.some(keyword => 
+          partLower.includes(keyword.toLowerCase())
+        ) || partLower.includes('tumani') || partLower.includes('dahasi');
+      });
+      
+      if (districtPart) {
+        district = districtPart;
+      }
+    }
+    
+    // Priority 4: If address contains keyword but no district extracted, set it explicitly
+    if (!district && hasYunusabadKeyword) {
+      district = 'Yunusabad'; // Set explicit district for validation
+    }
+    
+    // Priority 5: If coordinates exist and are in Tashkent area, pass them for validation
+    // (The lenient validation will handle coordinates even without district)
+    
+    console.log("📍 Delivery zone validation:", {
+      address: data.address,
+      selectedAddressState: selectedAddress?.state,
+      selectedAddressCity: selectedAddress?.city,
+      district,
+      hasKeyword: hasYunusabadKeyword,
+      coordinates: data.coordinates
+    });
     
     const zoneValidation = validateDeliveryAddress(
       data.coordinates, 
       data.address,
       undefined, // subtitle not available in form data
-      district
+      district || (hasYunusabadKeyword ? 'Yunusabad' : undefined)
     );
     if (!zoneValidation.isValid) {
       setPaymentStep("address");
@@ -184,15 +291,23 @@ const CheckoutPage = () => {
         type: "manual",
         message: t("deliveryZone.outOfZoneMessage")
       });
+      toast({
+        title: t("checkout.errors.deliveryZone"),
+        description: zoneValidation.message,
+        variant: "destructive",
+      });
       return;
     }
+    
+    setIsSubmitting(true);
     
     try {
       // Save address if requested and create order
       let addressId = selectedAddressId;
       
-      // If save address is checked or no address is selected, create a new one
+      // If save address is checked or no address is selected, try to create a new one
       if (data.saveAddress || !addressId) {
+        try {
         const addressResponse = await userApi.createAddress({
           title: "Home",
           addressType: "home",
@@ -208,7 +323,96 @@ const CheckoutPage = () => {
           isDefault: false, // Don't auto-set as default
         });
         addressId = addressResponse.address.id;
+        } catch (addressError: any) {
+          // Handle duplicate address error gracefully
+          console.log("📍 Address creation error caught:", addressError);
+          
+          const errorMessage = addressError instanceof Error 
+            ? addressError.message 
+            : (addressError?.error || String(addressError) || "Unknown error");
+          
+          console.log("📍 Error message:", errorMessage);
+          
+          // Check for duplicate address error (case-insensitive, various formats)
+          const isDuplicateError = errorMessage.toLowerCase().includes("already exists") || 
+                                   errorMessage.toLowerCase().includes("duplicate") ||
+                                   errorMessage.includes("This address already exists");
+          
+          if (isDuplicateError) {
+            // Address already exists - find and reuse it
+            console.log("📍 Address already exists, finding existing address...");
+            
+            try {
+              const addressesResponse = await userApi.getAddresses();
+              const existingAddresses = addressesResponse.addresses || [];
+              console.log("📍 Found", existingAddresses.length, "existing addresses");
+              
+              // Find matching address by comparing address, city, and postalCode
+              const matchingAddress = existingAddresses.find((addr: Address) => {
+                const addrMatch = addr.address.toLowerCase().trim() === data.address.toLowerCase().trim();
+                const cityMatch = addr.city.toLowerCase().trim() === "Tashkent".toLowerCase().trim();
+                const postalMatch = addr.postalCode === "100000" || !addr.postalCode; // Allow missing postal code
+                return addrMatch && cityMatch && postalMatch;
+              });
+              
+              if (matchingAddress) {
+                addressId = matchingAddress.id;
+                console.log("✅ Found existing address, reusing ID:", addressId);
+                toast({
+                  title: t("checkout.addressReused"),
+                  description: t("checkout.addressReusedMessage"),
+                  variant: "default",
+                });
+              } else if (existingAddresses.length > 0) {
+                // Couldn't find exact match, but address exists - use first address
+                addressId = existingAddresses[0].id;
+                console.log("⚠️ Using first available address (no exact match):", addressId);
+                toast({
+                  title: t("checkout.addressReused"),
+                  description: t("checkout.addressReusedMessage"),
+                  variant: "default",
+                });
+              } else {
+                // No addresses found - try to proceed without saving address
+                console.log("⚠️ No existing addresses found, proceeding without saving address");
+                // Don't throw error - just proceed without addressId (backend might handle it)
+                // But we need an addressId for the order, so this is a problem
+                // Let's use selectedAddressId if available, otherwise we need to handle this
+                if (!addressId && selectedAddressId) {
+                  addressId = selectedAddressId;
+                  console.log("✅ Using previously selected address:", addressId);
+                }
+              }
+            } catch (lookupError) {
+              console.error("❌ Error looking up existing addresses:", lookupError);
+              // If lookup fails, try to use selectedAddressId if available
+              if (!addressId && selectedAddressId) {
+                addressId = selectedAddressId;
+                console.log("✅ Fallback: Using previously selected address:", addressId);
+              }
+              // If still no addressId, we'll let the order creation fail with a clear error
+            }
+          } else {
+            // Other address creation errors - log and rethrow to be handled by outer catch
+            console.error("❌ Address creation failed with non-duplicate error:", errorMessage);
+            throw addressError;
+          }
+        }
       }
+      
+      // Ensure we have an addressId before creating order
+      if (!addressId) {
+        console.error("❌ No addressId available for order creation");
+        setIsSubmitting(false);
+        toast({
+          title: t("checkout.errors.orderFailed"),
+          description: t("checkout.errors.addressRequired"),
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      console.log("✅ Using addressId for order:", addressId);
       
       // Prepare order items from cart
       const orderItems = cartItems.map(item => ({
@@ -220,11 +424,18 @@ const CheckoutPage = () => {
       }));
       
       // Create the order
+      console.log("🛒 Creating order with:", {
+        itemsCount: orderItems.length,
+        addressId,
+        paymentMethod: data.paymentMethod
+      });
+      
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // Important: include cookies for authentication
         body: JSON.stringify({
           items: orderItems,
           addressId,
@@ -232,31 +443,81 @@ const CheckoutPage = () => {
         }),
       });
       
+      console.log("🛒 Order API response status:", response.status, response.statusText);
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create order");
+        const errorText = await response.text();
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { error: errorText || `HTTP ${response.status}` };
+        }
+        console.error("❌ Order creation failed:", errorData);
+        throw new Error(errorData.error || "Failed to create order");
       }
       
       const result = await response.json();
-      console.log("✅ Order created:", result);
+      console.log("✅ Order API response:", result);
+      
+      // Validate that we got an order back
+      if (!result || !result.order) {
+        console.error("❌ Order response missing order data:", result);
+        throw new Error(t("checkout.errors.generic"));
+      }
+      
+      // Store the actual order data
+      setOrderData(result.order);
+      console.log("✅ Order stored:", result.order.id);
+      
+      // Show success toast
+      toast({
+        title: t("checkout.orderConfirmed"),
+        description: t("checkout.orderSuccessMessage"),
+      });
       
       // Show order confirmation
       setOrderPlaced(true);
+      setIsSubmitting(false);
       
       // Clear cart after successful order
-      setTimeout(() => {
         clearCart();
-        setLocation("/");
-      }, 5000);
+      
+      console.log("✅ Order flow completed successfully");
+      
     } catch (error) {
       console.error("❌ Order creation failed:", error);
-      alert("Failed to place order. Please try again.");
+      setIsSubmitting(false);
+      
+      // Show detailed error message
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : (typeof error === 'string' ? error : t("checkout.errors.generic"));
+      
+      console.error("❌ Error message to show:", errorMessage);
+      
+      // Only show error if it's not already handled (e.g., duplicate address was handled above)
+      // Check if this is a network/order creation error vs address error
+      const isAddressError = errorMessage.toLowerCase().includes("address") && 
+        (errorMessage.toLowerCase().includes("already exists") || 
+         errorMessage.toLowerCase().includes("address"));
+      
+      // Don't show duplicate address errors again if we already handled them
+      const isHandledDuplicate = isAddressError && errorMessage.toLowerCase().includes("already exists");
+      
+      if (!isHandledDuplicate) {
+        toast({
+          title: t("checkout.errors.orderFailed"),
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     }
   };
   
   // Wrapper to ensure we only submit on the payment step, otherwise advance
   const onSubmit = (data: FormValues) => {
-    if (paymentStep !== "payment") {
+    if (paymentStep !== "payment" && paymentStep !== "confirmation") {
       console.log("🛒 CHECKOUT: Form valid but not on payment step, advancing");
       handleContinue(paymentStep);
       return;
@@ -300,25 +561,186 @@ const CheckoutPage = () => {
         break;
     }
   };
+
+  // Shared Place Order button click handler
+  const handlePlaceOrderClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log("🛒 CHECKOUT: Place Order button clicked!");
+    console.log("🛒 CHECKOUT: Form values:", form.getValues());
+    console.log("🛒 CHECKOUT: Form errors:", form.formState.errors);
+    
+    // Ensure we're on payment step
+    if (paymentStep !== "payment") {
+      console.log("🛒 CHECKOUT: Not on payment step, navigating to payment step");
+      setPaymentStep("payment");
+      return;
+    }
+    
+    // Trigger validation on all fields
+    const isValid = await form.trigger();
+    console.log("🛒 CHECKOUT: Form is valid:", isValid);
+    
+    if (!isValid) {
+      // Check which step has errors and navigate to it
+      const errors = form.formState.errors;
+      if (errors.fullName || errors.email || errors.phone || errors.address || errors.coordinates) {
+        console.log("🛒 CHECKOUT: Address errors found, navigating to address step");
+        setPaymentStep("address");
+        return;
+      }
+      if (errors.deliveryTime) {
+        console.log("🛒 CHECKOUT: Delivery errors found, navigating to delivery step");
+        setPaymentStep("delivery");
+        return;
+      }
+      return;
+    }
+    
+    // If valid, submit the form using handleSubmit to ensure proper validation
+    form.handleSubmit(onSubmitActual, onError)();
+  };
   
   if (orderPlaced) {
+    const orderId = orderData?.id || "N/A";
+    const orderTotal = orderData?.total 
+      ? (typeof orderData.total === 'string' ? parseFloat(orderData.total) : orderData.total)
+      : total;
+    const orderSubtotal = orderData?.subtotal 
+      ? (typeof orderData.subtotal === 'string' ? parseFloat(orderData.subtotal) : orderData.subtotal)
+      : subtotal;
+    const orderDeliveryFee = orderData?.deliveryFee 
+      ? (typeof orderData.deliveryFee === 'string' ? parseFloat(orderData.deliveryFee) : orderData.deliveryFee)
+      : deliveryFee;
+    
+    // Handle order items - API might return items differently
+    let orderItems: Array<{ product?: any; quantity: number; price: number; productName?: string; productImage?: string }> = [];
+    
+    if (orderData?.items && Array.isArray(orderData.items) && orderData.items.length > 0) {
+      // If items have product property (from types)
+      if (orderData.items[0]?.product) {
+        orderItems = orderData.items.map((item: any) => ({
+          product: item.product,
+          quantity: item.quantity || 1,
+          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price
+        }));
+      } else {
+        // If items are from API response (with productName, productImage)
+        orderItems = orderData.items.map((item: any) => ({
+          product: {
+            name: item.productName || 'Product',
+            image: item.productImage || '',
+          },
+          quantity: item.quantity || 1,
+          price: typeof item.price === 'string' ? parseFloat(item.price) : item.price
+        }));
+      }
+    } else {
+      // Fallback to cart items
+      orderItems = cartItems.map(item => ({
+        product: item,
+        quantity: item.quantity || 1,
+        price: typeof item.price === 'string' ? parseFloat(item.price) : item.price
+      }));
+    }
+    
     return (
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-sm border border-neutral-200 text-center">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Check className="h-8 w-8 text-primary" />
+        <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-sm border border-neutral-200">
+          {/* Success Header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Check className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-2xl font-heading font-bold mb-4">{t("checkout.orderConfirmed")}</h1>
-          <p className="text-neutral-600 mb-6">{t("checkout.orderConfirmedMessage")}</p>
-          <div className="bg-neutral-50 p-4 rounded-lg mb-6">
-            <p className="font-medium">{t("checkout.orderNumber")}: #ORD-{Math.floor(100000 + Math.random() * 900000)}</p>
+            <h1 className="text-3xl font-heading font-bold mb-3">{t("checkout.orderConfirmed")}</h1>
+            <p className="text-neutral-600 text-lg">{t("checkout.orderConfirmedMessage")}</p>
           </div>
-          <p className="text-sm text-neutral-500 mb-8">{t("checkout.redirectMessage")}</p>
-          <Link href="/">
-            <Button className="w-full">
+
+          {/* Order Number */}
+          <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg mb-6 text-center">
+            <p className="text-sm text-neutral-600 mb-2">{t("checkout.orderNumber")}</p>
+            <p className="text-2xl font-bold text-primary">#{orderId}</p>
+          </div>
+
+          {/* Order Summary */}
+          <div className="border border-neutral-200 rounded-lg p-6 mb-6">
+            <h2 className="text-lg font-semibold mb-4 flex items-center">
+              <Package className="h-5 w-5 mr-2 text-primary" />
+              {t("checkout.orderSummary")}
+            </h2>
+            
+            <div className="space-y-3 mb-4">
+              {orderItems.map((item, index) => (
+                <div key={index} className="flex items-center justify-between py-2 border-b border-neutral-100 last:border-0">
+                  <div className="flex items-center flex-1">
+                    {item.product?.image && (
+                      <img 
+                        src={item.product.image} 
+                        alt={item.product.name}
+                        className="w-12 h-12 object-cover rounded border border-neutral-200 mr-3"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{item.product?.name || "Product"}</p>
+                      <p className="text-xs text-neutral-500">
+                        {item.quantity} x {formatCurrency(item.price)}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="font-medium">{formatCurrency(item.price * item.quantity)}</p>
+                </div>
+              ))}
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-neutral-600">{t("checkout.subtotal")}</span>
+                <span>{formatCurrency(orderSubtotal)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-neutral-600">{t("checkout.deliveryFee")}</span>
+                <span>{formatCurrency(orderDeliveryFee)}</span>
+              </div>
+              <Separator className="my-2" />
+              <div className="flex justify-between font-bold text-lg">
+                <span>{t("checkout.total")}</span>
+                <span className="text-primary">{formatCurrency(orderTotal)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Delivery Info */}
+          {orderData?.address && (
+            <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-4 mb-6">
+              <p className="text-sm font-medium mb-2">{t("checkout.deliveryAddress")}</p>
+              <p className="text-sm text-neutral-600">{orderData.address.address}</p>
+              {orderData.address.city && (
+                <p className="text-sm text-neutral-600">{orderData.address.city}, {orderData.address.country}</p>
+              )}
+            </div>
+          )}
+
+          {/* Next Steps */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-sm text-blue-800">
+              <strong>{t("checkout.nextSteps")}</strong> {t("checkout.nextStepsMessage")}
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link href="/orders" className="flex-1">
+              <Button className="w-full" variant="default">
+                {t("checkout.viewOrderDetails")}
+              </Button>
+            </Link>
+            <Link href="/" className="flex-1">
+              <Button className="w-full" variant="outline">
               {t("checkout.backToHome")}
             </Button>
           </Link>
+          </div>
         </div>
       </div>
     );
@@ -350,7 +772,7 @@ const CheckoutPage = () => {
         <meta name="description" content={t("seo.checkout.description")} />
       </Helmet>
       
-      <div className="bg-neutral-50 py-8">
+      <div className="bg-neutral-50 py-8 pb-28 md:pb-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8">
             <div className="w-full lg:w-2/3">
@@ -376,7 +798,7 @@ const CheckoutPage = () => {
                         <div className="mb-6">
                           <AddressManager 
                             mode="selection"
-                            selectedAddressId={selectedAddressId}
+                            selectedAddressId={selectedAddressId ?? undefined}
                             onSelect={(address) => {
                               setSelectedAddressId(address.id);
                               fillFormWithAddress(address);
@@ -410,9 +832,20 @@ const CheckoutPage = () => {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t("checkout.email")}</FormLabel>
+                              <div className="flex items-center justify-between">
+                                <FormLabel>{t("checkout.email")}</FormLabel>
+                                {user?.email && (
+                                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                    From account
+                                  </span>
+                                )}
+                              </div>
                               <FormControl>
-                                <Input placeholder={t("checkout.emailPlaceholder")} {...field} />
+                                <Input 
+                                  placeholder={t("checkout.emailPlaceholder")} 
+                                  {...field}
+                                  className={user?.email ? "bg-gray-50" : ""}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -424,7 +857,14 @@ const CheckoutPage = () => {
                           name="phone"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t("checkout.phone")}</FormLabel>
+                              <div className="flex items-center justify-between">
+                                <FormLabel>{t("checkout.phone")}</FormLabel>
+                                {user?.phone && (
+                                  <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                    From account
+                                  </span>
+                                )}
+                              </div>
                               <FormControl>
                                 <Input 
                                   placeholder={t("checkout.phonePlaceholder")} 
@@ -446,6 +886,7 @@ const CheckoutPage = () => {
                                     field.onChange(formatted);
                                   }}
                                   value={field.value}
+                                  className={user?.phone ? "bg-gray-50" : ""}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -922,62 +1363,36 @@ const CheckoutPage = () => {
                         <div className="mt-6 space-y-4">
                           <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
                             <p className="text-sm text-emerald-800">
-                              <strong>Cash on Delivery</strong> - Pay when your order arrives
+                              <strong>{t("checkout.paymentMethods.cashTitle")}</strong>
                             </p>
                             <p className="text-xs text-emerald-700 mt-2">
-                              Our rider will collect the cash payment when delivering your order. Please have the exact amount ready.
+                              {t("checkout.paymentMethods.cashRiderMessage")}
                             </p>
                           </div>
                           <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
                             <p className="text-sm text-yellow-800">
-                              💡 <strong>Note:</strong> The rider will bring the cash to the admin after delivery is complete.
+                              💡 <strong>{t("checkout.paymentMethods.cashNote")}</strong>
                             </p>
                           </div>
                         </div>
                       )}
                       
-                      <div className="mt-8">
+                      {/* Desktop Place Order Button - Hidden on Mobile */}
+                      <div className="mt-8 hidden md:block">
                         <Button 
                           type="button" 
                           className="w-full"
-                          onClick={async (e) => {
-                            e.preventDefault();
-                            console.log("🛒 CHECKOUT: Place Order button clicked!");
-                            console.log("🛒 CHECKOUT: Form values:", form.getValues());
-                            console.log("🛒 CHECKOUT: Form errors:", form.formState.errors);
-                            
-                            // Ensure we're on payment step
-                            if (paymentStep !== "payment") {
-                              console.log("🛒 CHECKOUT: Not on payment step, navigating to payment step");
-                              setPaymentStep("payment");
-                              return;
-                            }
-                            
-                            // Trigger validation on all fields
-                            const isValid = await form.trigger();
-                            console.log("🛒 CHECKOUT: Form is valid:", isValid);
-                            
-                            if (!isValid) {
-                              // Check which step has errors and navigate to it
-                              const errors = form.formState.errors;
-                              if (errors.fullName || errors.email || errors.phone || errors.address || errors.coordinates) {
-                                console.log("🛒 CHECKOUT: Address errors found, navigating to address step");
-                                setPaymentStep("address");
-                                return;
-                              }
-                              if (errors.deliveryTime) {
-                                console.log("🛒 CHECKOUT: Delivery errors found, navigating to delivery step");
-                                setPaymentStep("delivery");
-                                return;
-                              }
-                              return;
-                            }
-                            
-                            // If valid, submit the form using handleSubmit to ensure proper validation
-                            form.handleSubmit(onSubmitActual, onError)();
-                          }}
+                          disabled={isSubmitting}
+                          onClick={handlePlaceOrderClick}
                         >
-                          {t("checkout.placeOrder")}
+                          {isSubmitting ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              {t("checkout.processingOrder")}
+                            </>
+                          ) : (
+                            t("checkout.placeOrder")
+                          )}
                         </Button>
                         <p className="text-xs text-neutral-500 text-center mt-4">
                           {t("checkout.termsConditionsMessage")}
@@ -1001,7 +1416,7 @@ const CheckoutPage = () => {
                         </Link>
                       )}
                       
-                      {paymentStep !== "payment" && (
+                      {paymentStep !== "payment" && paymentStep !== "confirmation" && (
                         <Button type="button" onClick={() => handleContinue(paymentStep)}>
                           {paymentStep === "address" ? t("checkout.continueToDelivery") : t("checkout.continueToPayment")}
                           <ArrowRight className="ml-2 h-4 w-4" />
@@ -1037,11 +1452,11 @@ const CheckoutPage = () => {
                               <div className="ml-4 flex-1">
                                 <div className="font-medium">{item.name}</div>
                                 <div className="text-sm text-neutral-500">
-                                  {item.quantity} x {formatCurrency(item.price)}
+                                  {item.quantity} x {formatCurrency(typeof item.price === 'string' ? parseFloat(item.price) : item.price)}
                                 </div>
                               </div>
                               <div className="font-medium">
-                                {formatCurrency(item.price * item.quantity)}
+                                {formatCurrency((typeof item.price === 'string' ? parseFloat(item.price) : item.price) * item.quantity)}
                               </div>
                             </div>
                           ))}
@@ -1095,6 +1510,31 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
+
+      {/* 🔥 MOBILE STICKY BUTTON - Only visible on mobile when on payment step */}
+      {paymentStep === "payment" && (
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-t border-neutral-200 shadow-lg safe-area-bottom">
+          <div className="px-4 py-3 pb-safe">
+            <Button 
+              type="button" 
+              className="w-full min-h-[48px] h-12 text-base font-semibold shadow-sm active:scale-[0.98] transition-transform"
+              disabled={isSubmitting}
+              onClick={handlePlaceOrderClick}
+            >
+              {isSubmitting ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>{t("checkout.processingOrder")}</span>
+                </div>
+              ) : (
+                <>
+                  {t("checkout.placeOrder")} · {formatCurrency(total)}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

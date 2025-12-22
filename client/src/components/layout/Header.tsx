@@ -14,6 +14,7 @@ import Logo from "@/components/ui/Logo";
 import { NotificationBell } from "@/components/ui/NotificationBell";
 import AppComingSoonDialog from "@/components/ui/AppComingSoonDialog";
 import { useLanguage } from "@/hooks/use-language";
+import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import {
@@ -23,6 +24,8 @@ import {
   ChevronDown,
   Menu,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 interface HeaderProps {
@@ -33,6 +36,7 @@ interface HeaderProps {
 export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProps) {
   const { t } = useTranslation();
   const { currentLanguage, setLanguage } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
   const [mobileSearchVisible, setMobileSearchVisible] = useState(false);
   const [appDialogOpen, setAppDialogOpen] = useState(false);
@@ -123,6 +127,15 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="h-8 w-8"
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
             <div className="hidden md:block">
               <button
                 type="button"

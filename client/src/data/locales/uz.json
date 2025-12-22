@@ -1,8 +1,6 @@
 {
   "languages": {
     "en": "Inglizcha",
-    "es": "Ispancha",
-    "ar": "Arabcha",
     "ru": "Ruscha",
     "uz": "O'zbekcha"
   },
@@ -216,7 +214,14 @@
     "subtotal": "Oraliq jami",
     "deliveryFee": "Yetkazib berish haqi",
     "total": "Jami",
-    "proceedToCheckout": "To'lovga o'tish"
+    "proceedToCheckout": "To'lovga o'tish",
+    "addedToCart": "Savatchaga qo'shildi",
+    "addedToCartWithQuantity": "Savatchaga {{quantity}}x {{productName}} qo'shildi",
+    "viewCart": "Savatchani ko'rish",
+    "undo": "Bekor qilish",
+    "continueShopping": "Xarid qilishni davom ettirish",
+    "itemsInCart": "Savatchada {{count}} narsa",
+    "itemsInCart_plural": "Savatchada {{count}} narsa"
   },
   "whyChooseUs": {
     "title": "Nima uchun Diyor Market tanlash kerak",
@@ -308,8 +313,24 @@
     "continueToPayment": "To'lovga davom etish",
     "orderConfirmed": "Buyurtma tasdiqlandi!",
     "orderConfirmedMessage": "Sizning buyurtmangiz muvaffaqiyatli bajarildi va tez orada yetkazib beriladi.",
+    "orderSuccessMessage": "Buyurtmangiz muvaffaqiyatli yaratildi.",
     "orderNumber": "Buyurtma raqami",
     "redirectMessage": "Siz bir necha soniyada bosh sahifaga yo'naltirilasiz...",
+    "viewOrderDetails": "Buyurtma tafsilotlarini ko'rish",
+    "processingOrder": "Buyurtma qayta ishlanmoqda...",
+    "nextSteps": "Keyingi qadamlar",
+    "nextStepsMessage": "Tez orada tasdiqlash xati olasiz. Buyurtma holatini hisobingizda kuzatishingiz mumkin.",
+    "addressReused": "Mavjud manzildan foydalanish",
+    "addressReusedMessage": "Biz bu manzilni saqlangan manzillaringizdan topdik va bu buyurtma uchun foydalanamiz.",
+    "errors": {
+      "orderFailed": "Buyurtma muvaffaqiyatsiz",
+      "generic": "Kutilmagan xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
+      "deliveryZone": "Yetkazib berish zonasi xatosi",
+      "addressNotFound": "Manzilingizni topib bo'lmadi. Iltimos, qayta urinib ko'ring.",
+      "addressLookupFailed": "Manzillaringizni olishning iloji bo'lmadi. Iltimos, qayta urinib ko'ring.",
+      "addressError": "Manzil xatosi",
+      "addressRequired": "Buyurtma berish uchun yetkazib berish manzili kerak. Iltimos, manzilni tanlang yoki kiriting."
+    },
     "backToHome": "Bosh sahifaga qaytish",
     "emptyCart": "Savatingiz bo'sh",
     "emptyCartMessage": "To'lovga o'tishdan oldin savatingizga narsalar qo'shishingiz kerak.",
@@ -325,7 +346,10 @@
       "mobileLabel": "Mobil",
       "international": "Xalqaro kartalar",
       "cash": "Yetkazib berishda naqd pul",
-      "cashDescription": "Yetkazib berilganda to'lash"
+      "cashDescription": "Yetkazib berilganda to'lash",
+      "cashTitle": "Yetkazib berishda naqd pul - Buyurtma kelganda to'lash",
+      "cashRiderMessage": "Bizning kuryer buyurtmangizni yetkazib berishda naqd pulni yig'adi. Iltimos, aniq miqdorni tayyorlang.",
+      "cashNote": "Eslatma: Kuryer yetkazib berish tugagandan so'ng naqd pulni administratorga olib keladi."
     }
   },
   "map": {
@@ -589,5 +613,8 @@
     "markAllRead": "Hammasini o'qilgan deb belgilash",
     "noNotifications": "Bildirishnomalar yo'q",
     "justNow": "Hozir"
+  },
+  "admin": {
+    "cashOnDeliveryMessage": "Yetkazib berishda naqd pul - Kuryer to'lovni yig'adi"
   }
 }

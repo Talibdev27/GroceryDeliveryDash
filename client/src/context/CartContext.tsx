@@ -102,25 +102,33 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const addToCart = (product: Omit<CartProduct, "quantity">) => {
     console.log("CartContext: Adding product to cart:", product);
+    let newQuantity = 1;
+    
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       
       if (existingItem) {
+        newQuantity = existingItem.quantity + 1;
         const newItems = prevItems.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id ? { ...item, quantity: newQuantity } : item
         );
         console.log("CartContext: Updated existing item, new cart:", newItems);
         return newItems;
       } else {
+        newQuantity = 1;
         const newItems = [...prevItems, { ...product, quantity: 1 }];
         console.log("CartContext: Added new item, new cart:", newItems);
         return newItems;
       }
     });
     
-    // Open cart when adding a new item
-    console.log("CartContext: Opening cart after adding item");
-    setIsCartOpen(true);
+    // Dispatch custom event for toast notification
+    window.dispatchEvent(new CustomEvent('cart:item-added', { 
+      detail: { 
+        product,
+        quantity: newQuantity
+      } 
+    }));
   };
 
   const removeFromCart = (productId: number) => {

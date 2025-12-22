@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -62,6 +63,7 @@ interface Order {
 }
 
 export default function OrderManagement() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -534,7 +536,7 @@ export default function OrderManagement() {
                   </div>
                   {selectedOrder.paymentMethod === "cash" && (
                     <p className="text-xs text-amber-600 mt-2 bg-amber-50 p-2 rounded">
-                      💵 Cash on Delivery - Rider will collect payment
+                      💵 {t("admin.cashOnDeliveryMessage")}
                     </p>
                   )}
                 </div>

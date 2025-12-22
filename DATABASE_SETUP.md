@@ -63,6 +63,37 @@ This will populate your database with categories and products from the mock data
 npm run dev
 ```
 
+## Database Maintenance Scripts
+
+### Adding New Categories
+
+To add the Canned Goods, Spices, and Sauces categories to your database:
+
+```bash
+npx tsx scripts/add-condiment-categories.ts
+```
+
+**Prerequisites:**
+- `DATABASE_URL` environment variable must be set in your `.env` file
+- Database must be accessible and schema must be initialized
+
+**What it does:**
+- Checks if each category (by slug) already exists
+- If missing, inserts the new category with all translations
+- If exists but inactive, activates it and updates fields
+- If exists and active, updates fields to match current definitions
+
+**Categories added:**
+- Canned Goods (Kanservantlar / Консервы)
+- Spices (Ziravorlar / Специи)
+- Sauces (Souslar / Соусы)
+
+**For Production:**
+1. Ensure `DATABASE_URL` is set in your production environment
+2. Run the script: `npx tsx scripts/add-condiment-categories.ts`
+3. Verify categories appear via `/api/categories` endpoint
+4. Check the frontend carousel shows the new categories
+
 ## Database Schema
 
 The database includes the following tables:

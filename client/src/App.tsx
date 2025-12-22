@@ -19,9 +19,12 @@ import Footer from "@/components/layout/Footer";
 import MobileMenu from "@/components/layout/MobileMenu";
 import ShoppingCart from "@/components/shop/ShoppingCart";
 import { useLanguage } from "@/hooks/use-language";
-import { useTheme } from "@/hooks/use-theme";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { useCart } from "@/hooks/use-cart";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 function Router() {
@@ -44,9 +47,64 @@ function Router() {
   );
 }
 
+// Cart Toast Listener - Handles toast notifications when items are added to cart
+function CartToastListener() {
+  const { toast } = useToast();
+  const { t } = useTranslation();
+  const { removeFromCart, openCart } = useCart();
+  
+  useEffect(() => {
+    const handleCartItemAdded = (e: Event) => {
+      const customEvent = e as CustomEvent<{ product: any; quantity: number }>;
+      const { product, quantity } = customEvent.detail;
+      
+      toast({
+        title: t("cart.addedToCart") || "Added to cart",
+        description: (
+          <div className="flex items-center gap-3">
+            <img 
+              src={product.image} 
+              alt={product.name}
+              className="w-12 h-12 object-cover rounded"
+            />
+            <div>
+              <p className="font-medium">{product.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {t("cart.addedToCartWithQuantity", { quantity, productName: product.name }) || `Added ${quantity}x to cart`}
+              </p>
+            </div>
+          </div>
+        ),
+        action: (
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => removeFromCart(product.id)}
+            >
+              {t("cart.undo") || "Undo"}
+            </Button>
+            <Button 
+              size="sm"
+              onClick={() => openCart()}
+            >
+              {t("cart.viewCart") || "View Cart"}
+            </Button>
+          </div>
+        ),
+        duration: 3000,
+      });
+    };
+    
+    window.addEventListener('cart:item-added', handleCartItemAdded as EventListener);
+    return () => window.removeEventListener('cart:item-added', handleCartItemAdded as EventListener);
+  }, [toast, t, removeFromCart, openCart]);
+  
+  return null;
+}
+
 function App() {
   const { currentLanguage } = useLanguage();
-  const { theme } = useTheme();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -60,12 +118,13 @@ function App() {
     const htmlElement = document.documentElement;
     htmlElement.lang = currentLanguage;
     htmlElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
-    htmlElement.className = theme;
-  }, [currentLanguage, theme]);
+    // Theme class is managed by ThemeContext, don't override it here
+  }, [currentLanguage]);
 
   return (
     <AuthProvider>
       <CartProvider>
+        <CartToastListener />
         <TooltipProvider>
           <div className="flex flex-col min-h-screen bg-neutral-100 text-neutral-700 font-sans">
             <Toaster />

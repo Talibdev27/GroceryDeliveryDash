@@ -1,8 +1,6 @@
 {
   "languages": {
     "en": "English",
-    "es": "Spanish",
-    "ar": "Arabic",
     "ru": "Russian",
     "uz": "Uzbek"
   },
@@ -216,7 +214,14 @@
     "subtotal": "Subtotal",
     "deliveryFee": "Delivery Fee",
     "total": "Total",
-    "proceedToCheckout": "Proceed to Checkout"
+    "proceedToCheckout": "Proceed to Checkout",
+    "addedToCart": "Added to cart",
+    "addedToCartWithQuantity": "Added {{quantity}}x {{productName}} to cart",
+    "viewCart": "View Cart",
+    "undo": "Undo",
+    "continueShopping": "Continue Shopping",
+    "itemsInCart": "{{count}} item in cart",
+    "itemsInCart_plural": "{{count}} items in cart"
   },
   "whyChooseUs": {
     "title": "Why Choose Diyor Market",
@@ -309,9 +314,25 @@
     "continueToPayment": "Continue to Payment",
     "orderConfirmed": "Order Confirmed!",
     "orderConfirmedMessage": "Your order has been successfully placed and will be delivered soon.",
+    "orderSuccessMessage": "Your order has been created successfully.",
     "orderNumber": "Order Number",
     "redirectMessage": "You will be redirected to the homepage in a few seconds...",
     "backToHome": "Back to Home",
+    "viewOrderDetails": "View Order Details",
+    "processingOrder": "Processing Order...",
+    "nextSteps": "What's Next?",
+    "nextStepsMessage": "You will receive a confirmation email shortly. You can track your order status in your account.",
+    "addressReused": "Using Existing Address",
+    "addressReusedMessage": "We found this address in your saved addresses and will use it for this order.",
+    "errors": {
+      "orderFailed": "Order Failed",
+      "generic": "An unexpected error occurred. Please try again.",
+      "deliveryZone": "Delivery Zone Error",
+      "addressNotFound": "Could not find your address. Please try again.",
+      "addressLookupFailed": "Unable to retrieve your addresses. Please try again.",
+      "addressError": "Address Error",
+      "addressRequired": "A delivery address is required to place an order. Please select or enter an address."
+    },
     "emptyCart": "Your Cart is Empty",
     "emptyCartMessage": "You need to add items to your cart before proceeding to checkout.",
     "startShopping": "Start Shopping",
@@ -326,7 +347,10 @@
       "mobileLabel": "Mobile",
       "international": "International Cards",
       "cash": "Cash on Delivery",
-      "cashDescription": "Pay when delivered"
+      "cashDescription": "Pay when delivered",
+      "cashTitle": "Cash on Delivery - Pay when your order arrives",
+      "cashRiderMessage": "Our rider will collect the cash payment when delivering your order. Please have the exact amount ready.",
+      "cashNote": "Note: The rider will bring the cash to the admin after delivery is complete."
     }
   },
   "map": {
@@ -590,5 +614,8 @@
     "markAllRead": "Mark all as read",
     "noNotifications": "No notifications",
     "justNow": "Just now"
+  },
+  "admin": {
+    "cashOnDeliveryMessage": "Cash on Delivery - Rider will collect payment"
   }
 }

@@ -139,4 +139,26 @@
   html:not([dir="rtl"]) .rtl-only {
     display: none;
   }
+  
+  /* Safe area support for notched devices (iPhone X and newer) */
+  .pb-safe {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Smooth scroll behavior for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent content jump on mobile keyboards */
+@media (max-width: 768px) {
+  body {
+    position: relative;
+    min-height: 100vh;
+  }
 }

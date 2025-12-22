@@ -56,6 +56,8 @@ export interface Address {
   state: string;
   postalCode: string;
   country: string;
+  latitude?: number | string;
+  longitude?: number | string;
   isDefault: boolean;
 }
 

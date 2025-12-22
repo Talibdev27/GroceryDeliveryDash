@@ -51,14 +51,13 @@ export default function Products() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
   
-  // API data with pagination
+  // API data with pagination (price range filter removed per user request)
   const { data: productsData, loading: productsLoading, error: productsError } = useProductsPaginated({
     page: currentPage,
     limit: itemsPerPage,
     category: selectedCategory || undefined,
     search: debouncedSearch || undefined,
-    minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
-    maxPrice: priceRange[1] < 1000 ? priceRange[1] : undefined,
+    // Price range filter removed - not needed
     sort: sortOption !== "popularity" ? sortOption : undefined
   });
   const { data: categoriesData, loading: categoriesLoading } = useCategories();
@@ -91,11 +90,7 @@ export default function Products() {
     return map;
   }, [categories, currentLanguage]);
 
-  // Update price range when categories load (use a reasonable default)
-  useEffect(() => {
-    // Set a reasonable default max price
-    setPriceRange([0, 1000]);
-  }, []);
+  // Price range filter removed - no longer needed
   
   // Parse query params (categoryId numeric or category name)
   useEffect(() => {
@@ -148,15 +143,14 @@ export default function Products() {
     }
     if (currentPage > 1) params.set("page", currentPage.toString());
     if (debouncedSearch) params.set("search", debouncedSearch);
-    if (priceRange[0] > 0) params.set("minPrice", priceRange[0].toString());
-    if (priceRange[1] < 1000) params.set("maxPrice", priceRange[1].toString());
+    // Price range params removed
     if (sortOption !== "popularity") params.set("sort", sortOption);
     
     const newUrl = `/products${params.toString() ? `?${params.toString()}` : ''}`;
     if (location !== newUrl) {
       setLocation(newUrl, { replace: true });
     }
-  }, [selectedCategory, currentPage, debouncedSearch, priceRange, sortOption, categories, currentLanguage]);
+  }, [selectedCategory, currentPage, debouncedSearch, sortOption, categories, currentLanguage]);
   
   // Products are already filtered and sorted by the server
   const sortedProducts = products;
@@ -239,20 +233,20 @@ export default function Products() {
                 <h3 className="font-medium text-lg">{t("products.filters")}</h3>
                 <Button variant="ghost" size="sm" className="text-primary" onClick={() => {
                   setSearchQuery("");
-                  setPriceRange([0, 50]);
+                  setDebouncedSearch("");
+                  setPriceRange([0, 1000]); // Reset to full range
                   setSelectedCategory(null);
-                  // Update URL to remove categoryId param, preserve other params
-                  const params = new URLSearchParams(location.split("?")[1] || "");
-                  params.delete("categoryId");
-                  const newQuery = params.toString();
-                  setLocation(newQuery ? `/products?${newQuery}` : "/products");
+                  setSortOption("popularity");
+                  setCurrentPage(1);
+                  // Clear all URL params
+                  setLocation("/products");
                 }}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   {t("products.resetFilters")}
                 </Button>
               </div>
               
-              <Accordion type="multiple" defaultValue={["categories", "price", "dietary"]}>
+              <Accordion type="multiple" defaultValue={["categories", "dietary"]}>
                 <AccordionItem value="categories">
                   <AccordionTrigger>{t("products.filterCategories")}</AccordionTrigger>
                   <AccordionContent>
@@ -289,27 +283,6 @@ export default function Products() {
                           </label>
                         </div>
                       ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="price">
-                  <AccordionTrigger>{t("products.filterPrice")}</AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Slider
-                        value={priceRange}
-                        max={1000}
-                        step={0.5}
-                        onValueChange={(value) => {
-                          setPriceRange([value[0], value[1]]);
-                          setCurrentPage(1); // Reset to first page when price changes
-                        }}
-                      />
-                      <div className="flex items-center justify-between">
-                        <span>{formatPrice(priceRange[0].toString())}</span>
-                        <span>{formatPrice(priceRange[1].toString())}</span>
-                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>

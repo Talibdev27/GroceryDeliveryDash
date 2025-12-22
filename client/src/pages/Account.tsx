@@ -23,6 +23,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/hooks/use-theme";
 import { userApi, orderApi } from "@/hooks/use-api";
 import { formatCurrency } from "@/lib/utils";
 import AddressManager from "@/components/account/AddressManager";
@@ -73,6 +74,7 @@ export default function Account() {
   const [, params] = useRoute("/account/:section?");
   const [activeTab, setActiveTab] = useState(params?.section || "profile");
   const { user, logout, loading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [, setLocation] = useLocation();
   
   // State for real data
@@ -852,7 +854,11 @@ export default function Account() {
                               {t("account.darkModeDescription")}
                             </p>
                           </Label>
-                          <Switch id="darkMode" />
+                          <Switch 
+                            id="darkMode" 
+                            checked={theme === "dark"} 
+                            onCheckedChange={toggleTheme}
+                          />
                         </div>
                       </div>
                       

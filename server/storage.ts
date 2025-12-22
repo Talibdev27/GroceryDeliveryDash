@@ -31,7 +31,7 @@ import {
   type UserRole,
   type Permission
 } from "@shared/schema";
-import { eq, and, sql, desc, like, gte, lte } from "drizzle-orm";
+import { eq, and, sql, desc, like, gte, lte, inArray } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 // Load environment variables
@@ -402,8 +402,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOrder(orderData: InsertOrder): Promise<Order> {
-    const result = await db.insert(orders).values(orderData).returning();
-    return result[0];
+    try {
+      console.log("💾 Creating order with data:", JSON.stringify(orderData, null, 2));
+      const result = await db.insert(orders).values(orderData).returning();
+      console.log("💾 Order created successfully:", result[0]?.id);
+      return result[0];
+    } catch (error) {
+      console.error("💾 Database error creating order:", error);
+      console.error("💾 Order data that failed:", JSON.stringify(orderData, null, 2));
+      if (error instanceof Error) {
+        console.error("💾 Error message:", error.message);
+        console.error("💾 Error stack:", error.stack);
+      }
+      throw error;
+    }
   }
 
   async createOrderItems(orderId: number, items: Array<{productId: number, quantity: number, price: number}>): Promise<void> {
@@ -1133,10 +1145,20 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async getUsersByRole(roles: string[]) {
-    return await db.select()
-      .from(users)
-      .where(sql`${users.role} = ANY(${roles})`);
+  async getUsersByRole(roles: string[]): Promise<User[]> {
+    try {
+      if (!roles || roles.length === 0) {
+        return [];
+      }
+      
+      // Use Drizzle's inArray for proper SQL generation
+      return await db.select()
+        .from(users)
+        .where(inArray(users.role, roles));
+    } catch (error) {
+      console.error(`❌ Error getting users by role "${roles.join(', ')}":`, error);
+      return []; // Return empty array instead of crashing
+    }
   }
 }
 

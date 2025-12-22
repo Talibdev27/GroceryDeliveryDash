@@ -998,15 +998,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/orders", authenticateUser, async (req: Request, res: Response) => {
     try {
+      console.log("=== ORDER CREATION START ===");
+      console.log("User ID:", req.session.userId);
+      console.log("Request body:", JSON.stringify(req.body, null, 2));
+      
       const { items, addressId, paymentMethod } = req.body;
       
       if (!items || items.length === 0) {
+        console.log("❌ Invalid items:", items);
         return res.status(400).json({ error: "Order must contain at least one item" });
       }
       
       if (!addressId || !paymentMethod) {
+        console.log("❌ Missing required fields:", { addressId, paymentMethod });
         return res.status(400).json({ error: "Address and payment method are required" });
       }
+      
+      console.log("✅ Validation passed");
       
       // Validate that the address belongs to the user (security)
       const address = await storage.getAddress(addressId);
@@ -1046,6 +1054,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tax = 0; // No tax for now
       const total = subtotal + deliveryFee + tax;
 
+      // Calculate estimated delivery time (30 minutes from now for ASAP, or based on selected time)
+      const estimatedDelivery = new Date();
+      estimatedDelivery.setMinutes(estimatedDelivery.getMinutes() + 30); // Default: 30 minutes
+      console.log("✅ Estimated delivery:", estimatedDelivery.toISOString());
+
+      console.log("📦 Creating order in database...");
+      console.log("📦 Order data:", {
+        userId: req.session.userId!,
+        status: "pending",
+        total: total.toString(),
+        subtotal: subtotal.toString(),
+        tax: tax.toString(),
+        deliveryFee: deliveryFee.toString(),
+        discount: "0",
+        addressId,
+        paymentMethod,
+        paymentStatus: "pending",
+        estimatedDelivery: estimatedDelivery,
+      });
+      
       const order = await storage.createOrder({
         userId: req.session.userId!,
         status: "pending",
@@ -1057,9 +1085,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         addressId,
         paymentMethod,
         paymentStatus: "pending",
+        estimatedDelivery: estimatedDelivery, // Date object - Drizzle will handle conversion
       });
 
-      console.log("🛒 Order created successfully:", order.id);
+      console.log("✅ Order created successfully:", order.id);
 
       // Save order items to database
       await storage.createOrderItems(order.id, validatedItems);
@@ -1070,32 +1099,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.decrementProductStock(item.productId, item.quantity);
       }
 
-      // Get user info for notification
-      const user = await storage.getUser(req.session.userId!);
-      
-      // Get Socket.io instance and emit notification
-      const io = app.get("io");
-      const connectedUsers = app.get("connectedUsers");
-      
-      // Notify all admins and super_admins
-      const admins = await storage.getUsersByRole(["admin", "super_admin"]);
-      for (const admin of admins) {
-        const socketId = connectedUsers.get(admin.id);
-        if (socketId) {
-          io.to(socketId).emit("new-order", {
-            orderId: order.id,
-            orderNumber: order.id,
-            customerName: user?.firstName || user?.username || "Customer",
-            total: order.total,
-            createdAt: order.createdAt
-          });
-        }
-      }
-
+      // Send response first (non-blocking)
       res.status(201).json({ order });
+      console.log("=== ORDER CREATION SUCCESS ===");
+
+      // Try to send notifications (non-blocking - don't fail order if this fails)
+      setImmediate(async () => {
+        try {
+          console.log("📢 Attempting to send admin notifications...");
+          const io = app.get("io");
+          const connectedUsers = app.get("connectedUsers");
+          
+          if (!io) {
+            console.warn("⚠️ Socket.io not initialized, skipping notifications");
+            return;
+          }
+          
+          if (!connectedUsers) {
+            console.warn("⚠️ Connected users map not initialized, skipping notifications");
+            return;
+          }
+          
+          // Get user info for notification
+          const user = await storage.getUser(req.session.userId!);
+          
+          // Notify all admins and super_admins
+          const admins = await storage.getUsersByRole(["admin", "super_admin"]);
+          
+          if (!admins || admins.length === 0) {
+            console.log("ℹ️ No admins found to notify");
+            return;
+          }
+          
+          let notifiedCount = 0;
+          for (const admin of admins) {
+            try {
+              const socketId = connectedUsers.get(admin.id);
+              if (socketId) {
+                io.to(socketId).emit("new-order", {
+                  orderId: order.id,
+                  orderNumber: order.id,
+                  customerName: user?.firstName || user?.username || "Customer",
+                  total: order.total,
+                  createdAt: order.createdAt
+                });
+                notifiedCount++;
+              }
+            } catch (adminError) {
+              console.warn(`⚠️ Failed to notify admin ${admin.id}:`, adminError);
+            }
+          }
+          
+          if (notifiedCount > 0) {
+            console.log(`✅ Notified ${notifiedCount} admin(s) about new order`);
+          } else {
+            console.log("ℹ️ No admins were connected to receive notifications");
+          }
+        } catch (notificationError) {
+          // Log but don't fail the order - notifications are non-critical
+          console.warn("⚠️ Failed to send admin notifications (order still created successfully):", notificationError);
+        }
+      });
     } catch (error) {
       console.error("Create order error:", error);
-      res.status(500).json({ error: "Failed to create order" });
+      console.error("Error details:", error instanceof Error ? error.message : String(error));
+      console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
+      res.status(500).json({ 
+        error: "Failed to create order",
+        details: error instanceof Error ? error.message : String(error)
+      });
     }
   });
 
