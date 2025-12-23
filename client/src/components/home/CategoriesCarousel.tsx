@@ -40,9 +40,9 @@ export default function CategoriesCarousel() {
   };
 
   return (
-    <section className="py-8 md:py-12 bg-white">
+    <section className="py-8 md:py-12 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl md:text-3xl font-heading font-bold mb-6">
+        <h2 className="text-2xl md:text-3xl font-heading font-bold mb-6 text-gray-900 dark:text-gray-100">
           {t("categories.title")}
         </h2>
         
@@ -55,8 +55,8 @@ export default function CategoriesCarousel() {
               {loading ? (
                 Array.from({ length: 8 }).map((_, index) => (
                   <div key={index} className="flex flex-col items-center">
-                    <div className="w-24 h-24 bg-neutral-200 rounded-full animate-pulse mb-2"></div>
-                    <div className="w-16 h-4 bg-neutral-200 animate-pulse"></div>
+                    <div className="w-24 h-24 bg-neutral-200 dark:bg-gray-700 rounded-full animate-pulse mb-2"></div>
+                    <div className="w-16 h-4 bg-neutral-200 dark:bg-gray-700 animate-pulse"></div>
                   </div>
                 ))
               ) : error ? (
@@ -71,14 +71,14 @@ export default function CategoriesCarousel() {
                     className="flex flex-col items-center group"
                   >
                     <div 
-                      className="w-24 h-24 bg-neutral-100 rounded-full overflow-hidden mb-2 group-hover:ring-2 ring-primary transition-all"
+                      className="w-24 h-24 bg-neutral-100 dark:bg-gray-800 rounded-full overflow-hidden mb-2 group-hover:ring-2 ring-primary transition-all"
                       style={{ 
                         backgroundImage: `url('${category.image}')`,
                         backgroundSize: "cover",
                         backgroundPosition: "center"
                       }}
                     ></div>
-                    <span className="text-sm font-medium group-hover:text-primary">{getCategoryName(category)}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-primary">{getCategoryName(category)}</span>
                   </Link>
                 ))
               )}
@@ -89,7 +89,7 @@ export default function CategoriesCarousel() {
           <Button
             variant="secondary"
             size="icon"
-            className="absolute left-0 rtl:left-auto rtl:right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-neutral-600 hover:text-primary focus:outline-none z-10"
+            className="absolute left-0 rtl:left-auto rtl:right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md flex items-center justify-center text-neutral-600 dark:text-gray-400 hover:text-primary focus:outline-none z-10"
             onClick={() => scrollCategories("left")}
           >
             {isRtl ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
@@ -97,7 +97,7 @@ export default function CategoriesCarousel() {
           <Button
             variant="secondary"
             size="icon"
-            className="absolute right-0 rtl:right-auto rtl:left-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-neutral-600 hover:text-primary focus:outline-none z-10"
+            className="absolute right-0 rtl:right-auto rtl:left-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md flex items-center justify-center text-neutral-600 dark:text-gray-400 hover:text-primary focus:outline-none z-10"
             onClick={() => scrollCategories("right")}
           >
             {isRtl ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}

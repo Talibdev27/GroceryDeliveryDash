@@ -39,7 +39,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   const displayUnit = currentLanguage === 'ru' ? (product as any).unitRu || product.unit : currentLanguage === 'uz' ? (product as any).unitUz || product.unit : product.unit;
   
   return (
-    <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden transition-all hover:shadow-md">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-neutral-200 dark:border-gray-700 overflow-hidden transition-all hover:shadow-md">
       <Link href={`/product/${product.id}`} className="block">
         <div className="relative">
           <img 
@@ -59,13 +59,13 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
           )}
         </div>
         <div className="p-4">
-          <h3 className="font-medium">{displayName}</h3>
-          <p className="text-sm text-neutral-500 mb-2">{displayUnit}</p>
+          <h3 className="font-medium text-gray-900 dark:text-gray-100">{displayName}</h3>
+          <p className="text-sm text-neutral-500 dark:text-gray-400 mb-2">{displayUnit}</p>
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="font-bold">{formatPrice(displayPrice)}</span>
+              <span className="font-bold text-gray-900 dark:text-gray-100">{formatPrice(displayPrice)}</span>
               {originalPrice && (
-                <span className="text-xs text-neutral-400 line-through">
+                <span className="text-xs text-neutral-400 dark:text-gray-500 line-through">
                   {formatPrice(originalPrice)}
                 </span>
               )}

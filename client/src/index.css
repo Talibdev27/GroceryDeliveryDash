@@ -50,19 +50,20 @@
 }
 
 .dark {
-  --background: 224 71% 4%;
-  --foreground: 213 31% 91%;
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
   
   --muted: 223 47% 11%;
   --muted-foreground: 215.4 16.3% 56.9%;
-  --popover: 224 71% 4%;
-  --popover-foreground: 215 20.2% 65.1%;
-  --card: 224 71% 4%;
-  --card-foreground: 213 31% 91%;
-  --border: 216 34% 17%;
-  --input: 216 34% 17%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+  --card: 222 47% 11%;
+  --card-foreground: 210 40% 98%;
+  --border: 217 33% 17%;
+  --input: 217 33% 17%;
   
-  --primary: 142 76% 36%;
+  /* Primary green - lighter for dark mode (#34D399) */
+  --primary: 160 65% 52%;
   --primary-foreground: 210 40% 98%;
   --secondary: 174 84% 32%;
   --secondary-foreground: 210 40% 98%;
@@ -88,6 +89,8 @@
 @layer base {
   * {
     @apply border-border;
+    /* Smooth theme transition */
+    transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
   }
   
   body {

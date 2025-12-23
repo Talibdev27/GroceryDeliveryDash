@@ -39,6 +39,11 @@ i18n
     
     debug: true,
     
+    // React integration - ensures components re-render on language change
+    react: {
+      useSuspense: false, // Don't use Suspense, we handle loading ourselves
+    },
+    
     // Force reload when language changes
     saveMissing: false,
     missingKeyHandler: false

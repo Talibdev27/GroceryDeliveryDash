@@ -132,7 +132,7 @@ export default function Auth() {
         <meta name="description" content="Login or create an account with Diyor Market" />
       </Helmet>
 
-      <div className="bg-neutral-50 py-8 min-h-screen">
+      <div className="bg-gray-50 dark:bg-gray-900 py-8 min-h-screen">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
@@ -141,10 +141,10 @@ export default function Auth() {
                   <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mr-3">
                     <span className="text-white font-bold text-xl">D</span>
                   </div>
-                  <h1 className="text-2xl font-bold text-neutral-800">Diyor Market</h1>
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Diyor Market</h1>
                 </div>
               </Link>
-              <p className="text-neutral-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 {t("auth.signInDescription")}
               </p>
             </div>
@@ -181,7 +181,7 @@ export default function Auth() {
                       <div className="space-y-2">
                         <Label htmlFor="login-username">{t("auth.username")}</Label>
                         <div className="relative">
-                          <User className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                          <User className="absolute left-3 top-3 h-4 w-4 text-neutral-400 dark:text-gray-500" />
                           <Input
                             id="login-username"
                             type="text"
@@ -190,7 +190,7 @@ export default function Auth() {
                             onChange={(e) =>
                               setLoginData({ ...loginData, username: e.target.value })
                             }
-                            className="pl-10"
+                            className="pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                         </div>
@@ -199,7 +199,7 @@ export default function Auth() {
                       <div className="space-y-2">
                         <Label htmlFor="login-password">{t("auth.password")}</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400 dark:text-gray-500" />
                           <Input
                             id="login-password"
                             type={showLoginPassword ? "text" : "password"}
@@ -208,13 +208,13 @@ export default function Auth() {
                             onChange={(e) =>
                               setLoginData({ ...loginData, password: e.target.value })
                             }
-                            className="pl-10"
+                            className="pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                           <button
                             type="button"
                             aria-label="toggle password visibility"
-                            className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600"
+                            className="absolute right-3 top-2.5 text-neutral-400 dark:text-gray-500 hover:text-neutral-600 dark:hover:text-gray-300"
                             onClick={() => setShowLoginPassword((v) => !v)}
                           >
                             {showLoginPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -241,6 +241,7 @@ export default function Auth() {
                             onChange={(e) =>
                               setRegisterData({ ...registerData, firstName: e.target.value })
                             }
+                            className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                         </div>
@@ -254,6 +255,7 @@ export default function Auth() {
                             onChange={(e) =>
                               setRegisterData({ ...registerData, lastName: e.target.value })
                             }
+                            className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                         </div>
@@ -262,7 +264,7 @@ export default function Auth() {
                       <div className="space-y-2">
                         <Label htmlFor="register-username">{t("auth.username")}</Label>
                         <div className="relative">
-                          <User className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                          <User className="absolute left-3 top-3 h-4 w-4 text-neutral-400 dark:text-gray-500" />
                           <Input
                             id="register-username"
                             type="text"
@@ -271,7 +273,7 @@ export default function Auth() {
                             onChange={(e) =>
                               setRegisterData({ ...registerData, username: e.target.value })
                             }
-                            className="pl-10"
+                            className="pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                         </div>
@@ -280,7 +282,7 @@ export default function Auth() {
                       <div className="space-y-2">
                         <Label htmlFor="register-email">{t("auth.email")}</Label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-neutral-400 dark:text-gray-500" />
                           <Input
                             id="register-email"
                             type="email"
@@ -289,7 +291,7 @@ export default function Auth() {
                             onChange={(e) =>
                               setRegisterData({ ...registerData, email: e.target.value })
                             }
-                            className="pl-10"
+                            className="pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                         </div>
@@ -298,7 +300,7 @@ export default function Auth() {
                       <div className="space-y-2">
                         <Label htmlFor="register-phone">{t("auth.phoneNumber")}</Label>
                         <div className="relative">
-                          <Phone className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                          <Phone className="absolute left-3 top-3 h-4 w-4 text-neutral-400 dark:text-gray-500" />
                           <Input
                             id="register-phone"
                             type="tel"
@@ -307,7 +309,7 @@ export default function Auth() {
                             onChange={(e) =>
                               setRegisterData({ ...registerData, phone: e.target.value })
                             }
-                            className="pl-10"
+                            className="pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                         </div>
@@ -316,7 +318,7 @@ export default function Auth() {
                       <div className="space-y-2">
                         <Label htmlFor="register-password">{t("auth.password")}</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400 dark:text-gray-500" />
                           <Input
                             id="register-password"
                             type={showRegisterPassword ? "text" : "password"}
@@ -325,13 +327,13 @@ export default function Auth() {
                             onChange={(e) =>
                               setRegisterData({ ...registerData, password: e.target.value })
                             }
-                            className="pl-10"
+                            className="pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                           <button
                             type="button"
                             aria-label="toggle password visibility"
-                            className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600"
+                            className="absolute right-3 top-2.5 text-neutral-400 dark:text-gray-500 hover:text-neutral-600 dark:hover:text-gray-300"
                             onClick={() => setShowRegisterPassword((v) => !v)}
                           >
                             {showRegisterPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -342,7 +344,7 @@ export default function Auth() {
                       <div className="space-y-2">
                         <Label htmlFor="register-confirmPassword">{t("auth.confirmPassword")}</Label>
                         <div className="relative">
-                          <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400" />
+                          <Lock className="absolute left-3 top-3 h-4 w-4 text-neutral-400 dark:text-gray-500" />
                           <Input
                             id="register-confirmPassword"
                             type={showRegisterConfirm ? "text" : "password"}
@@ -351,13 +353,13 @@ export default function Auth() {
                             onChange={(e) =>
                               setRegisterData({ ...registerData, confirmPassword: e.target.value })
                             }
-                            className="pl-10"
+                            className="pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             required
                           />
                           <button
                             type="button"
                             aria-label="toggle confirm password visibility"
-                            className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600"
+                            className="absolute right-3 top-2.5 text-neutral-400 dark:text-gray-500 hover:text-neutral-600 dark:hover:text-gray-300"
                             onClick={() => setShowRegisterConfirm((v) => !v)}
                           >
                             {showRegisterConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

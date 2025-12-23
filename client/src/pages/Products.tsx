@@ -166,19 +166,19 @@ export default function Products() {
         <meta name="description" content={t("seo.products.description")} />
       </Helmet>
       
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center text-sm text-neutral-500 space-x-2 rtl:space-x-reverse">
+          <div className="flex items-center text-sm text-neutral-500 dark:text-gray-400 space-x-2 rtl:space-x-reverse">
             <a href="/" className="hover:text-primary">{t("breadcrumb.home")}</a>
             <ChevronRight className="h-4 w-4" />
-            <span className="font-medium text-neutral-800">{t("breadcrumb.products")}</span>
+            <span className="font-medium text-neutral-800 dark:text-gray-200">{t("breadcrumb.products")}</span>
           </div>
         </div>
       </div>
       
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <h1 className="text-2xl md:text-3xl font-heading font-bold mb-4 md:mb-0">
+          <h1 className="text-2xl md:text-3xl font-heading font-bold mb-4 md:mb-0 text-gray-900 dark:text-gray-100">
             {selectedCategory 
               ? (() => {
                   const category = categories.find(cat => cat.id === selectedCategory);

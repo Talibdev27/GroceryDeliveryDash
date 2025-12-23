@@ -19,8 +19,7 @@ import Footer from "@/components/layout/Footer";
 import MobileMenu from "@/components/layout/MobileMenu";
 import ShoppingCart from "@/components/shop/ShoppingCart";
 import { useLanguage } from "@/hooks/use-language";
-import { AuthProvider } from "@/context/AuthContext";
-import { CartProvider } from "@/context/CartContext";
+import { useTheme } from "@/hooks/use-theme";
 import { useCart } from "@/hooks/use-cart";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
@@ -104,7 +103,8 @@ function CartToastListener() {
 }
 
 function App() {
-  const { currentLanguage } = useLanguage();
+  const { currentLanguage, languageVersion } = useLanguage();
+  const { theme, themeVersion } = useTheme();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -121,24 +121,27 @@ function App() {
     // Theme class is managed by ThemeContext, don't override it here
   }, [currentLanguage]);
 
+  // Log when language or theme version changes to verify re-renders
+  useEffect(() => {
+    console.log("App: Language version changed to", languageVersion, "Theme version changed to", themeVersion);
+  }, [languageVersion, themeVersion]);
+
   return (
-    <AuthProvider>
-      <CartProvider>
-        <CartToastListener />
-        <TooltipProvider>
-          <div className="flex flex-col min-h-screen bg-neutral-100 text-neutral-700 font-sans">
-            <Toaster />
-            <Header mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
-            <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
-            <ShoppingCart />
-            <main className="flex-grow">
-              <Router />
-            </main>
-            <Footer />
-          </div>
-        </TooltipProvider>
-      </CartProvider>
-    </AuthProvider>
+    <>
+      <CartToastListener />
+      <TooltipProvider>
+        <div className="flex flex-col min-h-screen bg-neutral-100 dark:bg-gray-900 text-neutral-700 dark:text-gray-100 font-sans">
+          <Toaster />
+          <Header mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+          <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+          <ShoppingCart />
+          <main className="flex-grow">
+            <Router />
+          </main>
+          <Footer />
+        </div>
+      </TooltipProvider>
+    </>
   );
 }
 

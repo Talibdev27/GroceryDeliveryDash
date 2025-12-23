@@ -14,6 +14,7 @@ interface LanguageContextType {
     dir: "ltr" | "rtl";
     textAlign: string;
   };
+  languageVersion: number; // Force re-render when language changes
 }
 
 export const LanguageContext = createContext<LanguageContextType>({
@@ -25,6 +26,7 @@ export const LanguageContext = createContext<LanguageContextType>({
     dir: "ltr",
     textAlign: "left",
   },
+  languageVersion: 0,
 });
 
 interface LanguageProviderProps {
@@ -51,7 +53,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   };
 
   const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>(detectInitialLanguage());
-  const [forceUpdate, setForceUpdate] = useState(0);
+  const [languageVersion, setLanguageVersion] = useState(0);
 
   // Initialize i18n with the detected language
   useEffect(() => {
@@ -87,12 +89,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       const testTranslation = i18n.t('hero.title');
       console.log("i18n: Test translation for hero.title:", testTranslation);
       
-      // Force a re-render to ensure all components update
-      setForceUpdate(prev => prev + 1);
-      
-      // Force a re-render of all components
-      console.log("LanguageContext: Forcing component re-render");
-      setForceUpdate(prev => prev + 1);
+      // Force a re-render by updating languageVersion
+      setLanguageVersion(prev => prev + 1);
+      console.log("LanguageContext: Language version updated, forcing component re-render");
     }).catch((error) => {
       console.error("i18n: Error changing language", error);
     });
@@ -121,11 +120,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         const testTranslation = i18n.t('hero.title');
         console.log("LanguageContext: Test translation:", testTranslation);
         
-        // Force a re-render - React will handle the language change reactively
-        setForceUpdate(prev => prev + 1);
-        
-        // REMOVED: window.location.reload() - let React handle the language change
-        console.log("LanguageContext: Language change complete, React will handle re-rendering");
+        // Force a re-render by updating languageVersion
+        setLanguageVersion(prev => prev + 1);
+        console.log("LanguageContext: Language change complete, forcing component re-render");
       }).catch((error) => {
         console.error("LanguageContext: Error changing language", error);
       });
@@ -140,6 +137,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
         currentLanguage,
         setLanguage,
         directions,
+        languageVersion, // This will change when language changes, forcing re-renders
       }}
     >
       {children}

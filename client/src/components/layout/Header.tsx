@@ -76,10 +76,10 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md">
+    <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-md">
       <div className="container mx-auto">
         {/* Top bar with language and account */}
-        <div className="flex items-center justify-between py-2 border-b border-neutral-200">
+        <div className="flex items-center justify-between py-2 border-b border-neutral-200 dark:border-gray-700">
           <div className="flex items-center space-x-4 rtl:space-x-reverse text-sm">
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center space-x-1 rtl:space-x-reverse">
@@ -92,10 +92,13 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
                 <ChevronDown className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={() => {
-                  console.log("Header: English language clicked");
-                  setLanguage("en");
-                }} className="cursor-pointer">
+                <DropdownMenuItem 
+                  onSelect={() => {
+                    console.log("🌐 Language selected: English");
+                    setLanguage("en");
+                  }} 
+                  className="cursor-pointer"
+                >
                   <img 
                     src={getLanguageFlag("en")}
                     alt="English"
@@ -103,10 +106,13 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
                   />
                   <span>English</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  console.log("Header: Russian language clicked");
-                  setLanguage("ru");
-                }} className="cursor-pointer">
+                <DropdownMenuItem 
+                  onSelect={() => {
+                    console.log("🌐 Language selected: Russian");
+                    setLanguage("ru");
+                  }} 
+                  className="cursor-pointer"
+                >
                   <img 
                     src={getLanguageFlag("ru")}
                     alt="Russian"
@@ -114,10 +120,13 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
                   />
                   <span>Russian</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  console.log("Header: Uzbek language clicked");
-                  setLanguage("uz");
-                }} className="cursor-pointer">
+                <DropdownMenuItem 
+                  onSelect={() => {
+                    console.log("🌐 Language selected: Uzbek");
+                    setLanguage("uz");
+                  }} 
+                  className="cursor-pointer"
+                >
                   <img 
                     src={getLanguageFlag("uz")}
                     alt="Uzbek"
@@ -130,7 +139,10 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleTheme}
+              onClick={() => {
+                console.log("🎨 Theme toggle clicked, current theme:", theme);
+                toggleTheme();
+              }}
               className="h-8 w-8"
               aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             >
@@ -191,9 +203,9 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
               <Input
                 type="text"
                 placeholder={t("header.searchPlaceholder")}
-                className="w-full py-2 px-4 bg-neutral-100 rounded-full border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full py-2 px-4 bg-neutral-100 dark:bg-gray-700 rounded-full border border-neutral-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
-              <Button variant="ghost" className="absolute right-0 rtl:right-auto rtl:left-0 top-0 h-full px-3 text-neutral-500 hover:text-primary">
+              <Button variant="ghost" className="absolute right-0 rtl:right-auto rtl:left-0 top-0 h-full px-3 text-neutral-500 dark:text-gray-400 hover:text-primary">
                 <Search className="h-4 w-4" />
               </Button>
             </div>
@@ -201,7 +213,7 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
           
           {/* Right side actions */}
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
-            <Button variant="ghost" className="md:hidden text-neutral-700 hover:text-primary p-2" aria-label="Search" onClick={toggleMobileSearch}>
+            <Button variant="ghost" className="md:hidden text-neutral-700 dark:text-gray-100 hover:text-primary p-2" aria-label="Search" onClick={toggleMobileSearch}>
               <Search className="h-5 w-5" />
             </Button>
             
@@ -214,7 +226,7 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
             
             <Button 
               variant="ghost" 
-              className="md:hidden text-neutral-700 hover:text-primary p-2" 
+              className="md:hidden text-neutral-700 dark:text-gray-100 hover:text-primary p-2" 
               aria-label="Menu" 
               onClick={toggleMobileMenu}
               data-event="click:toggleMobileMenu"
@@ -232,9 +244,6 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
               </Link>
               <Link href="/products?onSale=true" className="font-medium hover:text-primary">
                 {t("nav.deals")}
-              </Link>
-              <Link href="/recipes" className="font-medium hover:text-primary">
-                {t("nav.recipes")}
               </Link>
               {user && user.role === "admin" && (
                 <Link href="/admin" className="font-medium hover:text-primary text-blue-600">
@@ -257,15 +266,15 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
       </div>
       
       {/* Mobile search bar (hidden by default) */}
-      <div className={cn("md:hidden border-t border-neutral-200", { hidden: !mobileSearchVisible })}>
+      <div className={cn("md:hidden border-t border-neutral-200 dark:border-gray-700", { hidden: !mobileSearchVisible })}>
         <div className="p-3">
           <div className="relative">
             <Input
               type="text"
               placeholder={t("header.searchPlaceholder")}
-              className="w-full py-2 px-4 bg-neutral-100 rounded-full border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full py-2 px-4 bg-neutral-100 dark:bg-gray-700 rounded-full border border-neutral-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
-            <Button variant="ghost" className="absolute right-0 rtl:right-auto rtl:left-0 top-0 h-full px-3 text-neutral-500 hover:text-primary">
+            <Button variant="ghost" className="absolute right-0 rtl:right-auto rtl:left-0 top-0 h-full px-3 text-neutral-500 dark:text-gray-400 hover:text-primary">
               <Search className="h-4 w-4" />
             </Button>
           </div>

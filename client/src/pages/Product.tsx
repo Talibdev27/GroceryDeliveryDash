@@ -228,7 +228,7 @@ export default function Product() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Product Image */}
-          <div className="rounded-lg overflow-hidden bg-white border border-neutral-200">
+          <div className="rounded-lg overflow-hidden bg-white dark:bg-gray-800 border border-neutral-200 dark:border-gray-700">
             <img 
               src={product.image} 
               alt={product.name}
@@ -238,27 +238,27 @@ export default function Product() {
           
           {/* Product Details */}
           <div>
-            <div className="bg-white border border-neutral-200 rounded-lg p-6">
+            <div className="bg-white dark:bg-gray-800 border border-neutral-200 dark:border-gray-700 rounded-lg p-6">
               <div className="text-sm text-primary font-medium mb-2">{getCategoryName()}</div>
-              <h1 className="text-2xl md:text-3xl font-heading font-bold mb-2">{getName()}</h1>
+              <h1 className="text-2xl md:text-3xl font-heading font-bold mb-2 text-gray-900 dark:text-gray-100">{getName()}</h1>
               
               <div className="flex items-center mb-4">
                 <div className="flex items-center">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
-                      className={`h-5 w-5 ${star <= 4 ? "text-yellow-400 fill-yellow-400" : "text-neutral-300"}`}
+                      className={`h-5 w-5 ${star <= 4 ? "text-yellow-400 fill-yellow-400" : "text-neutral-300 dark:text-gray-600"}`}
                     />
                   ))}
                 </div>
-                <span className="ml-2 text-sm text-neutral-600">(24 {t("product.reviews")})</span>
+                <span className="ml-2 text-sm text-neutral-600 dark:text-gray-400">(24 {t("product.reviews")})</span>
               </div>
               
-              <div className="text-2xl font-bold mb-4">
+              <div className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
                 {product.sale && product.salePrice ? (
                   <div className="flex items-center space-x-2">
                     <span>{formatCurrency(parseFloat(product.salePrice))}</span>
-                    <span className="text-lg text-neutral-400 line-through">
+                    <span className="text-lg text-neutral-400 dark:text-gray-500 line-through">
                       {formatCurrency(parseFloat(product.price))}
                     </span>
                   </div>
@@ -267,7 +267,7 @@ export default function Product() {
                 )}
               </div>
               
-              <p className="text-neutral-600 mb-6">
+              <p className="text-neutral-600 dark:text-gray-400 mb-6">
                 {getDescription() || t("product.defaultDescription")}
               </p>
               
