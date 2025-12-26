@@ -228,9 +228,9 @@ export default function Products() {
         
         <div className="flex flex-col md:flex-row gap-6">
           <div className={`w-full md:w-64 md:block ${mobileFiltersVisible ? "block" : "hidden"}`}>
-            <div className="bg-white p-4 rounded-lg border border-neutral-200">
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-neutral-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium text-lg">{t("products.filters")}</h3>
+                <h3 className="font-medium text-lg text-gray-900 dark:text-gray-100">{t("products.filters")}</h3>
                 <Button variant="ghost" size="sm" className="text-primary" onClick={() => {
                   setSearchQuery("");
                   setDebouncedSearch("");
@@ -277,7 +277,7 @@ export default function Products() {
                           />
                           <label 
                             htmlFor={`category-${category.id}`}
-                            className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100 cursor-pointer"
                           >
                             {getCategoryName(category)}
                           </label>
@@ -295,7 +295,7 @@ export default function Products() {
                         <Checkbox id="organic" />
                         <label 
                           htmlFor="organic"
-                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100 cursor-pointer"
                         >
                           {t("products.dietaryOptions.organic")}
                         </label>
@@ -304,7 +304,7 @@ export default function Products() {
                         <Checkbox id="vegan" />
                         <label 
                           htmlFor="vegan"
-                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100 cursor-pointer"
                         >
                           {t("products.dietaryOptions.vegan")}
                         </label>
@@ -313,7 +313,7 @@ export default function Products() {
                         <Checkbox id="glutenFree" />
                         <label 
                           htmlFor="glutenFree"
-                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100 cursor-pointer"
                         >
                           {t("products.dietaryOptions.glutenFree")}
                         </label>
@@ -322,7 +322,7 @@ export default function Products() {
                         <Checkbox id="dairyFree" />
                         <label 
                           htmlFor="dairyFree"
-                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-900 dark:text-gray-100 cursor-pointer"
                         >
                           {t("products.dietaryOptions.dairyFree")}
                         </label>
