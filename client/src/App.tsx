@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import Products from "@/pages/Products";
 import Product from "@/pages/Product";
+import Cart from "@/pages/Cart";
 import Checkout from "@/pages/Checkout";
 import Orders from "@/pages/Orders";
 import Account from "@/pages/Account";
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/products" component={Products} />
       <Route path="/product/:id" component={Product} />
+      <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/orders" component={Orders} />
       <Route path="/account/:section?" component={Account} />
@@ -48,7 +50,8 @@ function Router() {
 function CartToastListener() {
   const { toast } = useToast();
   const { t } = useTranslation();
-  const { removeFromCart, openCart } = useCart();
+  const [, setLocation] = useLocation();
+  const { removeFromCart, closeCart } = useCart();
   
   useEffect(() => {
     const handleCartItemAdded = (e: Event) => {
@@ -83,7 +86,10 @@ function CartToastListener() {
             </Button>
             <Button 
               size="sm"
-              onClick={() => openCart()}
+              onClick={() => {
+                closeCart();
+                setLocation("/cart");
+              }}
             >
               {t("cart.viewCart") || "View Cart"}
             </Button>
@@ -95,7 +101,7 @@ function CartToastListener() {
     
     window.addEventListener('cart:item-added', handleCartItemAdded as EventListener);
     return () => window.removeEventListener('cart:item-added', handleCartItemAdded as EventListener);
-  }, [toast, t, removeFromCart, openCart]);
+  }, [toast, t, removeFromCart, closeCart, setLocation]);
   
   return null;
 }

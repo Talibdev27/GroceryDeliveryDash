@@ -23,17 +23,10 @@ export default function ShoppingCart() {
     total,
   } = useCart();
 
-  const handleCheckout = (e: React.MouseEvent) => {
+  const handleViewCart = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!user) {
-      // Redirect to auth page with return URL
-      setLocation("/auth?returnUrl=/checkout");
-      closeCart();
-    } else {
-      // User is authenticated, proceed to checkout
-      setLocation("/checkout");
-      closeCart();
-    }
+    closeCart();
+    setLocation("/cart");
   };
 
   if (!isCartOpen) return null;
@@ -145,10 +138,10 @@ export default function ShoppingCart() {
               </div>
               
               <Button
-                onClick={handleCheckout}
+                onClick={handleViewCart}
                 className="w-full bg-accent text-white font-semibold py-3 rounded-lg hover:bg-accent/90 transition-colors"
               >
-                {t("cart.proceedToCheckout")}
+                {t("cart.viewCart") || "View Cart"}
               </Button>
             </div>
           )}
