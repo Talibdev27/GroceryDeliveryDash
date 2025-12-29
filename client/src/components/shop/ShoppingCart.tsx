@@ -23,8 +23,6 @@ export default function ShoppingCart() {
     total,
   } = useCart();
 
-  console.log("ShoppingCart: isCartOpen =", isCartOpen, "cartItems.length =", cartItems.length);
-
   const handleCheckout = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!user) {
@@ -43,15 +41,15 @@ export default function ShoppingCart() {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={closeCart}>
       <div 
-        className="fixed top-0 right-0 rtl:right-auto rtl:left-0 h-full w-full max-w-md bg-white shadow-lg transform transition-transform duration-300 translate-x-0" 
+        className="fixed top-0 right-0 rtl:right-auto rtl:left-0 h-full w-full max-w-md bg-white dark:bg-gray-900 shadow-lg transform transition-transform duration-300 translate-x-0" 
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col h-full">
-          <div className="p-4 border-b border-neutral-200 flex justify-between items-center">
-            <h2 className="font-heading font-bold text-lg">
-              {t("cart.yourCart")} <span className="text-neutral-500">({cartItems.length} {t("cart.items")})</span>
+          <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 flex justify-between items-center">
+            <h2 className="font-heading font-bold text-lg dark:text-neutral-100">
+              {t("cart.yourCart")} <span className="text-neutral-500 dark:text-neutral-400 font-medium">({cartItems.length} {t("cart.items")})</span>
             </h2>
-            <Button variant="ghost" size="icon" onClick={closeCart} className="text-neutral-500">
+            <Button variant="ghost" size="icon" onClick={closeCart} className="text-neutral-500 dark:text-neutral-400">
               <X className="h-5 w-5" />
             </Button>
           </div>
@@ -61,25 +59,25 @@ export default function ShoppingCart() {
               <>
                 {/* Cart items */}
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex items-center py-4 border-b border-neutral-200">
+                  <div key={item.id} className="flex items-center py-4 border-b border-neutral-200 dark:border-neutral-700">
                     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-md" />
                     <div className="flex-grow mx-4">
-                      <h4 className="font-medium">{item.name}</h4>
-                      <p className="text-sm text-neutral-500">{item.unit}</p>
+                      <h4 className="font-semibold text-base dark:text-neutral-100">{item.name}</h4>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-300 font-medium">{item.unit}</p>
                       <div className="flex items-center mt-1">
                         <Button 
                           variant="outline" 
                           size="icon" 
-                          className="h-6 w-6 p-0" 
+                          className="h-6 w-6 p-0 dark:border-neutral-600 dark:text-neutral-200" 
                           onClick={() => decrementQuantity(item.id)}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
-                        <span className="mx-2 w-6 text-center">{item.quantity}</span>
+                        <span className="mx-2 w-6 text-center font-semibold dark:text-neutral-100">{item.quantity}</span>
                         <Button 
                           variant="outline" 
                           size="icon" 
-                          className="h-6 w-6 p-0" 
+                          className="h-6 w-6 p-0 dark:border-neutral-600 dark:text-neutral-200" 
                           onClick={() => incrementQuantity(item.id)}
                         >
                           <Plus className="h-3 w-3" />
@@ -87,11 +85,11 @@ export default function ShoppingCart() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-medium">
+                      <div className="font-semibold dark:text-neutral-100">
                         {item.sale && item.salePrice ? (
                           <div className="flex flex-col">
                             <span>{formatPrice(item.salePrice)}</span>
-                            <span className="text-xs text-neutral-400 line-through">
+                            <span className="text-xs text-neutral-400 dark:text-neutral-500 line-through font-normal">
                               {formatPrice(item.price)}
                             </span>
                           </div>
@@ -102,7 +100,7 @@ export default function ShoppingCart() {
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="text-neutral-400 hover:text-destructive mt-2 h-8 w-8" 
+                        className="text-neutral-400 dark:text-neutral-500 hover:text-destructive dark:hover:text-destructive mt-2 h-8 w-8" 
                         onClick={() => removeFromCart(item.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -113,14 +111,15 @@ export default function ShoppingCart() {
               </>
             ) : (
               <div className="flex flex-col items-center justify-center h-64">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-neutral-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-neutral-300 dark:text-neutral-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <h3 className="font-medium text-lg mb-2">{t("cart.emptyCart")}</h3>
-                <p className="text-neutral-500 text-center mb-4">{t("cart.emptyCartMessage")}</p>
+                <h3 className="font-semibold text-lg mb-2 dark:text-neutral-100">{t("cart.emptyCart")}</h3>
+                <p className="text-neutral-600 dark:text-neutral-300 text-center mb-4 font-medium">{t("cart.emptyCartMessage")}</p>
                 <Button
                   variant="outline"
                   onClick={closeCart}
+                  className="dark:border-neutral-600 dark:text-neutral-100"
                 >
                   {t("cart.startShopping")}
                 </Button>
@@ -129,25 +128,25 @@ export default function ShoppingCart() {
           </div>
           
           {cartItems.length > 0 && (
-            <div className="p-4 border-t border-neutral-200">
+            <div className="p-4 border-t border-neutral-200 dark:border-neutral-700">
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">{t("cart.subtotal")}</span>
-                  <span className="font-medium">{formatPrice(subtotal)}</span>
+                  <span className="text-neutral-600 dark:text-neutral-300 font-semibold">{t("cart.subtotal")}</span>
+                  <span className="font-semibold dark:text-neutral-100">{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">{t("cart.deliveryFee")}</span>
-                  <span className="font-medium">{formatPrice(deliveryFee)}</span>
+                  <span className="text-neutral-600 dark:text-neutral-300 font-semibold">{t("cart.deliveryFee")}</span>
+                  <span className="font-semibold dark:text-neutral-100">{formatPrice(deliveryFee)}</span>
                 </div>
-                <div className="flex justify-between border-t border-neutral-200 pt-2 mt-2">
-                  <span className="font-medium">{t("cart.total")}</span>
-                  <span className="font-bold text-lg">{formatPrice(total)}</span>
+                <div className="flex justify-between border-t border-neutral-200 dark:border-neutral-700 pt-2 mt-2">
+                  <span className="font-bold text-base dark:text-neutral-100">{t("cart.total")}</span>
+                  <span className="font-bold text-lg dark:text-neutral-100">{formatPrice(total)}</span>
                 </div>
               </div>
               
               <Button
                 onClick={handleCheckout}
-                className="w-full bg-accent text-white font-medium py-3 rounded-lg hover:bg-accent/90 transition-colors"
+                className="w-full bg-accent text-white font-semibold py-3 rounded-lg hover:bg-accent/90 transition-colors"
               >
                 {t("cart.proceedToCheckout")}
               </Button>
