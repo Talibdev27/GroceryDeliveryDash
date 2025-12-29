@@ -6,11 +6,6 @@ import en from "@/data/locales/en.json";
 import ru from "@/data/locales/ru.json";
 import uz from "@/data/locales/uz.json";
 
-console.log("i18n: Loading translations...");
-console.log("i18n: English hero.title:", en.hero.title);
-console.log("i18n: Russian hero.title:", ru.hero.title);
-console.log("i18n: Uzbek hero.title:", uz.hero.title);
-
 // Get initial language from localStorage
 const getInitialLanguage = () => {
   const savedLanguage = localStorage.getItem("language");
@@ -37,7 +32,7 @@ i18n
       escapeValue: false
     },
     
-    debug: true,
+    debug: false,
     
     // React integration - ensures components re-render on language change
     react: {
@@ -47,17 +42,6 @@ i18n
     // Force reload when language changes
     saveMissing: false,
     missingKeyHandler: false
-  })
-  .then(() => {
-    console.log("i18n: Initialized successfully");
-    console.log("i18n: Current language:", i18n.language);
-    console.log("i18n: Available languages:", i18n.languages);
-    
-    // Test all translations
-    console.log("i18n: Testing translations...");
-    console.log("i18n: English hero.title:", i18n.t('hero.title', { lng: 'en' }));
-    console.log("i18n: Russian hero.title:", i18n.t('hero.title', { lng: 'ru' }));
-    console.log("i18n: Uzbek hero.title:", i18n.t('hero.title', { lng: 'uz' }));
   })
   .catch((error) => {
     console.error("i18n: Initialization error:", error);

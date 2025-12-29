@@ -94,7 +94,6 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
               <DropdownMenuContent align="start">
                 <DropdownMenuItem 
                   onSelect={() => {
-                    console.log("🌐 Language selected: English");
                     setLanguage("en");
                   }} 
                   className="cursor-pointer"
@@ -108,7 +107,6 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onSelect={() => {
-                    console.log("🌐 Language selected: Russian");
                     setLanguage("ru");
                   }} 
                   className="cursor-pointer"
@@ -122,7 +120,6 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onSelect={() => {
-                    console.log("🌐 Language selected: Uzbek");
                     setLanguage("uz");
                   }} 
                   className="cursor-pointer"
@@ -140,7 +137,6 @@ export default function Header({ mobileMenuOpen, setMobileMenuOpen }: HeaderProp
               variant="ghost"
               size="icon"
               onClick={() => {
-                console.log("🎨 Theme toggle clicked, current theme:", theme);
                 toggleTheme();
               }}
               className="h-8 w-8"

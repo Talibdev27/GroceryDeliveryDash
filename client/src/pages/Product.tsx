@@ -116,13 +116,6 @@ export default function Product() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?.id, currentLanguage]);
 
-  // Debug logging
-  console.log("Product page: Product ID from URL:", params?.id);
-  console.log("Product page: Product data from API:", productData);
-  console.log("Product page: Product object:", product);
-  console.log("Product page: Loading state:", isLoading);
-  console.log("Product page: Error state:", error);
-  
   const incrementQuantity = () => {
     setQuantity(prev => prev + 1);
   };
@@ -134,21 +127,11 @@ export default function Product() {
   };
   
   const handleAddToCart = () => {
-    console.log("Product page: Add to cart clicked");
-    console.log("Product page: Product data:", product);
-    console.log("Product page: Quantity:", quantity);
-    
     if (product) {
-      console.log("Product page: Calling addToCart with:", {
-        ...product,
-        quantity: quantity
-      });
       addToCart({
         ...product,
         quantity: quantity
       });
-    } else {
-      console.log("Product page: No product data available");
     }
   };
   

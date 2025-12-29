@@ -18,16 +18,9 @@ export const useApi = <T>(endpoint: string, dependencies: any[] = []) => {
       setError(null);
       
       const url = `${API_BASE}${endpoint}`;
-      console.log(`🌐 API Request: GET ${url}`);
       
       const response = await fetch(url, {
         credentials: 'include', // Include cookies for authentication
-      });
-
-      console.log(`📡 API Response: ${response.status} ${response.statusText}`, {
-        url,
-        ok: response.ok,
-        headers: Object.fromEntries(response.headers.entries())
       });
 
       if (!response.ok) {
@@ -51,7 +44,6 @@ export const useApi = <T>(endpoint: string, dependencies: any[] = []) => {
       }
 
       const result = await response.json();
-      console.log(`✅ API Success:`, { url, dataKeys: Object.keys(result) });
       setData(result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred';

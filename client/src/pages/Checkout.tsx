@@ -171,7 +171,7 @@ const CheckoutPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">{t("checkout.loading") || "Loading..."}</p>
+          <p className="text-gray-600 dark:text-gray-200">{t("checkout.loading") || "Loading..."}</p>
         </div>
       </div>
     );
@@ -652,12 +652,12 @@ const CheckoutPage = () => {
               <Check className="h-10 w-10 text-primary" />
           </div>
             <h1 className="text-3xl font-heading font-bold mb-3">{t("checkout.orderConfirmed")}</h1>
-            <p className="text-neutral-600 text-lg">{t("checkout.orderConfirmedMessage")}</p>
+            <p className="text-neutral-600 dark:text-neutral-200 text-lg">{t("checkout.orderConfirmedMessage")}</p>
           </div>
 
           {/* Order Number */}
           <div className="bg-primary/5 border border-primary/20 p-6 rounded-lg mb-6 text-center">
-            <p className="text-sm text-neutral-600 mb-2">{t("checkout.orderNumber")}</p>
+            <p className="text-sm text-neutral-600 dark:text-neutral-200 mb-2">{t("checkout.orderNumber")}</p>
             <p className="text-2xl font-bold text-primary">#{orderId}</p>
           </div>
 
@@ -681,7 +681,7 @@ const CheckoutPage = () => {
                     )}
                     <div className="flex-1">
                       <p className="font-medium text-sm">{item.product?.name || "Product"}</p>
-                      <p className="text-xs text-neutral-500">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-300">
                         {item.quantity} x {formatCurrency(item.price)}
                       </p>
                     </div>
@@ -695,11 +695,11 @@ const CheckoutPage = () => {
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-600">{t("checkout.subtotal")}</span>
-                <span>{formatCurrency(orderSubtotal)}</span>
+                <span className="text-neutral-600 dark:text-neutral-200">{t("checkout.subtotal")}</span>
+                <span className="dark:text-neutral-100">{formatCurrency(orderSubtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-600">{t("checkout.deliveryFee")}</span>
+                <span className="text-neutral-600 dark:text-neutral-200">{t("checkout.deliveryFee")}</span>
                 <span>{formatCurrency(orderDeliveryFee)}</span>
               </div>
               <Separator className="my-2" />
@@ -714,9 +714,9 @@ const CheckoutPage = () => {
           {orderData?.address && (
             <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-4 mb-6">
               <p className="text-sm font-medium mb-2">{t("checkout.deliveryAddress")}</p>
-              <p className="text-sm text-neutral-600">{orderData.address.address}</p>
+              <p className="text-sm text-neutral-600 dark:text-neutral-200">{orderData.address.address}</p>
               {orderData.address.city && (
-                <p className="text-sm text-neutral-600">{orderData.address.city}, {orderData.address.country}</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-200">{orderData.address.city}, {orderData.address.country}</p>
               )}
             </div>
           )}
@@ -754,7 +754,7 @@ const CheckoutPage = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
           <h1 className="text-2xl font-heading font-bold mb-4">{t("checkout.emptyCart")}</h1>
-          <p className="text-neutral-600 mb-6">{t("checkout.emptyCartMessage")}</p>
+          <p className="text-neutral-600 dark:text-neutral-200 mb-6">{t("checkout.emptyCartMessage")}</p>
           <Link href="/products">
             <Button>
               {t("checkout.startShopping")}
@@ -772,30 +772,30 @@ const CheckoutPage = () => {
         <meta name="description" content={t("seo.checkout.description")} />
       </Helmet>
       
-      <div className="bg-neutral-50 py-8 pb-28 md:pb-8">
+      <div className="bg-neutral-50 dark:bg-gray-900 py-4 md:py-8 pb-28 md:pb-8">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="w-full lg:w-2/3">
-              <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
-                <div className="p-6 border-b border-neutral-200">
-                  <h1 className="text-2xl font-heading font-bold">{t("checkout.title")}</h1>
+          <div className="flex flex-col lg:flex-row gap-4 md:gap-8">
+            <div className="w-full lg:w-2/3 order-2 lg:order-1">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                <div className="p-4 md:p-6 border-b border-neutral-200 dark:border-neutral-700">
+                  <h1 className="text-xl md:text-2xl font-heading font-bold dark:text-neutral-100">{t("checkout.title")}</h1>
                 </div>
                 
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit, onError)} className="p-6 space-y-6">
+                  <form onSubmit={form.handleSubmit(onSubmit, onError)} className="p-4 md:p-6 space-y-4 md:space-y-6">
                     {/* Delivery Zone Banner */}
                     <DeliveryZoneBanner variant="info" className="mb-4" />
                     
                     {/* Address Information */}
                     <div className={paymentStep !== "address" ? "hidden" : ""}>
-                      <h2 className="text-lg font-medium mb-4 flex items-center">
-                        <MapPin className="mr-2 h-5 w-5 text-primary" />
+                      <h2 className="text-base md:text-lg font-medium mb-3 md:mb-4 flex items-center dark:text-neutral-100">
+                        <MapPin className="mr-2 h-4 w-4 md:h-5 md:w-5 text-primary" />
                         {t("checkout.deliveryAddress")}
                       </h2>
                       
                       {/* Address Selection */}
                       {user && (
-                        <div className="mb-6">
+                        <div className="mb-4 md:mb-6">
                           <AddressManager 
                             mode="selection"
                             selectedAddressId={selectedAddressId ?? undefined}
@@ -807,12 +807,12 @@ const CheckoutPage = () => {
                         </div>
                       )}
                       {!user && (
-                        <div className="mb-6 text-sm text-neutral-600">
+                        <div className="mb-4 md:mb-6 text-sm text-neutral-600 dark:text-neutral-200">
                           {t("checkout.guestNotice")}
                         </div>
                       )}
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                         <FormField
                           control={form.control}
                           name="fullName"
@@ -895,13 +895,13 @@ const CheckoutPage = () => {
                         />
                       </div>
                       
-                      <div className="mt-4">
+                      <div className="mt-3 md:mt-4">
                         <FormField
                           control={form.control}
                           name="address"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>{t("checkout.address")}</FormLabel>
+                              <FormLabel className="text-sm md:text-base">{t("checkout.address")}</FormLabel>
                               <FormControl>
                                 <LocationSelector
                                   value={field.value}
@@ -942,7 +942,7 @@ const CheckoutPage = () => {
                         />
                       </div>
                       
-                      <div className="mt-4">
+                      <div className="mt-3 md:mt-4">
                         <FormField
                           control={form.control}
                           name="saveAddress"
@@ -954,7 +954,7 @@ const CheckoutPage = () => {
                                   onCheckedChange={field.onChange}
                                 />
                               </FormControl>
-                              <FormLabel className="text-sm font-normal">
+                              <FormLabel className="text-xs md:text-sm font-normal">
                                 {t("checkout.saveAddressForFuture")}
                               </FormLabel>
                             </FormItem>
@@ -965,8 +965,8 @@ const CheckoutPage = () => {
                     
                     {/* Delivery Options */}
                     <div className={paymentStep !== "delivery" ? "hidden" : ""}>
-                      <h2 className="text-lg font-medium mb-4 flex items-center">
-                        <Truck className="mr-2 h-5 w-5 text-primary" />
+                      <h2 className="text-base md:text-lg font-medium mb-3 md:mb-4 flex items-center dark:text-neutral-100">
+                        <Truck className="mr-2 h-4 w-4 md:h-5 md:w-5 text-primary" />
                         {t("checkout.deliveryOptions")}
                       </h2>
                       
@@ -974,48 +974,48 @@ const CheckoutPage = () => {
                         control={form.control}
                         name="deliveryTime"
                         render={({ field }) => (
-                          <FormItem className="mb-6">
-                            <FormLabel>{t("checkout.deliveryTime")}</FormLabel>
+                          <FormItem className="mb-4 md:mb-6">
+                            <FormLabel className="text-sm md:text-base">{t("checkout.deliveryTime")}</FormLabel>
                             <FormControl>
                               <RadioGroup 
                                 onValueChange={field.onChange} 
                                 defaultValue={field.value}
-                                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4"
                               >
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "asap" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                <div className={`border rounded-lg p-3 md:p-4 cursor-pointer ${field.value === "asap" ? "border-primary bg-primary/5" : "border-neutral-200 dark:border-neutral-700"}`}>
                                   <RadioGroupItem value="asap" id="asap" className="sr-only" />
                                   <label htmlFor="asap" className="flex items-start cursor-pointer">
-                                    <div className="shrink-0 mt-1">
-                                      <div className={`w-5 h-5 rounded-full border ${field.value === "asap" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
-                                        {field.value === "asap" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
+                                    <div className="shrink-0 mt-0.5 md:mt-1">
+                                      <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full border ${field.value === "asap" ? "border-primary" : "border-neutral-300 dark:border-neutral-600"} flex items-center justify-center`}>
+                                        {field.value === "asap" && <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-primary"></div>}
                                       </div>
                                     </div>
-                                    <div className="ml-3">
-                                      <div className="font-medium flex items-center">
-                                        <Timer className="h-4 w-4 mr-1" />
+                                    <div className="ml-2 md:ml-3 flex-1">
+                                      <div className="font-medium text-sm md:text-base flex items-center dark:text-neutral-100">
+                                        <Timer className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                                         {t("checkout.asap")}
                                       </div>
-                                      <div className="text-sm text-neutral-500 mt-1">
+                                      <div className="text-xs md:text-sm text-neutral-500 dark:text-neutral-300 mt-1">
                                         {t("checkout.asapDescription")}
                                       </div>
                                     </div>
                                   </label>
                                 </div>
                                 
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "scheduled" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                <div className={`border rounded-lg p-3 md:p-4 cursor-pointer ${field.value === "scheduled" ? "border-primary bg-primary/5" : "border-neutral-200 dark:border-neutral-700"}`}>
                                   <RadioGroupItem value="scheduled" id="scheduled" className="sr-only" />
                                   <label htmlFor="scheduled" className="flex items-start cursor-pointer">
-                                    <div className="shrink-0 mt-1">
-                                      <div className={`w-5 h-5 rounded-full border ${field.value === "scheduled" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
-                                        {field.value === "scheduled" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
+                                    <div className="shrink-0 mt-0.5 md:mt-1">
+                                      <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full border ${field.value === "scheduled" ? "border-primary" : "border-neutral-300 dark:border-neutral-600"} flex items-center justify-center`}>
+                                        {field.value === "scheduled" && <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-primary"></div>}
                                       </div>
                                     </div>
-                                    <div className="ml-3">
-                                      <div className="font-medium flex items-center">
-                                        <Home className="h-4 w-4 mr-1" />
+                                    <div className="ml-2 md:ml-3 flex-1">
+                                      <div className="font-medium text-sm md:text-base flex items-center">
+                                        <Home className="h-3 w-3 md:h-4 md:w-4 mr-1" />
                                         {t("checkout.scheduled")}
                                       </div>
-                                      <div className="text-sm text-neutral-500 mt-1">
+                                      <div className="text-xs md:text-sm text-neutral-500 dark:text-neutral-300 mt-1">
                                         {t("checkout.scheduledDescription")}
                                       </div>
                                     </div>
@@ -1060,7 +1060,7 @@ const CheckoutPage = () => {
                               <FormLabel className="font-medium block mb-1">
                                 {t("checkout.contactFreeDelivery")}
                               </FormLabel>
-                              <div className="text-sm text-neutral-500">
+                              <div className="text-sm text-neutral-500 dark:text-neutral-300">
                                 {t("checkout.contactFreeDescription")}
                               </div>
                             </div>
@@ -1091,8 +1091,8 @@ const CheckoutPage = () => {
                     
                     {/* Payment Method */}
                     <div className={paymentStep !== "payment" ? "hidden" : ""}>
-                      <h2 className="text-lg font-medium mb-4 flex items-center">
-                        <CreditCard className="mr-2 h-5 w-5 text-primary" />
+                      <h2 className="text-base md:text-lg font-medium mb-3 md:mb-4 flex items-center dark:text-neutral-100">
+                        <CreditCard className="mr-2 h-4 w-4 md:h-5 md:w-5 text-primary" />
                         {t("checkout.paymentMethod")}
                       </h2>
                       
@@ -1108,92 +1108,92 @@ const CheckoutPage = () => {
                                 className="space-y-3"
                               >
                                 {/* UzCard - National Payment System */}
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "uzcard" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "uzcard" ? "border-primary bg-primary/5" : "border-neutral-200 dark:border-neutral-700"}`}>
                                   <RadioGroupItem value="uzcard" id="uzcard" className="sr-only" />
                                   <label htmlFor="uzcard" className="flex items-center justify-between cursor-pointer">
                                     <div className="flex items-center">
                                       <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "uzcard" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "uzcard" ? "border-primary" : "border-neutral-300 dark:border-neutral-600"} flex items-center justify-center`}>
                                           {field.value === "uzcard" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.uzcard")}</div>
+                                      <div className="ml-3 font-medium dark:text-neutral-100">{t("checkout.paymentMethods.uzcard")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-blue-600 rounded text-white text-xs font-bold flex items-center justify-center">UZ</div>
-                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.uzcardLabel")}</span>
+                                      <span className="text-sm text-neutral-500 dark:text-neutral-300">{t("checkout.paymentMethods.uzcardLabel")}</span>
                                     </div>
                                   </label>
                                 </div>
 
                                 {/* Humo - Popular Payment System */}
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "humo" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "humo" ? "border-primary bg-primary/5" : "border-neutral-200 dark:border-neutral-700"}`}>
                                   <RadioGroupItem value="humo" id="humo" className="sr-only" />
                                   <label htmlFor="humo" className="flex items-center justify-between cursor-pointer">
                                     <div className="flex items-center">
                                       <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "humo" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "humo" ? "border-primary" : "border-neutral-300 dark:border-neutral-600"} flex items-center justify-center`}>
                                           {field.value === "humo" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.humo")}</div>
+                                      <div className="ml-3 font-medium dark:text-neutral-100">{t("checkout.paymentMethods.humo")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-green-600 rounded text-white text-xs font-bold flex items-center justify-center">H</div>
-                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.humoLabel")}</span>
+                                      <span className="text-sm text-neutral-500 dark:text-neutral-300">{t("checkout.paymentMethods.humoLabel")}</span>
                                     </div>
                                   </label>
                                 </div>
 
                                 {/* Click - Mobile Payment */}
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "click" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "click" ? "border-primary bg-primary/5" : "border-neutral-200 dark:border-neutral-700"}`}>
                                   <RadioGroupItem value="click" id="click" className="sr-only" />
                                   <label htmlFor="click" className="flex items-center justify-between cursor-pointer">
                                     <div className="flex items-center">
                                       <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "click" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "click" ? "border-primary" : "border-neutral-300 dark:border-neutral-600"} flex items-center justify-center`}>
                                           {field.value === "click" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.click")}</div>
+                                      <div className="ml-3 font-medium dark:text-neutral-100">{t("checkout.paymentMethods.click")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-purple-600 rounded text-white text-xs font-bold flex items-center justify-center">C</div>
-                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.mobileLabel")}</span>
+                                      <span className="text-sm text-neutral-500 dark:text-neutral-300">{t("checkout.paymentMethods.mobileLabel")}</span>
                                     </div>
                                   </label>
                                 </div>
                                 
                                 {/* Payme - Mobile Payment */}
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "payme" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "payme" ? "border-primary bg-primary/5" : "border-neutral-200 dark:border-neutral-700"}`}>
                                   <RadioGroupItem value="payme" id="payme" className="sr-only" />
                                   <label htmlFor="payme" className="flex items-center justify-between cursor-pointer">
                                     <div className="flex items-center">
                                       <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "payme" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "payme" ? "border-primary" : "border-neutral-300 dark:border-neutral-600"} flex items-center justify-center`}>
                                           {field.value === "payme" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.payme")}</div>
+                                      <div className="ml-3 font-medium dark:text-neutral-100">{t("checkout.paymentMethods.payme")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-orange-600 rounded text-white text-xs font-bold flex items-center justify-center">P</div>
-                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.mobileLabel")}</span>
+                                      <span className="text-sm text-neutral-500 dark:text-neutral-300">{t("checkout.paymentMethods.mobileLabel")}</span>
                                     </div>
                                   </label>
                                 </div>
                                 
                                 {/* International Cards */}
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "international" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "international" ? "border-primary bg-primary/5" : "border-neutral-200 dark:border-neutral-700"}`}>
                                   <RadioGroupItem value="international" id="international" className="sr-only" />
                                   <label htmlFor="international" className="flex items-center justify-between cursor-pointer">
                                     <div className="flex items-center">
                                       <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "international" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "international" ? "border-primary" : "border-neutral-300 dark:border-neutral-600"} flex items-center justify-center`}>
                                           {field.value === "international" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.international")}</div>
+                                      <div className="ml-3 font-medium dark:text-neutral-100">{t("checkout.paymentMethods.international")}</div>
                                     </div>
                                     <div className="flex space-x-2 rtl:space-x-reverse">
                                       <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" className="h-6 w-auto" />
@@ -1203,20 +1203,20 @@ const CheckoutPage = () => {
                                 </div>
                                 
                                 {/* Cash - Pay on Delivery */}
-                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "cash" ? "border-primary bg-primary/5" : "border-neutral-200"}`}>
+                                <div className={`border rounded-lg p-4 cursor-pointer ${field.value === "cash" ? "border-primary bg-primary/5" : "border-neutral-200 dark:border-neutral-700"}`}>
                                   <RadioGroupItem value="cash" id="cash" className="sr-only" />
                                   <label htmlFor="cash" className="flex items-center justify-between cursor-pointer">
                                     <div className="flex items-center">
                                       <div className="shrink-0">
-                                        <div className={`w-5 h-5 rounded-full border ${field.value === "cash" ? "border-primary" : "border-neutral-300"} flex items-center justify-center`}>
+                                        <div className={`w-5 h-5 rounded-full border ${field.value === "cash" ? "border-primary" : "border-neutral-300 dark:border-neutral-600"} flex items-center justify-center`}>
                                           {field.value === "cash" && <div className="w-3 h-3 rounded-full bg-primary"></div>}
                                         </div>
                                       </div>
-                                      <div className="ml-3 font-medium">{t("checkout.paymentMethods.cash")}</div>
+                                      <div className="ml-3 font-medium dark:text-neutral-100">{t("checkout.paymentMethods.cash")}</div>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <div className="w-8 h-6 bg-emerald-600 rounded text-white text-xs font-bold flex items-center justify-center">💵</div>
-                                      <span className="text-sm text-neutral-500">{t("checkout.paymentMethods.cashDescription")}</span>
+                                      <span className="text-sm text-neutral-500 dark:text-neutral-300">{t("checkout.paymentMethods.cashDescription")}</span>
                                     </div>
                                   </label>
                                 </div>
@@ -1331,7 +1331,7 @@ const CheckoutPage = () => {
                       {form.watch("paymentMethod") === "international" && (
                         <div className="mt-6 space-y-4">
                           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                            <p className="text-sm text-gray-800">
+                            <p className="text-sm text-gray-800 dark:text-gray-200">
                               <strong>International Cards</strong> - Visa, MasterCard
                             </p>
                           </div>
@@ -1394,22 +1394,22 @@ const CheckoutPage = () => {
                             t("checkout.placeOrder")
                           )}
                         </Button>
-                        <p className="text-xs text-neutral-500 text-center mt-4">
+                        <p className="text-xs text-neutral-500 dark:text-neutral-300 text-center mt-4">
                           {t("checkout.termsConditionsMessage")}
                         </p>
                       </div>
                     </div>
                     
                     {/* Navigation buttons */}
-                    <div className="flex justify-between pt-4 mt-8 border-t border-neutral-200">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:justify-between pt-4 mt-6 md:mt-8 border-t border-neutral-200">
                       {paymentStep !== "address" ? (
-                        <Button type="button" variant="outline" onClick={handleBack}>
+                        <Button type="button" variant="outline" onClick={handleBack} className="w-full sm:w-auto order-2 sm:order-1">
                           <ArrowLeft className="mr-2 h-4 w-4" />
                           {t("checkout.back")}
                         </Button>
                       ) : (
-                        <Link href="/products">
-                          <Button type="button" variant="outline">
+                        <Link href="/products" className="w-full sm:w-auto order-2 sm:order-1">
+                          <Button type="button" variant="outline" className="w-full sm:w-auto">
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             {t("checkout.continueShopping")}
                           </Button>
@@ -1417,7 +1417,7 @@ const CheckoutPage = () => {
                       )}
                       
                       {paymentStep !== "payment" && paymentStep !== "confirmation" && (
-                        <Button type="button" onClick={() => handleContinue(paymentStep)}>
+                        <Button type="button" onClick={() => handleContinue(paymentStep)} className="w-full sm:w-auto order-1 sm:order-2">
                           {paymentStep === "address" ? t("checkout.continueToDelivery") : t("checkout.continueToPayment")}
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
@@ -1428,34 +1428,34 @@ const CheckoutPage = () => {
               </div>
             </div>
             
-            <div className="w-full lg:w-1/3">
-              <div className="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden sticky top-24">
-                <div className="p-6 border-b border-neutral-200">
-                  <h2 className="text-xl font-heading font-bold">{t("checkout.orderSummary")}</h2>
+            <div className="w-full lg:w-1/3 order-1 lg:order-2">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700 overflow-hidden lg:sticky lg:top-24">
+                <div className="p-4 md:p-6 border-b border-neutral-200 dark:border-neutral-700">
+                  <h2 className="text-lg md:text-xl font-heading font-bold dark:text-neutral-100">{t("checkout.orderSummary")}</h2>
                 </div>
                 
-                <div className="p-6">
+                <div className="p-4 md:p-6">
                   <Accordion type="single" collapsible defaultValue="items">
                     <AccordionItem value="items" className="border-none">
-                      <AccordionTrigger className="py-2 font-medium">
+                      <AccordionTrigger className="py-2 font-medium text-sm md:text-base">
                         {t("checkout.cartItems", { count: cartItems.length })}
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="space-y-4 mt-2">
+                        <div className="space-y-3 md:space-y-4 mt-2">
                           {cartItems.map((item) => (
-                            <div key={item.id} className="flex items-center">
+                            <div key={item.id} className="flex items-center gap-3">
                               <img 
                                 src={item.image} 
                                 alt={item.name}
-                                className="w-16 h-16 object-cover rounded border border-neutral-200"
+                                className="w-12 h-12 md:w-16 md:h-16 object-cover rounded border border-neutral-200 shrink-0"
                               />
-                              <div className="ml-4 flex-1">
-                                <div className="font-medium">{item.name}</div>
-                                <div className="text-sm text-neutral-500">
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm md:text-base truncate dark:text-neutral-100">{item.name}</div>
+                                <div className="text-xs md:text-sm text-neutral-500 dark:text-neutral-300">
                                   {item.quantity} x {formatCurrency(typeof item.price === 'string' ? parseFloat(item.price) : item.price)}
                                 </div>
                               </div>
-                              <div className="font-medium">
+                              <div className="font-medium text-sm md:text-base shrink-0 dark:text-neutral-100">
                                 {formatCurrency((typeof item.price === 'string' ? parseFloat(item.price) : item.price) * item.quantity)}
                               </div>
                             </div>
@@ -1465,42 +1465,42 @@ const CheckoutPage = () => {
                     </AccordionItem>
                   </Accordion>
                   
-                  <div className="space-y-3 py-4">
-                    <div className="flex justify-between">
-                      <span className="text-neutral-600">{t("checkout.subtotal")}</span>
-                      <span className="font-medium">{formatCurrency(subtotal)}</span>
+                  <div className="space-y-2 md:space-y-3 py-3 md:py-4">
+                    <div className="flex justify-between text-sm md:text-base">
+                      <span className="text-neutral-600 dark:text-neutral-200">{t("checkout.subtotal")}</span>
+                      <span className="font-medium dark:text-neutral-100">{formatCurrency(subtotal)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-neutral-600">{t("checkout.deliveryFee")}</span>
-                      <span className="font-medium">{formatCurrency(deliveryFee)}</span>
+                    <div className="flex justify-between text-sm md:text-base">
+                      <span className="text-neutral-600 dark:text-neutral-200">{t("checkout.deliveryFee")}</span>
+                      <span className="font-medium dark:text-neutral-100">{formatCurrency(deliveryFee)}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-neutral-600">{t("checkout.tip")}</span>
+                    <div className="flex justify-between items-center text-sm md:text-base">
+                      <span className="text-neutral-600 dark:text-neutral-200">{t("checkout.tip")}</span>
                       <div className="flex space-x-2 rtl:space-x-reverse items-center">
                         <input
                           type="number"
-                          className="w-16 text-right border rounded p-1"
+                          className="w-14 md:w-16 text-right border rounded p-1 text-xs md:text-sm"
                           placeholder="0.00"
                         />
-                        <span className="text-primary text-sm">Add</span>
+                        <span className="text-primary text-xs md:text-sm">Add</span>
                       </div>
                     </div>
                   </div>
                   
                   <Separator />
                   
-                  <div className="flex justify-between py-4 font-bold text-lg">
+                  <div className="flex justify-between py-3 md:py-4 font-bold text-base md:text-lg dark:text-neutral-100">
                     <span>{t("checkout.total")}</span>
                     <span>{formatCurrency(total)}</span>
                   </div>
                   
-                  <div className="mt-4">
+                  <div className="mt-3 md:mt-4">
                     <input
                       type="text"
-                      className="w-full border border-neutral-200 rounded-md p-2 text-sm"
+                      className="w-full border border-neutral-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 rounded-md p-2 text-xs md:text-sm"
                       placeholder={t("checkout.promoCodePlaceholder")}
                     />
-                    <div className="text-xs text-neutral-500 mt-2">
+                    <div className="text-xs text-neutral-500 dark:text-neutral-300 mt-1 md:mt-2">
                       {t("checkout.promoCodeHint")}
                     </div>
                   </div>
@@ -1513,7 +1513,7 @@ const CheckoutPage = () => {
 
       {/* 🔥 MOBILE STICKY BUTTON - Only visible on mobile when on payment step */}
       {paymentStep === "payment" && (
-        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white border-t border-neutral-200 shadow-lg safe-area-bottom">
+        <div className="fixed bottom-0 left-0 right-0 md:hidden z-50 bg-white dark:bg-gray-900 border-t border-neutral-200 dark:border-neutral-700 shadow-lg safe-area-bottom">
           <div className="px-4 py-3 pb-safe">
             <Button 
               type="button" 

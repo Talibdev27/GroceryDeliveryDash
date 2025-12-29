@@ -20,7 +20,6 @@ export default function CartButton() {
   }, [itemCount, prevCount]);
   
   const handleClick = () => {
-    console.log("CartButton: Clicked! Current item count:", itemCount);
     toggleCart();
   };
   

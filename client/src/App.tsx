@@ -11,7 +11,6 @@ import Auth from "@/pages/Auth";
 import AdminDashboard from "@/pages/AdminDashboard";
 import SuperAdminDashboard from "@/pages/SuperAdminDashboard";
 import RiderDashboard from "@/pages/RiderDashboard";
-import LoginTest from "@/pages/LoginTest";
 import Location from "@/pages/Location";
 import NotFound from "@/pages/not-found";
 import Header from "@/components/layout/Header";
@@ -40,7 +39,6 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/super-admin" component={SuperAdminDashboard} />
       <Route path="/rider" component={RiderDashboard} />
-      <Route path="/login-test" component={LoginTest} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -103,8 +101,7 @@ function CartToastListener() {
 }
 
 function App() {
-  const { currentLanguage, languageVersion } = useLanguage();
-  const { theme, themeVersion } = useTheme();
+  const { currentLanguage } = useLanguage();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -120,11 +117,6 @@ function App() {
     htmlElement.dir = currentLanguage === "ar" ? "rtl" : "ltr";
     // Theme class is managed by ThemeContext, don't override it here
   }, [currentLanguage]);
-
-  // Log when language or theme version changes to verify re-renders
-  useEffect(() => {
-    console.log("App: Language version changed to", languageVersion, "Theme version changed to", themeVersion);
-  }, [languageVersion, themeVersion]);
 
   return (
     <>

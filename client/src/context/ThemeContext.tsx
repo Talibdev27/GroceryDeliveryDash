@@ -25,12 +25,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const detectInitialTheme = (): Theme => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     if (savedTheme && ["light", "dark"].includes(savedTheme)) {
-      console.log("ThemeContext: Using saved theme:", savedTheme);
       return savedTheme;
     }
     
     // Always default to light mode (ignore system preference)
-    console.log("ThemeContext: Using default theme: light");
     return "light";
   };
 
@@ -41,41 +39,27 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   useEffect(() => {
     const root = document.documentElement;
     
-    console.log("ThemeContext: Applying theme:", theme);
-    
     // Remove both classes first to ensure clean state
     root.classList.remove("dark", "light");
     
     if (theme === "dark") {
       root.classList.add("dark");
-      console.log("ThemeContext: Added 'dark' class to document");
-    } else {
-      console.log("ThemeContext: Light mode - no dark class");
     }
     
     // Save to localStorage
     localStorage.setItem("theme", theme);
-    console.log("ThemeContext: Theme saved to localStorage:", theme);
-    
-    // Verify the class was applied
-    console.log("ThemeContext: Document classes:", root.classList.toString());
     
     // Force re-render by updating themeVersion
     setThemeVersion(prev => prev + 1);
-    console.log("ThemeContext: Theme version updated, forcing component re-render");
   }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
-    console.log("ThemeContext: setTheme called with:", newTheme);
     setThemeState(newTheme);
   };
 
   const toggleTheme = () => {
-    console.log("ThemeContext: toggleTheme called, current theme:", theme);
     setThemeState((prevTheme) => {
-      const newTheme = prevTheme === "light" ? "dark" : "light";
-      console.log("ThemeContext: Toggling from", prevTheme, "to", newTheme);
-      return newTheme;
+      return prevTheme === "light" ? "dark" : "light";
     });
   };
 

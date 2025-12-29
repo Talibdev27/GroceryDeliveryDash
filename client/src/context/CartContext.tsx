@@ -101,7 +101,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = (product: Omit<CartProduct, "quantity">) => {
-    console.log("CartContext: Adding product to cart:", product);
     let newQuantity = 1;
     
     setCartItems((prevItems) => {
@@ -112,12 +111,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         const newItems = prevItems.map((item) =>
           item.id === product.id ? { ...item, quantity: newQuantity } : item
         );
-        console.log("CartContext: Updated existing item, new cart:", newItems);
         return newItems;
       } else {
         newQuantity = 1;
         const newItems = [...prevItems, { ...product, quantity: 1 }];
-        console.log("CartContext: Added new item, new cart:", newItems);
         return newItems;
       }
     });
@@ -160,20 +157,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   };
 
   const toggleCart = () => {
-    console.log("CartContext: toggleCart called, current state:", isCartOpen);
-    setIsCartOpen((prev) => {
-      console.log("CartContext: Setting cart open to:", !prev);
-      return !prev;
-    });
+    setIsCartOpen((prev) => !prev);
   };
 
   const closeCart = () => {
-    console.log("CartContext: closeCart called");
     setIsCartOpen(false);
   };
 
   const openCart = () => {
-    console.log("CartContext: openCart called");
     setIsCartOpen(true);
   };
 

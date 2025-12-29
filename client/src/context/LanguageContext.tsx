@@ -36,19 +36,14 @@ interface LanguageProviderProps {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   // Try to get language from localStorage, or default to 'en'
   const detectInitialLanguage = (): SupportedLanguage => {
-    console.log("LanguageContext: Detecting initial language");
-    
     // Get saved language from localStorage
     const savedLanguage = localStorage.getItem("language");
-    console.log("LanguageContext: Saved language from localStorage:", savedLanguage);
     
     // Check if the saved language is one of our supported languages
     if (savedLanguage && SUPPORTED_LANGUAGES.includes(savedLanguage as SupportedLanguage)) {
-      console.log("LanguageContext: Using saved language:", savedLanguage);
       return savedLanguage as SupportedLanguage;
     }
     
-    console.log("LanguageContext: Using default language: en");
     return "en"; // Default
   };
 
@@ -57,11 +52,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   // Initialize i18n with the detected language
   useEffect(() => {
-    console.log("LanguageContext: Initializing i18n with language:", currentLanguage);
-    i18n.changeLanguage(currentLanguage).then(() => {
-      console.log("LanguageContext: i18n initialized with language:", currentLanguage);
-      console.log("LanguageContext: Current i18n language:", i18n.language);
-    });
+    i18n.changeLanguage(currentLanguage);
   }, []); // Run only once on mount
 
   // Compute directional properties - all our languages are LTR
@@ -74,24 +65,14 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   // Update i18n language when currentLanguage changes
   useEffect(() => {
-    console.log("LanguageContext: Changing language to", currentLanguage);
-    
     // Update HTML attributes
     document.documentElement.lang = currentLanguage;
     document.documentElement.dir = directions.dir;
     
     // Change i18next language
     i18n.changeLanguage(currentLanguage).then(() => {
-      console.log("i18n: Language changed to", currentLanguage);
-      console.log("i18n: Current language is now", i18n.language);
-      
-      // Test if translations are working
-      const testTranslation = i18n.t('hero.title');
-      console.log("i18n: Test translation for hero.title:", testTranslation);
-      
       // Force a re-render by updating languageVersion
       setLanguageVersion(prev => prev + 1);
-      console.log("LanguageContext: Language version updated, forcing component re-render");
     }).catch((error) => {
       console.error("i18n: Error changing language", error);
     });
@@ -101,10 +82,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   }, [currentLanguage]);
 
   const setLanguage = (lang: string) => {
-    console.log("LanguageContext: setLanguage called with", lang);
     if (SUPPORTED_LANGUAGES.includes(lang as SupportedLanguage)) {
-      console.log("LanguageContext: Setting language to", lang);
-      
       // Save to localStorage first
       localStorage.setItem("language", lang);
       
@@ -113,16 +91,8 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       
       // Force i18n to change language
       i18n.changeLanguage(lang).then(() => {
-        console.log("LanguageContext: i18n language changed to", lang);
-        console.log("LanguageContext: i18n current language", i18n.language);
-        
-        // Test translation
-        const testTranslation = i18n.t('hero.title');
-        console.log("LanguageContext: Test translation:", testTranslation);
-        
         // Force a re-render by updating languageVersion
         setLanguageVersion(prev => prev + 1);
-        console.log("LanguageContext: Language change complete, forcing component re-render");
       }).catch((error) => {
         console.error("LanguageContext: Error changing language", error);
       });
