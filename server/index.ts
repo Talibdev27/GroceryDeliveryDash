@@ -48,8 +48,25 @@ const upload = multer({
 app.set("upload", upload);
 
 // Session configuration
+const SESSION_SECRET = process.env.SESSION_SECRET;
+const DEFAULT_SECRET = "your-secret-key-change-in-production";
+
+if (!SESSION_SECRET || SESSION_SECRET === DEFAULT_SECRET) {
+  if (app.get("env") === "production") {
+    throw new Error(
+      "SESSION_SECRET environment variable must be set in production. " +
+      "Generate a strong secret with: openssl rand -base64 32"
+    );
+  } else {
+    console.warn(
+      "⚠️  WARNING: Using default SESSION_SECRET. " +
+      "Set SESSION_SECRET environment variable for production."
+    );
+  }
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || "your-secret-key-change-in-production",
+  secret: SESSION_SECRET || DEFAULT_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {

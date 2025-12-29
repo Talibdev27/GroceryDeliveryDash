@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { Link, useLocation } from "wouter";
@@ -15,7 +15,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/context/AuthContext";
-import { User, Mail, Lock, UserPlus, LogIn, Phone, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Lock, UserPlus, LogIn, Phone, Eye, EyeOff, Check, X } from "lucide-react";
+import { validatePassword } from "@/lib/password-validation";
 
 export default function Auth() {
   const { t } = useTranslation();
@@ -86,12 +87,25 @@ export default function Auth() {
     }
   };
 
+  // Password validation
+  const passwordValidation = useMemo(() => {
+    if (!registerData.password) return null;
+    return validatePassword(registerData.password);
+  }, [registerData.password]);
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return; // debounce
     setIsLoading(true);
     setError(null);
     setSuccess(null);
+
+    // Validate password strength
+    if (registerData.password && passwordValidation && !passwordValidation.isValid) {
+      setError(passwordValidation.errors[0] || "Password does not meet requirements");
+      setIsLoading(false);
+      return;
+    }
 
     if (registerData.password !== registerData.confirmPassword) {
       setError(t("auth.passwordMismatch"));
@@ -327,7 +341,11 @@ export default function Auth() {
                             onChange={(e) =>
                               setRegisterData({ ...registerData, password: e.target.value })
                             }
-                            className="pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                            className={`pl-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 ${
+                              passwordValidation && !passwordValidation.isValid && registerData.password
+                                ? "border-red-500 dark:border-red-500"
+                                : ""
+                            }`}
                             required
                           />
                           <button
@@ -339,6 +357,79 @@ export default function Auth() {
                             {showRegisterPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                           </button>
                         </div>
+                        
+                        {/* Password Strength Indicator */}
+                        {registerData.password && passwordValidation && (
+                          <div className="space-y-2 mt-2">
+                            {/* Strength Bar */}
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full transition-all ${
+                                    passwordValidation.strength === "strong"
+                                      ? "w-full bg-green-500"
+                                      : passwordValidation.strength === "medium"
+                                      ? "w-2/3 bg-yellow-500"
+                                      : "w-1/3 bg-red-500"
+                                  }`}
+                                />
+                              </div>
+                              <span className={`text-xs font-medium ${
+                                passwordValidation.strength === "strong"
+                                  ? "text-green-600 dark:text-green-400"
+                                  : passwordValidation.strength === "medium"
+                                  ? "text-yellow-600 dark:text-yellow-400"
+                                  : "text-red-600 dark:text-red-400"
+                              }`}>
+                                {passwordValidation.strength.toUpperCase()}
+                              </span>
+                            </div>
+                            
+                            {/* Requirements Checklist */}
+                            <div className="text-xs space-y-1 text-gray-600 dark:text-gray-400">
+                              <div className="flex items-center gap-2">
+                                {passwordValidation.meetsRequirements.minLength ? (
+                                  <Check className="h-3 w-3 text-green-500" />
+                                ) : (
+                                  <X className="h-3 w-3 text-red-500" />
+                                )}
+                                <span>At least 8 characters</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {passwordValidation.meetsRequirements.hasUppercase ? (
+                                  <Check className="h-3 w-3 text-green-500" />
+                                ) : (
+                                  <X className="h-3 w-3 text-red-500" />
+                                )}
+                                <span>One uppercase letter</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {passwordValidation.meetsRequirements.hasLowercase ? (
+                                  <Check className="h-3 w-3 text-green-500" />
+                                ) : (
+                                  <X className="h-3 w-3 text-red-500" />
+                                )}
+                                <span>One lowercase letter</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {passwordValidation.meetsRequirements.hasNumber ? (
+                                  <Check className="h-3 w-3 text-green-500" />
+                                ) : (
+                                  <X className="h-3 w-3 text-red-500" />
+                                )}
+                                <span>One number</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {passwordValidation.meetsRequirements.hasSpecialChar ? (
+                                  <Check className="h-3 w-3 text-green-500" />
+                                ) : (
+                                  <X className="h-3 w-3 text-red-500" />
+                                )}
+                                <span>One special character (!@#$%^&*)</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-2">

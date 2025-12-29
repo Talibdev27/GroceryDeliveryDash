@@ -169,10 +169,33 @@ export const promotions = pgTable("promotions", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Common passwords to block
+const commonPasswords = [
+  'password', 'Password123!', 'Admin123!', 'Customer123!', 'Rider123!', 'SuperAdmin123!',
+  '12345678', 'qwerty123', 'Welcome123!', 'password123', 'admin123', 'letmein',
+  '123456', 'password1', 'Password1', 'welcome', 'monkey', '1234567890'
+];
+
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users, {
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(/[A-Z]/, "Password must include at least one uppercase letter")
+    .regex(/[a-z]/, "Password must include at least one lowercase letter")
+    .regex(/[0-9]/, "Password must include at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must include at least one special character (!@#$%^&*)")
+    .refine(
+      (password) => {
+        // Check against common passwords
+        const passwordLower = password.toLowerCase();
+        return !commonPasswords.some(common => 
+          passwordLower.includes(common.toLowerCase()) || 
+          passwordLower === common.toLowerCase()
+        );
+      },
+      { message: "This password is too common. Please choose a more unique password." }
+    ),
 }).pick({
   username: true,
   email: true,

@@ -2,7 +2,9 @@ import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import multer from "multer";
+import rateLimit from "express-rate-limit";
 import { storage, verifyPassword, db } from "./storage";
+import { validatePasswordSecurity } from "./utils/password-check";
 import { insertUserSchema, insertAddressSchema, insertPromotionSchema, products as productsTable } from "@shared/schema";
 import { ZodError } from "zod";
 import { uploadImage, isCloudinaryConfigured } from "./cloudinary";
@@ -87,8 +89,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Optional columns ensure failed:", e);
     }
   }
+
+  // Rate limiting for authentication endpoints
+  const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 attempts per window
+    message: "Too many login attempts. Please try again in 15 minutes.",
+    standardHeaders: true,
+    legacyHeaders: false,
+    skipSuccessfulRequests: true, // Don't count successful logins
+  });
+
+  const registerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 3, // 3 registration attempts per hour
+    message: "Too many registration attempts. Please try again in an hour.",
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
   // Authentication routes
-  app.post("/api/auth/register", validateBody(insertUserSchema), async (req: Request, res: Response) => {
+  app.post("/api/auth/register", registerLimiter, validateBody(insertUserSchema), async (req: Request, res: Response) => {
     try {
       const { username, email, password, firstName, lastName, phone } = req.body;
 
@@ -101,6 +122,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingEmail = await storage.getUserByEmail(email);
       if (existingEmail) {
         return res.status(400).json({ error: "Email already exists" });
+      }
+
+      // Check if password has been breached
+      const passwordCheck = await validatePasswordSecurity(password);
+      if (!passwordCheck.isValid) {
+        return res.status(400).json({ error: passwordCheck.error });
       }
 
       // Create new user
@@ -126,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/login", async (req: Request, res: Response) => {
+  app.post("/api/auth/login", loginLimiter, async (req: Request, res: Response) => {
     try {
       const { username, password } = req.body;
       
